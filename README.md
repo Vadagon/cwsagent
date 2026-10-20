@@ -9,6 +9,13 @@ Autofill and extract Chrome Web Store listings from the developer console.
 
 Extract's ZIP is the format Autofill reads ([FORMAT.md](FORMAT.md), [example](example)).
 
+## Private by design
+
+- **Runs only on your computer**, inside your own Chrome. There is no server and no account.
+- **Sends nothing out**: no analytics, no tracking. Your listings, stats and user messages never leave your browser.
+- The only network traffic is between you and Google's own console: the console uploading your images and saving your draft, and Extract downloading your listing's images.
+- **No permissions requested**. It only runs on the developer console pages, and the [code is open](entrypoints) for anyone to check.
+
 ## Install
 
 > [!IMPORTANT]
