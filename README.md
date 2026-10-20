@@ -16,7 +16,7 @@ Extract's ZIP is the format Autofill reads ([FORMAT.md](FORMAT.md), [example](ex
 > profile started with `--apps-gallery-url`. Use a **separate profile** for this:
 > in it, every installed extension can access Web Store pages.
 
-**1. Download** the ZIP from [Releases](https://github.com/Vadagon/cwsagent/releases) and unzip it.
+**1. Download** [**cwsagent-chrome.zip**](https://github.com/Vadagon/cwsagent/releases/latest/download/cwsagent-chrome.zip) (latest release) and unzip it into a folder you'll keep.
 
 **2. Start a publishing window** (your normal Chrome can stay open):
 
@@ -43,7 +43,7 @@ google-chrome --user-data-dir="$HOME/.chrome-publishing" --apps-gallery-url=http
 
 **3. Load it:** `chrome://extensions` → **Developer mode** → **Load unpacked** → pick the unzipped folder.
 
-Always open the publishing window with the same command.
+Always open the publishing window with the same command. To update, download the ZIP again, replace the folder, and press reload on CWSAgent in `chrome://extensions`.
 
 ## Use
 
@@ -54,14 +54,21 @@ Always open the publishing window with the same command.
 
 CWSAgent never saves, submits, ticks certifications or changes visibility.
 
-## Develop
+## Development
+
+Pull requests are welcome! Fixes for console layout changes, new languages,
+better extraction or UI improvements: open an issue or send a PR.
 
 ```bash
+git clone https://github.com/Vadagon/cwsagent.git
+cd cwsagent
 npm install
-npm run build     # dist/chrome-mv3
-npm run release   # release/*.zip
-npm test
-npm run mock      # mock console at http://127.0.0.1:8767
+npm run dev       # dev mode with reload
+npm run build     # → dist/ (load unpacked)
+npm test          # unit tests
+npm run mock      # mock console at http://127.0.0.1:8767, no real listing needed
 ```
+
+Releases are built by GitHub Actions: pushing a `v*` tag publishes the ZIPs.
 
 React + TypeScript on [WXT](https://wxt.dev). Not affiliated with Google.

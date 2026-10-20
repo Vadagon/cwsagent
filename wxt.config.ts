@@ -1,10 +1,11 @@
 import { defineConfig } from 'wxt';
 
-// Build: dist/chrome-mv3 (load unpacked). Release: `npm run release` moves the
-// store ZIP from dist/ to release/.
+// Build: dist/ (load unpacked). Release: `npm run release` moves the ZIPs that
+// `wxt zip` writes next to the build into release/.
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   outDir: 'dist',
+  outDirTemplate: '',
   zip: {
     artifactTemplate: '{{name}}-{{version}}-{{browser}}.zip',
     sourcesTemplate: '{{name}}-{{version}}-sources.zip',

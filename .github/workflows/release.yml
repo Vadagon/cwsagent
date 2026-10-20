@@ -1,0 +1,43 @@
+# Builds the extension and attaches it to the GitHub release for a version tag,
+# so anyone can install it from Releases without building it themselves.
+# Push a tag (git tag v0.6.0 && git push --tags), or run it by hand for an
+# existing tag to rebuild that release's ZIPs.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to (re)build, e.g. v0.5.0
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run compile
+      - run: npm test
+      - run: npm run release
+      - name: Attach ZIPs to the release
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" release/*.zip --clobber
+          else
+            gh release create "$TAG" release/*.zip --title "CWSAgent ${TAG#v}" --notes "Download **cwsagent-chrome.zip**, unzip it, and load the folder with Load unpacked in a publishing window. See [Install](https://github.com/${{ github.repository }}#install)."
+          fi
