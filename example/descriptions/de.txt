@@ -1,0 +1,5 @@
+Example Extension nimmt deinen Bildschirm mit Kamera auf.
+
+✨ FUNKTIONEN
+• Nimm den ganzen Bildschirm, ein Fenster oder einen Tab auf
+• Teile einen Link, sobald du stoppst

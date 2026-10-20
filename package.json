@@ -1,0 +1,32 @@
+{
+  "name": "cwsagent",
+  "description": "Fill or extract a Chrome Web Store listing in one drop.",
+  "private": true,
+  "version": "0.5.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "release": "wxt zip && node scripts/release.mjs",
+    "compile": "tsc --noEmit",
+    "test": "vitest run",
+    "mock": "python3 tests/serve.py",
+    "icons": "python3 scripts/make-icons.py public/icons",
+    "postinstall": "wxt prepare"
+  },
+  "dependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@wxt-dev/module-react": "1.2.2",
+    "typescript": "5.9.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.5",
+    "wxt": "0.21.4"
+  }
+}

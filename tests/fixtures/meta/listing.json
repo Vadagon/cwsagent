@@ -1,0 +1,20 @@
+{
+  "itemId": "abcdefghijklmnopabcdefghijklmnop",
+  "category": "Developer Tools",
+  "officialUrl": "example.com",
+  "homepageUrl": "https://example.com",
+  "supportUrl": "https://example.com/support",
+  "matureContent": true,
+  "languages": { "de": { "promoVideo": "https://www.youtube.com/watch?v=AAAAAAAAAAA" } },
+  "privacy": {
+    "singlePurpose": "Fill Web Store listings from one folder.",
+    "permissions": { "storage": "Keeps the dropped package between pages.", "tabs": "Not requested by this item." },
+    "hostPermission": "Runs only on the developer console.",
+    "remoteCode": false,
+    "dataCollected": ["websiteContent", "user activity"],
+    "certify": true,
+    "privacyPolicyUrl": "https://example.com/privacy"
+  },
+  "testInstructions": { "username": "reviewer@example.com", "instructions": "Open the console and drop the folder." },
+  "distribution": { "visibility": "private" }
+}

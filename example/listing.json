@@ -1,0 +1,17 @@
+{
+  "category": "Tools",
+  "homepageUrl": "https://example.com",
+  "supportUrl": "https://example.com/support",
+  "matureContent": false,
+  "languages": {
+    "de": { "promoVideo": "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
+  },
+  "privacy": {
+    "remoteCode": false,
+    "dataCollected": [],
+    "privacyPolicyUrl": "https://example.com/privacy"
+  },
+  "testInstructions": {
+    "instructions": "Install, open the popup and press Start. No account needed."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "category": "Tools",
+  "singlePurpose": "Record your screen, a browser tab or your camera and share the recording as a link.",
+  "permissions": [
+    { "permission": "storage", "justification": "Saves the user's recording settings." },
+    { "permission": "https://*/*", "justification": "Shows the camera bubble on the page being recorded." }
+  ]
+}

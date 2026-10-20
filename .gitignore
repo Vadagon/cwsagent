@@ -1,0 +1,5 @@
+node_modules/
+.wxt/
+dist/
+release/
+.DS_Store

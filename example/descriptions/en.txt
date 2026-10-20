@@ -1,0 +1,5 @@
+Example Extension records your screen with camera.
+
+✨ WHAT IT DOES
+• Record your whole screen, a window or a tab
+• Share a link the moment you stop
