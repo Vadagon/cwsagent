@@ -529,9 +529,10 @@ export const pageButton = (text: string) =>
 
 /**
  * The element the card sits right after: the tab's heading, or the short header
- * row that holds it, so the card takes the content column's full width.
+ * row that holds it. inset is how far the heading's text starts into their
+ * parent, so the card can line up with it.
  */
-export function cardAnchor(title: string): HTMLElement | null {
+export function cardAnchor(title: string): { after: HTMLElement; inset: number } | null {
   const heading = [...document.querySelectorAll<HTMLElement>('h1, h2, h3, [role="heading"]')]
     .find((h) => visible(h) && clean(h.textContent) === title);
   if (!heading) return null;
@@ -541,7 +542,10 @@ export function cardAnchor(title: string): HTMLElement | null {
     if (!(style.display.includes('flex') && style.flexDirection.startsWith('row') && p.getBoundingClientRect().height < 120)) break;
     spot = p;
   }
-  return spot;
+  const text = document.createRange();
+  text.selectNodeContents(heading);
+  const from = spot.parentElement?.getBoundingClientRect().left ?? 0;
+  return { after: spot, inset: Math.max(0, text.getBoundingClientRect().left - from) };
 }
 
 // ---- Finding an item for Extension Tower ------------------------------------------

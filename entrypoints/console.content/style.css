@@ -67,26 +67,26 @@ a, .link { color: #0b57d0; }
 .dialog-buttons .btn { flex: 1 1 auto; padding: 9px 14px; font-size: 13px; }
 
 /* Console: the inline card under the tab's heading */
-.cws { margin: 16px 0 24px; padding: 16px 24px; background: #f4f8fe; border: 1px solid #a8c7fa; border-radius: 8px; color: #1f1f1f; font-size: 14px; }
+.cws { max-width: 960px; margin: 0 0 16px; padding: 16px 24px; background: #f4f8fe; border: 1px solid #a8c7fa; border-radius: 8px; color: #1f1f1f; font-size: 14px; }
 .cws.floating { position: fixed; right: 16px; bottom: 16px; z-index: 2147483000; width: 380px; margin: 0; box-shadow: 0 4px 18px rgba(0,0,0,.18); }
 .cws.over { border-color: #0b57d0; background: #e8f0fe; }
-.cws-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.cws-text { min-width: 0; display: grid; gap: 8px; }
+.cws-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 24px; }
+.cws-text { flex: 1 1 240px; min-width: 0; display: grid; justify-items: start; gap: 6px; }
 .cws-title { display: flex; align-items: center; gap: 8px; color: #1a4fa0; font-size: 15px; font-weight: 700; }
 .cws-title .mi { width: 20px; height: 20px; }
 .cws-sub { color: #3c4043; line-height: 1.4; overflow-wrap: anywhere; }
 .cws-sub.bad { color: #b3261e; }
 .cws-sub.ok { color: #146c2e; }
 button.cws-sub { border: 0; background: none; padding: 0; font: inherit; text-align: left; cursor: pointer; text-decoration: underline; }
-.cws-actions { display: flex; align-items: center; gap: 8px; flex: none; }
-.cws .btn { flex: none; gap: 8px; padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 700; background: #1a73e8; }
+.cws-actions { display: flex; align-items: center; gap: 8px; flex: none; max-width: 100%; }
+.cws-get { font-weight: 500; }
+.cws .btn { flex: none; gap: 8px; height: 40px; padding: 0 20px; border-radius: 6px; font-size: 14px; font-weight: 700; background: #1a73e8; }
 .cws .btn .mi { width: 20px; height: 20px; }
 .cws .btn.ghost { background: #fff; color: #1a4fa0; border: 1px solid #a8c7fa; }
 .cws .btn.danger { background: #b3261e; }
 .cws .btn.spin .mi { animation: spin 1.1s linear infinite; }
 .cws .icon .mi { width: 20px; height: 20px; }
 .cws .icon:hover { background: #e8f0fe; }
-.cws-token { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
-.cws-token input { flex: 1; min-width: 0; padding: 9px 12px; font-size: 14px; color: #1f1f1f; background: #fff; border: 1px solid #747775; border-radius: 6px; }
-.cws-token a { flex: none; font-weight: 500; }
+.cws-token { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cws-token input { width: 240px; min-width: 0; height: 40px; padding: 0 12px; font-size: 14px; color: #1f1f1f; background: #fff; border: 1px solid #747775; border-radius: 6px; }
 .cws .more { width: auto; max-height: none; margin-top: 12px; padding: 12px 0 0; border: 0; border-top: 1px solid #a8c7fa; border-radius: 0; background: none; box-shadow: none; font-size: 13px; }

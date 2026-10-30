@@ -84,6 +84,7 @@ function useCardPlacement(host: HTMLElement, page: Page) {
     const kind = page.kind;
     if (!isTab(kind)) {
       if (host.parentElement !== document.documentElement) document.documentElement.append(host);
+      host.style.margin = '';
       setInline(false);
       return;
     }
@@ -91,9 +92,11 @@ function useCardPlacement(host: HTMLElement, page: Page) {
     const place = () => {
       const anchor = cardAnchor(TAB_NAMES[kind]);
       if (anchor) {
-        if (host.previousElementSibling !== anchor) anchor.after(host);
+        if (host.previousElementSibling !== anchor.after) anchor.after.after(host);
+        host.style.margin = `0 ${anchor.inset}px`;
       } else if (Date.now() - since > HEADING_WAIT_MS) {
         if (main().firstElementChild !== host) main().prepend(host);
+        host.style.margin = '';
       } else return;
       setInline(true);
     };
@@ -385,7 +388,7 @@ export default function App({ host }: { host: HTMLElement }) {
     if (wrongItem) packageStatus = { text: 'Made for another item', tone: 'bad', onClick: () => setPanel('info') };
     else if (canFill) {
       const n = page.kind === 'listing' ? readyLanguageCount(pkg) : 0;
-      packageStatus = { text: page.kind === 'listing' ? (n ? `${n} language${n > 1 ? 's' : ''} ready` : 'Listing ready') : `${TAB_NAMES[page.kind as TabKind]} ready` };
+      packageStatus = { text: page.kind === 'listing' ? `${pkg.name} · ${n ? `${n} language${n > 1 ? 's' : ''} ready` : 'listing ready'}` : `${TAB_NAMES[page.kind as TabKind]} ready` };
     } else {
       const go = ORDER.find((k) => has(pkg, k));
       packageStatus = go ? { text: <>Go to <a href={tabUrl(go) ?? '#'}>{TAB_NAMES[go]}</a></> } : { text: 'Nothing to autofill here' };
@@ -446,7 +449,7 @@ export default function App({ host }: { host: HTMLElement }) {
         </button>
       );
     } else if (canFill) {
-      action = <button className="btn" onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
+      action = <button className={`btn ${askToken ? 'ghost' : ''}`} onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
     } else if (!towerReady()) {
       action = <button className="btn" onClick={() => dirInput.current?.click()}><Icon name="fileUpload" /><span>Upload</span></button>;
     } else if (tower?.connected && !matching) {
@@ -479,21 +482,23 @@ export default function App({ host }: { host: HTMLElement }) {
               {status.onClick
                 ? <button className={`cws-sub ${status.tone ?? ''}`} aria-live="polite" onClick={status.onClick}>{status.text}</button>
                 : <div className={`cws-sub ${status.tone ?? ''}`} aria-live="polite">{status.text}</div>}
+              {askToken && <a className="cws-get" href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>}
             </div>
-            <div className="cws-actions">{actions}</div>
+            <div className="cws-actions">
+              {actions}
+              {askToken && (
+                <form className="cws-token" onSubmit={(e) => {
+                  e.preventDefault();
+                  const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
+                  connect(input.value);
+                  input.value = '';
+                }}>
+                  <input name="key" type="password" placeholder="API token" autoComplete="off" spellCheck={false} aria-label="ExtensionTower API token" />
+                  <button className="btn" type="submit"><span>Connect</span></button>
+                </form>
+              )}
+            </div>
           </div>
-          {askToken && (
-            <form className="cws-token" onSubmit={(e) => {
-              e.preventDefault();
-              const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
-              connect(input.value);
-              input.value = '';
-            }}>
-              <input name="key" type="password" placeholder="API token" autoComplete="off" spellCheck={false} aria-label="ExtensionTower API token" />
-              <button className="btn" type="submit"><span>Connect</span></button>
-              <a href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>
-            </form>
-          )}
           {askToken && (tower?.invalid || tower?.error) && (
             <div className="cws-sub bad" role="alert" style={{ marginTop: 8 }}>{tower.invalid ? 'ExtensionTower rejected that token.' : tower.error}</div>
           )}
