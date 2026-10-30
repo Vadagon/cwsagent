@@ -331,7 +331,7 @@ export default function App({ host }: { host: HTMLElement }) {
     return () => { gone = true; };
   }, [page.itemId]);
   const connect = async (key: string) => {
-    try { await towerConnect(key); setTower({ connected: true }); await refreshTower(); } catch (e) { setTower({ connected: false, error: (e as Error).message }); }
+    try { await towerConnect(key); setTower({ connected: true }); setPanel(null); await refreshTower(); } catch (e) { setTower({ connected: false, error: (e as Error).message }); }
   };
   const disconnect = async () => { await towerDisconnect().catch(() => {}); setTower({ connected: false }); };
 
@@ -418,14 +418,12 @@ export default function App({ host }: { host: HTMLElement }) {
   else if (pick && !source) status = { text: `Link ${pick.name} here?` };
   else if (dropped && packageStatus) status = packageStatus;
   else if (towerReady() && (!tower || matching)) status = { text: 'Matching…' };
-  else if (tower?.error) status = { text: tower.error, tone: 'bad' };
+  else if (tower?.connected && tower.error) status = { text: tower.error, tone: 'bad' };
   else if (fromTower) status = { text: fromTower };
   else if (packageStatus) status = packageStatus;
-  else if (!towerReady()) status = { text: 'Drop a listing folder or ZIP' };
-  else if (!tower?.connected) status = { text: 'Connect your ExtensionTower account' };
+  else if (!towerReady()) status = { text: 'No listing loaded' };
+  else if (!tower?.connected) status = { text: tower?.invalid ? 'ExtensionTower rejected the API token' : 'Connect your ExtensionTower account', tone: tower?.invalid ? 'bad' : undefined, onClick: () => setPanel('settings') };
   else status = { text: 'No matching listing' };
-
-  const askToken = inline && towerReady() && !!tower && !tower.connected && !matching && !run && !confirm;
 
   let actions: ReactNode;
   if (run) {
@@ -455,14 +453,13 @@ export default function App({ host }: { host: HTMLElement }) {
         </button>
       );
     } else if (canFill) {
-      action = <button className={`btn ${askToken ? 'ghost' : ''}`} onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
-    } else if (!towerReady()) {
-      action = <button className="btn" onClick={() => dirInput.current?.click()}><Icon name="fileUpload" /><span>Upload</span></button>;
-    } else if (tower?.connected && !matching) {
+      action = <button className="btn" onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
+    } else if (towerReady() && tower?.connected && !matching) {
       action = <button className="btn ghost" onClick={refreshTower}><Icon name="sync" /><span>{tower.error ? 'Retry' : 'Check again'}</span></button>;
     }
     actions = (
       <>
+        <button className="cws-logo" title="ExtensionTower settings" aria-label="ExtensionTower settings" onClick={() => setPanel(panel === 'settings' ? null : 'settings')}><TowerMark /><span>ExtensionTower</span></button>
         <button className={`icon ${panel ? 'pressed' : ''}`} title="Settings" aria-label="Settings" aria-pressed={!!panel} onClick={() => setPanel(panel ? null : 'settings')}><Icon name="settings" /></button>
         {action}
       </>
@@ -497,32 +494,25 @@ export default function App({ host }: { host: HTMLElement }) {
                     : <div className={`cws-sub ${status.tone ?? ''}`} aria-live="polite">{status.text}</div>}
                 </div>
               </div>
-              {askToken && <a className="cws-get" href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>}
             </div>
-            <div className="cws-actions">
-              {actions}
-              {askToken && (
-                <form className="cws-token" onSubmit={(e) => {
-                  e.preventDefault();
-                  const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
-                  connect(input.value);
-                  input.value = '';
-                }}>
-                  <input name="key" type="password" placeholder="API token" autoComplete="off" spellCheck={false} aria-label="ExtensionTower API token" />
-                  <button className="btn" type="submit"><span>Connect</span></button>
-                </form>
-              )}
-            </div>
+            <div className="cws-actions">{actions}</div>
           </div>
-          {askToken && (tower?.invalid || tower?.error) && (
-            <div className="cws-sub bad" role="alert" style={{ marginTop: 8 }}>{tower.invalid ? 'ExtensionTower rejected that token.' : tower.error}</div>
+          {inline && !useTower && !run && !confirm && !matching && (
+            <div className="cws-drop">
+              <Icon name="upload" />
+              <b>Drop a ZIP or folder</b>
+              <span className="links">
+                <button className="link" onClick={() => dirInput.current?.click()}>Choose folder</button>
+                <button className="link" onClick={() => zipInput.current?.click()}>Choose ZIP</button>
+              </span>
+            </div>
           )}
           {inline && panel === 'extract' && !run && (
             <ExtractPanel options={extract} onChange={changeExtract} onStart={startExtract} onCancel={() => setPanel(null)} />
           )}
           {inline && panel === 'settings' && (
             <SettingsPanel
-              pkg={pkg} page={page} opts={opts} setOpts={setOpts} tower={tower} onDisconnect={disconnect} hasHistory={history.length > 0} onPanel={setPanel}
+              pkg={pkg} page={page} opts={opts} setOpts={setOpts} tower={tower} onConnect={connect} onDisconnect={disconnect} hasHistory={history.length > 0} onPanel={setPanel}
               onForget={async () => { await clearPackage(); setPkg(null); setDropped(false); setFlash(null); setPanel(null); }}
               onZip={() => zipInput.current?.click()} onFolder={() => dirInput.current?.click()}
             />
@@ -586,11 +576,18 @@ function ExtractPanel({ options, onChange, onStart, onCancel }: {
 
 const GUIDE_URL = 'https://github.com/Vadagon/cwsagent#make-a-listing-package';
 const TOWER_URL = 'https://extensiontower.com/dashboard';
+const SIGNUP_URL = 'https://extensiontower.com/signup';
+
+const TowerMark = () => (
+  <svg viewBox="0 0 32 35" width="18" height="20" fill="none" stroke="#c74719" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="m4 10 12-6 12 6-12 6L4 10Z" /><path d="m4 17 12 6 12-6M4 24l12 6 12-6" />
+  </svg>
+);
 
 function SettingsPanel(props: {
   pkg: Package | null; page: Page; opts: ListingOptions | null; setOpts: (o: ListingOptions) => void;
   onForget: () => void; onZip: () => void; onFolder: () => void;
-  tower: Tower | null; onDisconnect: () => void; hasHistory: boolean; onPanel: (p: PanelName) => void;
+  tower: Tower | null; onConnect: (key: string) => void; onDisconnect: () => void; hasHistory: boolean; onPanel: (p: PanelName) => void;
 }) {
   const { pkg, opts, setOpts } = props;
   const defaults = pkg ? listingDefaults(pkg) : null;
@@ -600,6 +597,31 @@ function SettingsPanel(props: {
   ];
   return (
     <div className="more">
+      {towerReady() && (
+        <div>
+          <div className="sec-title">ExtensionTower</div>
+          {props.tower?.connected ? (
+            <div className="links"><span>Connected</span><button className="link" onClick={props.onDisconnect}>Disconnect</button></div>
+          ) : (
+            <>
+              <form className="cws-token" onSubmit={(e) => {
+                e.preventDefault();
+                const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
+                props.onConnect(input.value);
+                input.value = '';
+              }}>
+                <input name="key" type="password" placeholder="API token" autoComplete="off" spellCheck={false} aria-label="ExtensionTower API token" />
+                <button className="btn" type="submit"><span>Connect</span></button>
+              </form>
+              {props.tower?.error && <div className="bad-text" role="alert" style={{ marginTop: 6 }}>{props.tower.error}</div>}
+              <div className="links" style={{ marginTop: 8 }}>
+                <a href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>
+                <a href={SIGNUP_URL} target="_blank" rel="noreferrer">Create an account</a>
+              </div>
+            </>
+          )}
+        </div>
+      )}
       {pkg && opts && defaults && has(pkg, 'listing') && (
         <div>
           <div className="sec-title">Autofill on Store listing</div>
@@ -623,7 +645,6 @@ function SettingsPanel(props: {
         <button className="link" disabled={!props.page.itemId} onClick={() => props.onPanel('extract')}>Extract</button>
         {props.hasHistory && <button className="link" onClick={() => props.onPanel('history')}>History</button>}
         {pkg && <button className="link" onClick={() => props.onPanel('info')}>Loaded listing</button>}
-        {towerReady() && props.tower?.connected && <button className="link" onClick={props.onDisconnect}>Disconnect ExtensionTower</button>}
       </div>
       <div className="muted">Never saves, submits, ticks certifications or changes visibility.</div>
     </div>

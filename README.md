@@ -19,7 +19,7 @@ Keep it in your extension's repo as `meta/` and drop the folder, or a ZIP of it,
 | Way | How |
 |---|---|
 | **With your coding agent** | Add the [cwsagent-package skill](skills/cwsagent-package/SKILL.md) to Claude Code, Codex or any agent that reads skills, then ask it to *"make a CWSAgent listing package for this extension"*. Agents without skills: point them at the SKILL.md URL. |
-| **With [Extension Tower](https://extensiontower.com)** | See every language, image and store answer side by side and edit them. Open the item's Store listing in the Chrome Web Store console: the CWS Agent card finds it in your account and **Sync** fills it. Without a connection the card asks for your API token. The popup also lists your extensions, with **Chrome** and **Edge** buttons that open that store's dashboard, sync the listing and fill it. |
+| **With [Extension Tower](https://extensiontower.com)** | See every language, image and store answer side by side and edit them. Open the item's Store listing in the Chrome Web Store console: the CWS Agent card finds it in your account and **Sync** fills it. Connect or create an account from the card's ExtensionTower logo or Settings icon. The popup also lists your extensions, with **Chrome** and **Edge** buttons that open that store's dashboard, sync the listing and fill it. |
 | **From your live listing** | **Extract** it, edit the files, drop the ZIP back. |
 
 The package holds only what you put in it. Anything missing stays as it is in the console.
@@ -84,12 +84,12 @@ On Edge, images belong to each language, uploads are PNG (converted when needed)
 
 From the popup, **Chrome** opens the item, or looks for it in your item list (by ID, then by name) and opens it. If it isn't there, the same dialog offers a new listing or picking it yourself.
 
-A card sits under the heading of each item's Store listing, Privacy and Test instructions tabs. It finds the item in your Extension Tower account by its link, its ID or store URL, then a unique name. If the account isn't connected, paste your API token into the card.
+A card sits under the heading of each item's Store listing, Privacy and Test instructions tabs. It finds the item in your Extension Tower account by its link, its ID or store URL, then a unique name. To connect, press the card's ExtensionTower logo or Settings icon and paste your API token; you can create an account from there too.
 
 | Step | Action |
 |---|---|
 | Sync | **Sync** loads the listing from Extension Tower and fills the open tab (replacing screenshots asks first) → **Save draft** on each tab |
-| Autofill a package | Drop a listing on the card, or use **Settings** → Upload → **Autofill** on each tab → **Save draft** |
+| Autofill a package | Drop a ZIP or folder on the card, or choose one → **Autofill** on each tab → **Save draft** |
 | Extract | **Settings** → **Extract** → tick what to save → **Extract** → ZIP lands in Downloads |
 
 CWSAgent never saves, submits, ticks certifications or changes visibility.
