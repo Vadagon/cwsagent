@@ -22,6 +22,7 @@ export type TowerMessage =
   | { type: 'tower:connect'; key: string }
   | { type: 'tower:disconnect' }
   | { type: 'tower:status'; itemId: string }
+  | { type: 'tower:match'; itemId: string; title?: string | null }
   | { type: 'tower:package'; itemId: string }
   | { type: 'tower:state' }
   | { type: 'tower:list' }
@@ -31,6 +32,8 @@ export type TowerMessage =
   | { type: 'tower:mode'; mode: 'pick' | 'create'; existing?: string[] }
   | { type: 'tower:done' };
 export type TowerStatus = { connected: boolean; available?: boolean };
+/** The listing in the account that a console item belongs to. invalid: Extension Tower rejected the saved token. */
+export type TowerMatch = { connected: boolean; invalid?: boolean; source?: TowerExtension | null; languages?: number; byName?: boolean };
 export type TowerState = { connected: boolean; chromeSeen: boolean; links: Record<Store, Record<string, string>> };
 export type TowerFile = { path: string; text: string } | { path: string; base64: string; type: string };
 
@@ -47,6 +50,7 @@ async function ask<T>(msg: TowerMessage): Promise<T> {
 export const towerConnect = (key: string) => ask<TowerStatus>({ type: 'tower:connect', key });
 export const towerDisconnect = () => ask<TowerStatus>({ type: 'tower:disconnect' });
 export const towerStatus = (itemId: string) => ask<TowerStatus>({ type: 'tower:status', itemId });
+export const towerMatch = (itemId: string, title?: string | null) => ask<TowerMatch>({ type: 'tower:match', itemId, title });
 
 /** The item's listing from Extension Tower, as files for buildPackage. */
 export async function towerFiles(itemId: string): Promise<FileEntry[]> {

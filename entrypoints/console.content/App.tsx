@@ -1,14 +1,15 @@
-// The widget on every developer console page: a drop field with one status
-// line and two buttons. Upload (or drop) a listing, then Autofill; Extract
-// asks what to save, then downloads this item's listing as a ZIP. The header
-// shows Settings, plus Info once a listing is loaded and History once
-// something has run.
+// The card on an item's Store listing, Privacy and Test instructions tabs, right
+// under the tab's heading. It finds the item's listing in the Extension Tower
+// account, asks for the API token when there's none, and Sync loads that listing
+// and autofills the open tab. Drop a listing on the card to use a package instead;
+// Settings holds Upload, Extract and History. Elsewhere nothing shows, unless a
+// run or a popup-started update has something to say.
 import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
-import { Icon, type IconName } from '../../components/Icon';
+import { Icon } from '../../components/Icon';
 import { RANGE_LABELS, type RangeChoice } from '../../lib/analytics';
 import {
-  fillListing, fillPrivacy, fillTest, pageButton, pageKind, planListing, planPrivacy, planTest,
-  findItem, isItemList, listedItems, newItemButton, readyLanguageCount, Stopped, tabUrl, type TabKind,
+  cardAnchor, fillListing, fillPrivacy, fillTest, itemTitle, main, pageButton, pageKind, planListing, planPrivacy, planTest,
+  findItem, isItemList, listedItems, newItemButton, readyLanguageCount, Stopped, tabUrl, waitFor, type TabKind,
 } from '../../lib/dashboard';
 import {
   cancelExport, continueExport, DEFAULT_EXTRACT, exportState, startExport, stepsFor, type ExtractOptions,
@@ -18,8 +19,8 @@ import { store } from '../../lib/store';
 import { NotFound } from '../../components/NotFound';
 import { matchName } from '../../lib/match';
 import {
-  towerConnect, towerDisconnect, towerDone, towerFiles, towerHello, towerLink, towerMode, towerReady, towerStatus,
-  type Pending, type TowerExtension, type TowerStatus,
+  towerConnect, towerDisconnect, towerDone, towerFiles, towerHello, towerLink, towerMatch, towerMode, towerReady,
+  type Pending, type TowerMatch,
 } from '../../lib/tower';
 import type { FileEntry, ListingOptions, Package, Page, PlanStep, RunContext, RunRecord } from '../../lib/types';
 
@@ -56,7 +57,6 @@ function readExtract(): ExtractOptions {
   return DEFAULT_EXTRACT;
 }
 const writeExtract = (o: ExtractOptions) => { try { localStorage.setItem(EXTRACT_KEY, JSON.stringify(o)); } catch { /* blocked */ } };
-const readOpen = () => { try { return localStorage.getItem('cwsagent-open') !== '0'; } catch { return true; } };
 
 // ---- Run history (kept across page loads) ------------------------------------------
 
@@ -65,10 +65,48 @@ const HISTORY_KEY = 'history';
 const HISTORY_MAX = 20;
 
 interface Run { ctx: RunContext; status: string; stop: () => void; stopping: boolean }
-interface Status { text: ReactNode; tone?: 'ok' | 'bad'; icon?: IconName; onClick?: () => void }
+interface Status { text: ReactNode; tone?: 'ok' | 'bad'; onClick?: () => void }
 interface Confirm { kind: TabKind; opts: ListingOptions; steps: PlanStep[] }
 type PanelName = 'settings' | 'info' | 'history' | 'extract';
-type Tower = TowerStatus & { error?: string };
+type Tower = TowerMatch & { error?: string };
+
+const HEADING_WAIT_MS = 4000;
+
+/**
+ * Keeps the host right after the open tab's heading, through the console's
+ * client-side navigation and re-renders. Off a tab it waits on the document,
+ * showing nothing of its own. A tab whose heading can't be found gets the card
+ * at the top of the page content after a moment. Returns whether it's inline.
+ */
+function useCardPlacement(host: HTMLElement, page: Page) {
+  const [inline, setInline] = useState(false);
+  useEffect(() => {
+    const kind = page.kind;
+    if (!isTab(kind)) {
+      if (host.parentElement !== document.documentElement) document.documentElement.append(host);
+      setInline(false);
+      return;
+    }
+    const since = Date.now();
+    const place = () => {
+      const anchor = cardAnchor(TAB_NAMES[kind]);
+      if (anchor) {
+        if (host.previousElementSibling !== anchor) anchor.after(host);
+      } else if (Date.now() - since > HEADING_WAIT_MS) {
+        if (main().firstElementChild !== host) main().prepend(host);
+      } else return;
+      setInline(true);
+    };
+    let queued = 0;
+    const later = () => { if (!queued) queued = window.setTimeout(() => { queued = 0; place(); }, 200); };
+    const observer = new MutationObserver(later);
+    observer.observe(document.body, { childList: true, subtree: true });
+    const fallback = window.setTimeout(place, HEADING_WAIT_MS + 100);
+    place();
+    return () => { observer.disconnect(); clearTimeout(queued); clearTimeout(fallback); };
+  }, [host, page.kind, page.itemId]);
+  return inline;
+}
 
 function makeCtx(onProgress: (text: string) => void) {
   const records: RunRecord[] = [];
@@ -89,8 +127,7 @@ function makeCtx(onProgress: (text: string) => void) {
   return { ctx, stop: () => { stopRequested = true; } };
 }
 
-export default function App() {
-  const [open, setOpen] = useState(readOpen);
+export default function App({ host }: { host: HTMLElement }) {
   const [panel, setPanel] = useState<PanelName | null>(null);
   const [pkg, setPkg] = useState<Package | null>(null);
   const [page, setPage] = useState<Page>(pageKind());
@@ -102,20 +139,18 @@ export default function App() {
   const [extract, setExtract] = useState<ExtractOptions>(readExtract);
   const [over, setOver] = useState(false);
   const [tower, setTower] = useState<Tower | null>(null);
+  const [matching, setMatching] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [dropped, setDropped] = useState(false);
   const [autoFill, setAutoFill] = useState(false);
-  const [linked, setLinked] = useState<TowerExtension | null>(null);
   const [notFound, setNotFound] = useState<Pending | null>(null);
   const [pick, setPick] = useState<Pending | null>(null);
   const dirInput = useRef<HTMLInputElement>(null);
   const zipInput = useRef<HTMLInputElement>(null);
   const pkgRef = useRef(pkg);
   pkgRef.current = pkg;
+  const inline = useCardPlacement(host, page);
 
-  const show = (v: boolean) => {
-    setOpen(v);
-    if (!v) setPanel(null);
-    try { localStorage.setItem('cwsagent-open', v ? '1' : '0'); } catch { /* storage blocked */ }
-  };
   const toggle = (name: PanelName) => setPanel((cur) => (cur === name ? null : name));
 
   const addHistory = useCallback(async (entry: HistoryEntry) => {
@@ -201,12 +236,14 @@ export default function App() {
 
   // ---- Loading a listing --------------------------------------------------------
 
-  const load = async (getFiles: () => Promise<FileEntry[]>, name?: string) => {
+  // forItem: the listing was chosen for this console item, whatever ID it has in Extension Tower.
+  const load = async (getFiles: () => Promise<FileEntry[]>, name?: string, forItem?: string) => {
     try {
-      setFlash({ text: 'Reading…', icon: 'sync' });
+      setFlash({ text: forItem ? 'Syncing…' : 'Reading…' });
       const files = await getFiles();
       if (!files.length) throw new Error('Nothing in that drop');
       const next = await buildPackage(files, name);
+      if (forItem) next.itemId = forItem;
       await savePackage(next);
       setPkg(next);
       setOpts(listingDefaults(next));
@@ -222,23 +259,37 @@ export default function App() {
   // ---- Extension Tower -----------------------------------------------------------
 
   const refreshTower = useCallback(async () => {
-    if (!towerReady()) return;
-    try { setTower(await towerStatus(page.itemId ?? '')); } catch (e) { setTower({ connected: true, error: (e as Error).message }); }
-  }, [page.itemId]);
+    if (!towerReady() || !page.itemId || !isTab(page.kind)) return;
+    setMatching(true);
+    try {
+      await waitFor(itemTitle, { timeout: 3000 });
+      setTower(await towerMatch(page.itemId, itemTitle()));
+    } catch (e) { setTower({ connected: true, error: (e as Error).message }); }
+    setMatching(false);
+  }, [page.itemId, page.kind]);
   useEffect(() => { refreshTower(); }, [refreshTower]);
 
-  const syncFrom = (id: string) => load(() => towerFiles(id), 'Extension Tower');
-  const towerId = linked?.id ?? (tower?.available ? page.itemId : undefined);
-  const sync = () => { if (towerId) syncFrom(towerId); };
+  const syncFrom = async (id: string) => {
+    setSyncing(true);
+    const ok = await load(() => towerFiles(id), 'Extension Tower', page.itemId);
+    setSyncing(false);
+    if (ok) setDropped(false);
+    else refreshTower(); // the token may have been revoked since the match
+    return ok;
+  };
+  const source = tower?.source ?? null;
+  const sync = async () => { if (source && await syncFrom(source.id)) setAutoFill(true); };
   const linkHere = async (id: string) => {
     if (!page.itemId) return;
     try {
-      setLinked((await towerLink('chrome', page.itemId)).linked);
+      await towerLink('chrome', page.itemId);
       setPick(null);
       await towerDone();
+      refreshTower();
       if (await syncFrom(id)) setAutoFill(true);
     } catch (e) { setFlash({ text: (e as Error).message, tone: 'bad' }); }
   };
+  const drop = async (getFiles: () => Promise<FileEntry[]>, name?: string) => { if (await load(getFiles, name)) setDropped(true); };
 
   // Tell the background CWSAgent runs here (the popup warns until it has), and
   // carry on an update the popup started: on the item list, find the item and
@@ -250,19 +301,16 @@ export default function App() {
       const publisher = location.pathname.match(/\/devconsole\/([0-9a-f-]{36})(?:\/|$)/)?.[1] ?? null;
       const h = await towerHello('chrome', page.itemId ?? null, publisher).catch(() => null);
       if (!h || gone) return;
-      setLinked(h.linked);
       const p = h.pending;
       if (!p) return;
       if (page.itemId) {
-        show(true);
         if (h.linked?.id === p.id) { await towerDone(); if (await syncFrom(p.id)) setAutoFill(true); }
         else if (!h.linked && p.mode === 'create' && !p.existing?.includes(page.itemId)) await linkHere(p.id);
         else if (!h.linked) setPick(p);
         return;
       }
       if (p.mode !== 'find' || !isItemList()) return;
-      show(true);
-      setFlash({ text: `Looking for ${p.name}…`, icon: 'sync' });
+      setFlash({ text: `Looking for ${p.name}…` });
       const hit = await findItem(p.itemId, p.name, matchName);
       if (gone) return;
       setFlash(null);
@@ -273,7 +321,7 @@ export default function App() {
     return () => { gone = true; };
   }, [page.itemId]);
   const connect = async (key: string) => {
-    try { setTower(await towerConnect(key)); await refreshTower(); } catch (e) { setTower({ connected: false, error: (e as Error).message }); }
+    try { await towerConnect(key); setTower({ connected: true }); await refreshTower(); } catch (e) { setTower({ connected: false, error: (e as Error).message }); }
   };
   const disconnect = async () => { await towerDisconnect().catch(() => {}); setTower({ connected: false }); };
 
@@ -283,9 +331,9 @@ export default function App() {
     setOver(false);
     const first = e.dataTransfer.items[0]?.webkitGetAsEntry?.();
     const dt = e.dataTransfer;
-    load(() => filesFromDrop(dt), first?.name.replace(/\.zip$/i, ''));
+    drop(() => filesFromDrop(dt), first?.name.replace(/\.zip$/i, ''));
   };
-  const onDragOver = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); show(true); setOver(true); };
+  const onDragOver = (e: DragEvent) => { e.preventDefault(); e.stopPropagation(); setOver(true); };
 
   // ---- Boot, navigation, popup status ---------------------------------------------
 
@@ -296,7 +344,7 @@ export default function App() {
       if (p) setOpts(listingDefaults(p));
       setHistory((await store.get<HistoryEntry[]>(HISTORY_KEY).catch(() => undefined)) ?? []);
       const state = await exportState().catch(() => undefined);
-      if (state && state.itemId === pageKind().itemId) { show(true); resumeExport(); }
+      if (state && state.itemId === pageKind().itemId) resumeExport();
     })();
     let last = location.pathname;
     const timer = setInterval(() => {
@@ -327,11 +375,27 @@ export default function App() {
     if (!autoFill || !pkg) return;
     setAutoFill(false);
     if (canFill) requestFill(page.kind as TabKind);
+    else if (isTab(page.kind)) setFlash({ text: `Nothing to autofill on ${TAB_NAMES[page.kind]}` });
   }, [autoFill, pkg]);
   const wrongItem = !!(pkg?.itemId && page.itemId && pkg.itemId !== page.itemId);
 
+  const useTower = !!source && !dropped;
+  let packageStatus: Status | null = null;
+  if (pkg) {
+    if (wrongItem) packageStatus = { text: 'Made for another item', tone: 'bad', onClick: () => setPanel('info') };
+    else if (canFill) {
+      const n = page.kind === 'listing' ? readyLanguageCount(pkg) : 0;
+      packageStatus = { text: page.kind === 'listing' ? (n ? `${n} language${n > 1 ? 's' : ''} ready` : 'Listing ready') : `${TAB_NAMES[page.kind as TabKind]} ready` };
+    } else {
+      const go = ORDER.find((k) => has(pkg, k));
+      packageStatus = go ? { text: <>Go to <a href={tabUrl(go) ?? '#'}>{TAB_NAMES[go]}</a></> } : { text: 'Nothing to autofill here' };
+    }
+  }
+  const fromTower = source && ['From ExtensionTower', tower?.byName && source.name,
+    tower?.languages ? `${tower.languages} language${tower.languages > 1 ? 's' : ''}` : null].filter(Boolean).join(' · ');
+
   let status: Status;
-  if (run) status = { text: run.status, icon: 'sync' };
+  if (run) status = { text: run.status };
   else if (confirm) {
     const shots: string[] = [];
     for (const s of confirm.steps.filter((x) => x.destructive)) {
@@ -342,61 +406,64 @@ export default function App() {
     const other = confirm.steps.some((x) => /another item/.test(x.text));
     status = { text: [other && 'Other item!', shots.length && `Replaces ${shots.join(', ')} screenshots`].filter(Boolean).join(' · '), tone: 'bad', onClick: () => setPanel('info') };
   } else if (flash) status = flash;
-  else if (!pkg) status = { text: <><b>Drop listing folder or ZIP</b><br /><span className="muted">or click to choose</span></>, icon: 'upload' };
-  else if (wrongItem) status = { text: 'Made for another item', tone: 'bad', onClick: () => setPanel('info') };
-  else if (page.kind === 'other') status = { text: 'Open an item to autofill' };
-  else if (canFill) {
-    const n = page.kind === 'listing' ? readyLanguageCount(pkg) : 0;
-    status = { text: page.kind === 'listing' ? (n ? `${n} language${n > 1 ? 's' : ''} ready` : 'Listing ready') : `${TAB_NAMES[page.kind as TabKind]} ready` };
-  } else {
-    const go = ORDER.find((k) => has(pkg, k));
-    status = go ? { text: <>Go to <a href={tabUrl(go) ?? '#'}>{TAB_NAMES[go]}</a></> } : { text: 'Nothing to autofill here' };
-  }
-  const tone = status.tone ?? '';
-  const statusIcon: IconName = status.icon ?? (tone === 'bad' ? 'error' : tone === 'ok' ? 'check' : pkg ? 'ready' : 'upload');
+  else if (pick && !source) status = { text: `Link ${pick.name} here?` };
+  else if (dropped && packageStatus) status = packageStatus;
+  else if (towerReady() && (!tower || matching)) status = { text: 'Matching…' };
+  else if (tower?.error) status = { text: tower.error, tone: 'bad' };
+  else if (fromTower) status = { text: fromTower };
+  else if (packageStatus) status = packageStatus;
+  else if (!towerReady()) status = { text: 'Drop a listing folder or ZIP' };
+  else if (!tower?.connected) status = { text: 'Connect your ExtensionTower account' };
+  else status = { text: 'No matching listing' };
 
-  const onFieldClick = (e: React.MouseEvent) => {
-    if ((e.target as HTMLElement).closest('a')) return; // tab links inside the status
-    if (status.onClick) status.onClick();
-    else if (!run) dirInput.current?.click();
-  };
+  const askToken = inline && towerReady() && !!tower && !tower.connected && !matching && !run && !confirm;
 
-  let mainButton: ReactNode;
-  let secondButton: ReactNode;
+  let actions: ReactNode;
   if (run) {
-    mainButton = (
+    actions = (
       <button className="btn danger" disabled={run.stopping} onClick={() => { run.stop(); setRun({ ...run, stopping: true }); }}>
         <Icon name="stop" /><span>{run.stopping ? 'Stopping…' : 'Stop'}</span>
       </button>
     );
   } else if (confirm) {
     const replaces = confirm.steps.some((s) => s.destructive && /screenshots/i.test(s.text));
-    mainButton = (
-      <button className="btn danger" onClick={() => { const c = confirm; setConfirm(null); fill(c.kind, c.opts); }}>
-        <Icon name="autofill" /><span>{replaces ? 'Replace' : 'Autofill anyway'}</span>
-      </button>
+    actions = (
+      <>
+        <button className="btn ghost" onClick={() => setConfirm(null)}><span>Cancel</span></button>
+        <button className="btn danger" onClick={() => { const c = confirm; setConfirm(null); fill(c.kind, c.opts); }}>
+          <Icon name="autofill" /><span>{replaces ? 'Replace' : 'Autofill anyway'}</span>
+        </button>
+      </>
     );
-    secondButton = <button className="btn ghost" onClick={() => setConfirm(null)}><span>Cancel</span></button>;
-  } else {
-    mainButton = canFill
-      ? <button className="btn" onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>
-      : <button className="btn" onClick={() => dirInput.current?.click()}><Icon name="fileUpload" /><span>Upload</span></button>;
-    secondButton = (
-      <button className={`btn ghost ${panel === 'extract' ? 'pressed' : ''}`} disabled={!page.itemId}
-        title="Choose what to save, then extract it to a ZIP in Downloads" onClick={() => toggle('extract')}>
-        <Icon name="extract" /><span>Extract</span>
-      </button>
+  } else if (pick && !source && page.itemId) {
+    actions = <button className="btn" onClick={() => linkHere(pick.id)}><Icon name="check" /><span>Link</span></button>;
+  } else if (inline) {
+    let action: ReactNode = null;
+    if (useTower) {
+      action = (
+        <button className={`btn ${syncing ? 'spin' : ''}`} disabled={syncing} onClick={sync}>
+          <Icon name="sync" /><span>{syncing ? 'Syncing…' : 'Sync'}</span>
+        </button>
+      );
+    } else if (canFill) {
+      action = <button className="btn" onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
+    } else if (!towerReady()) {
+      action = <button className="btn" onClick={() => dirInput.current?.click()}><Icon name="fileUpload" /><span>Upload</span></button>;
+    } else if (tower?.connected && !matching) {
+      action = <button className="btn ghost" onClick={refreshTower}><Icon name="sync" /><span>{tower.error ? 'Retry' : 'Check again'}</span></button>;
+    }
+    actions = (
+      <>
+        <button className={`icon ${panel ? 'pressed' : ''}`} title="Settings" aria-label="Settings" aria-pressed={!!panel} onClick={() => setPanel(panel ? null : 'settings')}><Icon name="settings" /></button>
+        {action}
+      </>
     );
   }
 
-  const headerButton = (name: PanelName, icon: IconName, label: string) => (
-    <button className={`icon ${panel === name ? 'pressed' : ''}`} title={label} aria-label={label} aria-pressed={panel === name} onClick={() => toggle(name)}>
-      <Icon name={icon} />
-    </button>
-  );
+  const showCard = inline || !!run || !!flash || (!!pick && !!page.itemId);
 
   return (
-    <div className="wrap">
+    <>
       {notFound && (
         <NotFound name={notFound.name} store="this Chrome Web Store account"
           onCreate={async () => { setNotFound(null); await towerMode('create', listedItems()).catch(() => {}); newItemButton()?.click(); setFlash({ text: 'Upload the package; CWSAgent links the new item' }); }}
@@ -404,61 +471,53 @@ export default function App() {
           onCancel={() => { setNotFound(null); towerDone().catch(() => {}); }}
         />
       )}
-      {open && panel === 'extract' && !run && (
-        <ExtractPanel options={extract} onChange={changeExtract} onStart={startExtract} onCancel={() => setPanel(null)} />
-      )}
-      {open && panel === 'settings' && (
-        <SettingsPanel
-          pkg={pkg} page={page} opts={opts} setOpts={setOpts} tower={tower} onConnect={connect} onDisconnect={disconnect}
-          onForget={async () => { await clearPackage(); setPkg(null); setFlash(null); setPanel(null); }}
-          onZip={() => zipInput.current?.click()} onFolder={() => dirInput.current?.click()}
-        />
-      )}
-      {open && panel === 'info' && pkg && <InfoPanel pkg={pkg} page={page} />}
-      {open && panel === 'history' && history.length > 0 && (
-        <HistoryPanel history={history} onClear={async () => { setHistory([]); setPanel(null); await store.delete(HISTORY_KEY).catch(() => {}); }} />
-      )}
-      {open ? (
-        <div className={`card ${run ? 'working' : ''}`} onDragOver={onDragOver} onDragLeave={() => setOver(false)} onDrop={onDrop}>
-          <div className="top">
-            {pkg && headerButton('info', 'info', 'Loaded listing')}
-            {history.length > 0 && headerButton('history', 'history', 'History')}
-            {headerButton('settings', 'settings', 'Settings')}
-            <button className="icon" title="Minimize" aria-label="Minimize" onClick={() => show(false)}><Icon name="minimize" /></button>
-          </div>
-          <div
-            className={`drop ${tone} ${over ? 'over' : ''}`} role="button" tabIndex={0} onClick={onFieldClick}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onFieldClick(e as unknown as React.MouseEvent); } }}
-          >
-            <Icon name={statusIcon} />
-            <div className="status" aria-live="polite">{status.text}</div>
-          </div>
-          <div className="buttons">{mainButton}{secondButton}</div>
-          {!run && !confirm && page.itemId && towerId && (
-            <div className="tower">
-              <span>In Extension Tower</span>
-              <button className="mini" onClick={sync}>Sync</button>
+      {showCard && (
+        <div className={`cws ${inline ? '' : 'floating'} ${over ? 'over' : ''}`} onDragOver={onDragOver} onDragLeave={() => setOver(false)} onDrop={onDrop}>
+          <div className="cws-row">
+            <div className="cws-text">
+              <div className="cws-title"><Icon name="extension" /><span>CWS Agent</span></div>
+              {status.onClick
+                ? <button className={`cws-sub ${status.tone ?? ''}`} aria-live="polite" onClick={status.onClick}>{status.text}</button>
+                : <div className={`cws-sub ${status.tone ?? ''}`} aria-live="polite">{status.text}</div>}
             </div>
+            <div className="cws-actions">{actions}</div>
+          </div>
+          {askToken && (
+            <form className="cws-token" onSubmit={(e) => {
+              e.preventDefault();
+              const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
+              connect(input.value);
+              input.value = '';
+            }}>
+              <input name="key" type="password" placeholder="API token" autoComplete="off" spellCheck={false} aria-label="ExtensionTower API token" />
+              <button className="btn" type="submit"><span>Connect</span></button>
+              <a href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>
+            </form>
           )}
-          {!run && !confirm && page.itemId && !towerId && pick && (
-            <div className="tower">
-              <span>Link {pick.name} here?</span>
-              <button className="mini" onClick={() => linkHere(pick.id)}>Link</button>
-            </div>
+          {askToken && (tower?.invalid || tower?.error) && (
+            <div className="cws-sub bad" role="alert" style={{ marginTop: 8 }}>{tower.invalid ? 'ExtensionTower rejected that token.' : tower.error}</div>
           )}
-          {!run && tower?.error && <div className="tower bad-text">{tower.error}</div>}
+          {inline && panel === 'extract' && !run && (
+            <ExtractPanel options={extract} onChange={changeExtract} onStart={startExtract} onCancel={() => setPanel(null)} />
+          )}
+          {inline && panel === 'settings' && (
+            <SettingsPanel
+              pkg={pkg} page={page} opts={opts} setOpts={setOpts} tower={tower} onDisconnect={disconnect} hasHistory={history.length > 0} onPanel={setPanel}
+              onForget={async () => { await clearPackage(); setPkg(null); setDropped(false); setFlash(null); setPanel(null); }}
+              onZip={() => zipInput.current?.click()} onFolder={() => dirInput.current?.click()}
+            />
+          )}
+          {inline && panel === 'info' && pkg && <InfoPanel pkg={pkg} page={page} />}
+          {inline && panel === 'history' && history.length > 0 && (
+            <HistoryPanel history={history} onClear={async () => { setHistory([]); setPanel(null); await store.delete(HISTORY_KEY).catch(() => {}); }} />
+          )}
         </div>
-      ) : (
-        <button className="bubble" title="Autofill or extract this listing" aria-label="Open listing tools"
-          onClick={() => show(true)} onDragOver={onDragOver} onDrop={onDrop}>
-          <Icon name="upload" />
-        </button>
       )}
       <input ref={dirInput} type="file" hidden {...{ webkitdirectory: '' }}
-        onChange={(e) => { const f = e.target.files!; load(() => filesFromInput(f), f[0]?.webkitRelativePath.split('/')[0]); e.target.value = ''; }} />
+        onChange={(e) => { const f = e.target.files!; drop(() => filesFromInput(f), f[0]?.webkitRelativePath.split('/')[0]); e.target.value = ''; }} />
       <input ref={zipInput} type="file" hidden accept=".zip,application/zip"
-        onChange={(e) => { const f = e.target.files!; load(() => filesFromInput(f), f[0]?.name.replace(/\.zip$/i, '')); e.target.value = ''; }} />
-    </div>
+        onChange={(e) => { const f = e.target.files!; drop(() => filesFromInput(f), f[0]?.name.replace(/\.zip$/i, '')); e.target.value = ''; }} />
+    </>
   );
 }
 
@@ -511,7 +570,7 @@ const TOWER_URL = 'https://extensiontower.com/dashboard';
 function SettingsPanel(props: {
   pkg: Package | null; page: Page; opts: ListingOptions | null; setOpts: (o: ListingOptions) => void;
   onForget: () => void; onZip: () => void; onFolder: () => void;
-  tower: Tower | null; onConnect: (key: string) => void; onDisconnect: () => void;
+  tower: Tower | null; onDisconnect: () => void; hasHistory: boolean; onPanel: (p: PanelName) => void;
 }) {
   const { pkg, opts, setOpts } = props;
   const defaults = pkg ? listingDefaults(pkg) : null;
@@ -540,25 +599,12 @@ function SettingsPanel(props: {
           <a href={GUIDE_URL} target="_blank" rel="noreferrer">Make a package</a>
         </div>
       </div>
-      {towerReady() && (
-        <div>
-          <div className="sec-title">Extension Tower</div>
-          {props.tower?.connected ? (
-            <div className="links"><span>Connected</span><button className="link" onClick={props.onDisconnect}>Disconnect</button></div>
-          ) : (
-            <form className="key" onSubmit={(e) => {
-              e.preventDefault();
-              const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
-              props.onConnect(input.value);
-              input.value = '';
-            }}>
-              <input name="key" type="password" placeholder="API key" autoComplete="off" spellCheck={false} aria-label="Extension Tower API key" />
-              <button className="mini" type="submit">Connect</button>
-            </form>
-          )}
-          {!props.tower?.connected && <a href={TOWER_URL} target="_blank" rel="noreferrer">Get a key</a>}
-        </div>
-      )}
+      <div className="links">
+        <button className="link" disabled={!props.page.itemId} onClick={() => props.onPanel('extract')}>Extract</button>
+        {props.hasHistory && <button className="link" onClick={() => props.onPanel('history')}>History</button>}
+        {pkg && <button className="link" onClick={() => props.onPanel('info')}>Loaded listing</button>}
+        {towerReady() && props.tower?.connected && <button className="link" onClick={props.onDisconnect}>Disconnect ExtensionTower</button>}
+      </div>
       <div className="muted">Never saves, submits, ticks certifications or changes visibility.</div>
     </div>
   );

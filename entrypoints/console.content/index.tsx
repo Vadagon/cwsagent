@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import App from './App';
 // Inlined as a string and put inside our own shadow root: the console's styles
-// can't reach the widget, and the bundle needs no extension URL to load CSS.
+// can't reach the card, and the bundle needs no extension URL to load CSS.
 import css from './style.css?inline';
 
 export default defineContentScript({
@@ -18,6 +18,6 @@ export default defineContentScript({
     const mount = document.createElement('div');
     shadow.append(style, mount);
     document.documentElement.append(host);
-    createRoot(mount).render(<App />);
+    createRoot(mount).render(<App host={host} />);
   },
 });

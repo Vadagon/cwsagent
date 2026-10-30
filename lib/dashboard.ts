@@ -525,6 +525,25 @@ export async function fillTest(ctx: RunContext, pkg: Package) {
 export const pageButton = (text: string) =>
   [...document.querySelectorAll('button')].find((b) => visible(b) && clean(b.innerText) === text) || null;
 
+// ---- Where the inline card goes ------------------------------------------------
+
+/**
+ * The element the card sits right after: the tab's heading, or the short header
+ * row that holds it, so the card takes the content column's full width.
+ */
+export function cardAnchor(title: string): HTMLElement | null {
+  const heading = [...document.querySelectorAll<HTMLElement>('h1, h2, h3, [role="heading"]')]
+    .find((h) => visible(h) && clean(h.textContent) === title);
+  if (!heading) return null;
+  let spot = heading;
+  for (let p = spot.parentElement; p && p !== document.body; p = spot.parentElement) {
+    const style = getComputedStyle(p);
+    if (!(style.display.includes('flex') && style.flexDirection.startsWith('row') && p.getBoundingClientRect().height < 120)) break;
+    spot = p;
+  }
+  return spot;
+}
+
 // ---- Finding an item for Extension Tower ------------------------------------------
 
 /** The console's item list (/devconsole or /devconsole/<publisher>), not an item page. */

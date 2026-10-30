@@ -14,12 +14,12 @@ coding agent or Extension Tower write the listing; CWSAgent puts it into the sto
 A package is a plain folder: `listing.json` for details and privacy answers, `images/` for the icon,
 tiles and screenshots, and `languages/<code>/` for each language's description and screenshots
 ([FORMAT.md](FORMAT.md), [example](example), [listing.schema.json](listing.schema.json)).
-Keep it in your extension's repo as `meta/` and drop the folder, or a ZIP of it, on CWSAgent.
+Keep it in your extension's repo as `meta/` and drop the folder, or a ZIP of it, on the CWS Agent card.
 
 | Way | How |
 |---|---|
 | **With your coding agent** | Add the [cwsagent-package skill](skills/cwsagent-package/SKILL.md) to Claude Code, Codex or any agent that reads skills, then ask it to *"make a CWSAgent listing package for this extension"*. Agents without skills: point them at the SKILL.md URL. |
-| **With [Extension Tower](https://extensiontower.com)** | See every language, image and store answer side by side and edit them. Connect your API key in the CWSAgent popup: it lists your extensions, each with **Chrome** and **Edge** buttons that open that store's dashboard, sync the listing and fill it. |
+| **With [Extension Tower](https://extensiontower.com)** | See every language, image and store answer side by side and edit them. Open the item's Store listing in the Chrome Web Store console: the CWS Agent card finds it in your account and **Sync** fills it. Without a connection the card asks for your API token. The popup also lists your extensions, with **Chrome** and **Edge** buttons that open that store's dashboard, sync the listing and fill it. |
 | **From your live listing** | **Extract** it, edit the files, drop the ZIP back. |
 
 The package holds only what you put in it. Anything missing stays as it is in the console.
@@ -28,7 +28,7 @@ The package holds only what you put in it. Anything missing stays as it is in th
 
 - **Runs on your computer**, inside your own Chrome, only on the Web Store developer console and Partner Center's Edge pages. No account needed.
 - **Sends nothing out**: no analytics, no tracking. Your listings, stats and user messages never leave your browser.
-- Network traffic is between you and Google's own console (uploading your images, saving your draft, Extract downloading your listing's images), plus Extension Tower only if you connect it: then CWSAgent asks extensiontower.com whether the open item is in your account, and on **Sync** downloads that listing.
+- Network traffic is between you and Google's own console (uploading your images, saving your draft, Extract downloading your listing's images), plus Extension Tower only if you connect it: then CWSAgent reads your extension list from extensiontower.com to find the open item, checks that listing's languages, and on **Sync** downloads it.
 - **Your API key stays inside the extension.** It's kept in the extension's own storage and used only by its background worker, never on the console page.
 - **No permissions requested**. It only runs on the developer console pages, and the [code is open](entrypoints) for anyone to check.
 
@@ -84,10 +84,13 @@ On Edge, images belong to each language, uploads are PNG (converted when needed)
 
 From the popup, **Chrome** opens the item, or looks for it in your item list (by ID, then by name) and opens it. If it isn't there, the same dialog offers a new listing or picking it yourself.
 
+A card sits under the heading of each item's Store listing, Privacy and Test instructions tabs. It finds the item in your Extension Tower account by its link, its ID or store URL, then a unique name. If the account isn't connected, paste your API token into the card.
+
 | Step | Action |
 |---|---|
-| Autofill | Drop a listing on the widget → **Autofill** on Store listing, Privacy, Test instructions → **Save draft** on each |
-| Extract | **Extract** → tick what to save → **Extract** → ZIP lands in Downloads |
+| Sync | **Sync** loads the listing from Extension Tower and fills the open tab (replacing screenshots asks first) → **Save draft** on each tab |
+| Autofill a package | Drop a listing on the card, or use **Settings** → Upload → **Autofill** on each tab → **Save draft** |
+| Extract | **Settings** → **Extract** → tick what to save → **Extract** → ZIP lands in Downloads |
 
 CWSAgent never saves, submits, ticks certifications or changes visibility.
 

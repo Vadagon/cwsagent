@@ -9,8 +9,9 @@
 // is linked to. The popup's store buttons open a page and leave a pending
 // update here; that page finds the item (or offers to create one), links it,
 // syncs and autofills.
+import { matchName } from '../lib/match';
 import { store } from '../lib/store';
-import type { Hello, Pending, Store, TowerExtension, TowerFile, TowerMessage, TowerState, TowerStatus } from '../lib/tower';
+import type { Hello, Pending, Store, TowerExtension, TowerFile, TowerMatch, TowerMessage, TowerState, TowerStatus } from '../lib/tower';
 
 const API = (import.meta.env.WXT_EXTENSIONTOWER_URL as string | undefined) || 'https://extensiontower.com';
 const KEY = 'towerKey';
@@ -19,12 +20,13 @@ const CONSOLE = 'https://chrome.google.com/webstore/devconsole';
 const EDGE = 'https://partner.microsoft.com/en-us/dashboard/microsoftedge';
 
 class TowerError extends Error {}
+class TowerRejected extends TowerError {}
 
 async function request(path: string): Promise<Response> {
   const key = await store.get<string>(KEY);
   if (!key) throw new TowerError('Connect Extension Tower first.');
   const res = await fetch(`${API}${path}`, { headers: { Authorization: `Bearer ${key}` }, credentials: 'omit' });
-  if (res.status === 401) throw new TowerError('Extension Tower rejected the API key. Connect again.');
+  if (res.status === 401) throw new TowerRejected('Extension Tower rejected the API token. Connect again.');
   return res;
 }
 
@@ -58,6 +60,37 @@ async function list(): Promise<TowerExtension[]> {
   const slim = extensions.map(({ id, name, icon, storeUrl }) => ({ id, name, icon, storeUrl }));
   await store.set('towerExtensions', slim);
   return slim;
+}
+
+/** How many languages a listing's package holds. Only for the card: unknown when it can't be read. */
+async function languageCount(id: string): Promise<number | undefined> {
+  try {
+    const res = await request(`/api/v1/extensions/${id}/package`);
+    if (!res.ok) return undefined;
+    const { files } = await res.json() as { files: { path: string }[] };
+    return new Set(files.flatMap((f) => f.path.match(/^languages\/([^/]+)\//)?.[1] ?? [])).size;
+  } catch (e) {
+    if (e instanceof TowerRejected) throw e;
+    return undefined;
+  }
+}
+
+/** Finds the console item's listing: its link, its ID, its store URL, then a unique name among listings not tied to another item. */
+async function match(itemId: string, title?: string | null): Promise<TowerMatch> {
+  if (!(await store.get<string>(KEY))) return { connected: false };
+  try {
+    const extensions = await list();
+    const map = await links('chrome');
+    const byId = extensions.find((e) => map[e.id] === itemId) ?? extensions.find((e) => e.id === itemId)
+      ?? extensions.find((e) => e.storeUrl?.includes(itemId));
+    const free = extensions.filter((e) => !map[e.id] && !/[a-p]{32}/.test(e.storeUrl ?? ''));
+    const source = byId ?? (title ? matchName(title, free, (e) => e.name) : null);
+    if (!source) return { connected: true, source: null };
+    return { connected: true, source, byName: !byId, languages: await languageCount(source.id) };
+  } catch (e) {
+    if (e instanceof TowerRejected) return { connected: false, invalid: true };
+    throw e;
+  }
 }
 
 async function listingPackage(itemId: string): Promise<TowerFile[]> {
@@ -158,12 +191,13 @@ async function handle(msg: TowerMessage): Promise<unknown> {
   switch (msg.type) {
     case 'tower:connect': {
       const key = msg.key.trim();
-      if (!KEY_PATTERN.test(key)) throw new TowerError('That isn’t an Extension Tower API key.');
+      if (!KEY_PATTERN.test(key)) throw new TowerError('That isn’t an Extension Tower API token.');
       await store.set(KEY, key);
       return { connected: true };
     }
     case 'tower:disconnect': await store.delete(KEY); await store.delete('towerExtensions'); return { connected: false };
     case 'tower:status': return status(msg.itemId);
+    case 'tower:match': return match(msg.itemId, msg.title);
     case 'tower:package': return { files: await listingPackage(msg.itemId) };
     case 'tower:state': return state();
     case 'tower:list': return { extensions: await list() };

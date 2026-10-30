@@ -67,7 +67,7 @@ untouched in the console.
    - Description lengths are within the limit; no empty description files.
    - Image sizes match; screenshots are numbered 1…n without gaps.
 7. **Hand over.** Tell the user what the package fills and what it leaves alone. To load it they
-   drop `meta/` (or `cd meta && zip -r ../listing.zip .`) on the CWSAgent panel. The panel lists
+   drop `meta/` (or `cd meta && zip -r ../listing.zip .`) on the CWS Agent card. Its Loaded listing view lists
    any file it ignored.
 
 ## Rules
