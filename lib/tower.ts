@@ -33,7 +33,9 @@ export type TowerMessage =
   | { type: 'tower:done' };
 export type TowerStatus = { connected: boolean; available?: boolean };
 /** The listing in the account that a console item belongs to. invalid: Extension Tower rejected the saved token. */
-export type TowerMatch = { connected: boolean; invalid?: boolean; source?: TowerExtension | null; languages?: number; byName?: boolean };
+export type TowerMatch = { connected: boolean; invalid?: boolean; source?: TowerExtension | null; details?: TowerDetails };
+/** What Sync would bring from the listing, read from its package. */
+export type TowerDetails = { languages: number; screenshots: number; icon: boolean; smallTile: boolean; marquee: boolean; category?: string; privacy: boolean };
 export type TowerState = { connected: boolean; chromeSeen: boolean; links: Record<Store, Record<string, string>> };
 export type TowerFile = { path: string; text: string } | { path: string; base64: string; type: string };
 

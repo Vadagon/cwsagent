@@ -20,7 +20,7 @@ import { NotFound } from '../../components/NotFound';
 import { matchName } from '../../lib/match';
 import {
   towerConnect, towerDisconnect, towerDone, towerFiles, towerHello, towerLink, towerMatch, towerMode, towerReady,
-  type Pending, type TowerMatch,
+  type Pending, type TowerDetails, type TowerMatch,
 } from '../../lib/tower';
 import type { FileEntry, ListingOptions, Package, Page, PlanStep, RunContext, RunRecord } from '../../lib/types';
 
@@ -71,6 +71,12 @@ type PanelName = 'settings' | 'info' | 'history' | 'extract';
 type Tower = TowerMatch & { error?: string };
 
 const HEADING_WAIT_MS = 4000;
+
+const counted = (n: number, word: string) => (n ? `${n} ${word}${n > 1 ? 's' : ''}` : null);
+const detailParts = (d?: TowerDetails) => (d ? [
+  counted(d.languages, 'language'), counted(d.screenshots, 'screenshot'), d.icon && 'Icon', d.smallTile && 'Small tile', d.marquee && 'Marquee',
+  d.category, d.privacy && 'Privacy answers',
+].filter((x): x is string => !!x) : []);
 
 /**
  * Keeps the host right after the open tab's heading, through the console's
@@ -145,6 +151,7 @@ export default function App({ host }: { host: HTMLElement }) {
   const [matching, setMatching] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [dropped, setDropped] = useState(false);
+  const [iconFailed, setIconFailed] = useState<string | null>(null);
   const [autoFill, setAutoFill] = useState(false);
   const [notFound, setNotFound] = useState<Pending | null>(null);
   const [pick, setPick] = useState<Pending | null>(null);
@@ -394,8 +401,7 @@ export default function App({ host }: { host: HTMLElement }) {
       packageStatus = go ? { text: <>Go to <a href={tabUrl(go) ?? '#'}>{TAB_NAMES[go]}</a></> } : { text: 'Nothing to autofill here' };
     }
   }
-  const fromTower = source && ['From ExtensionTower', tower?.byName && source.name,
-    tower?.languages ? `${tower.languages} language${tower.languages > 1 ? 's' : ''}` : null].filter(Boolean).join(' · ');
+  const fromTower = source && ['From ExtensionTower', ...detailParts(tower?.details)].join(' · ');
 
   let status: Status;
   if (run) status = { text: run.status };
@@ -463,6 +469,7 @@ export default function App({ host }: { host: HTMLElement }) {
     );
   }
 
+  const showSource = inline && useTower && !!source;
   const showCard = inline || !!run || !!flash || (!!pick && !!page.itemId);
 
   return (
@@ -479,9 +486,17 @@ export default function App({ host }: { host: HTMLElement }) {
           <div className="cws-row">
             <div className="cws-text">
               <div className="cws-title"><Icon name="extension" /><span>CWS Agent</span></div>
-              {status.onClick
-                ? <button className={`cws-sub ${status.tone ?? ''}`} aria-live="polite" onClick={status.onClick}>{status.text}</button>
-                : <div className={`cws-sub ${status.tone ?? ''}`} aria-live="polite">{status.text}</div>}
+              <div className="cws-source">
+                {showSource && source.icon && iconFailed !== source.icon && (
+                  <img src={source.icon} alt="" width={40} height={40} onError={() => setIconFailed(source.icon)} />
+                )}
+                <div className="cws-source-text">
+                  {showSource && <div className="cws-name">{source.name}</div>}
+                  {status.onClick
+                    ? <button className={`cws-sub ${status.tone ?? ''}`} aria-live="polite" onClick={status.onClick}>{status.text}</button>
+                    : <div className={`cws-sub ${status.tone ?? ''}`} aria-live="polite">{status.text}</div>}
+                </div>
+              </div>
               {askToken && <a className="cws-get" href={TOWER_URL} target="_blank" rel="noreferrer">Get a token</a>}
             </div>
             <div className="cws-actions">

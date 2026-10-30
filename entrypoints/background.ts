@@ -11,7 +11,7 @@
 // syncs and autofills.
 import { matchName } from '../lib/match';
 import { store } from '../lib/store';
-import type { Hello, Pending, Store, TowerExtension, TowerFile, TowerMatch, TowerMessage, TowerState, TowerStatus } from '../lib/tower';
+import type { Hello, Pending, Store, TowerExtension, TowerFile, TowerDetails, TowerMatch, TowerMessage, TowerState, TowerStatus } from '../lib/tower';
 
 const API = (import.meta.env.WXT_EXTENSIONTOWER_URL as string | undefined) || 'https://extensiontower.com';
 const KEY = 'towerKey';
@@ -62,13 +62,23 @@ async function list(): Promise<TowerExtension[]> {
   return slim;
 }
 
-/** How many languages a listing's package holds. Only for the card: unknown when it can't be read. */
-async function languageCount(id: string): Promise<number | undefined> {
+/** What a listing's package holds. Only for the card: unknown when it can't be read. */
+async function packageDetails(id: string): Promise<TowerDetails | undefined> {
   try {
     const res = await request(`/api/v1/extensions/${id}/package`);
     if (!res.ok) return undefined;
-    const { files } = await res.json() as { files: { path: string }[] };
-    return new Set(files.flatMap((f) => f.path.match(/^languages\/([^/]+)\//)?.[1] ?? [])).size;
+    const { files } = await res.json() as { files: { path: string; text?: string }[] };
+    const paths = files.map((f) => f.path);
+    const listing = JSON.parse(files.find((f) => f.path === 'listing.json')?.text ?? '{}') as { category?: string; privacy?: object };
+    return {
+      languages: new Set(paths.flatMap((p) => p.match(/^languages\/([^/]+)\//)?.[1] ?? [])).size,
+      screenshots: paths.filter((p) => p.includes('screenshots/')).length,
+      icon: paths.includes('images/icon'),
+      smallTile: paths.includes('images/small-tile'),
+      marquee: paths.includes('images/marquee'),
+      category: listing.category,
+      privacy: !!listing.privacy,
+    };
   } catch (e) {
     if (e instanceof TowerRejected) throw e;
     return undefined;
@@ -86,7 +96,7 @@ async function match(itemId: string, title?: string | null): Promise<TowerMatch>
     const free = extensions.filter((e) => !map[e.id] && !/[a-p]{32}/.test(e.storeUrl ?? ''));
     const source = byId ?? (title ? matchName(title, free, (e) => e.name) : null);
     if (!source) return { connected: true, source: null };
-    return { connected: true, source, byName: !byId, languages: await languageCount(source.id) };
+    return { connected: true, source, details: await packageDetails(source.id) };
   } catch (e) {
     if (e instanceof TowerRejected) return { connected: false, invalid: true };
     throw e;

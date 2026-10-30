@@ -28,7 +28,7 @@ The package holds only what you put in it. Anything missing stays as it is in th
 
 - **Runs on your computer**, inside your own Chrome, only on the Web Store developer console and Partner Center's Edge pages. No account needed.
 - **Sends nothing out**: no analytics, no tracking. Your listings, stats and user messages never leave your browser.
-- Network traffic is between you and Google's own console (uploading your images, saving your draft, Extract downloading your listing's images), plus Extension Tower only if you connect it: then CWSAgent reads your extension list from extensiontower.com to find the open item, checks that listing's languages, and on **Sync** downloads it.
+- Network traffic is between you and Google's own console (uploading your images, saving your draft, Extract downloading your listing's images), plus Extension Tower only if you connect it: then CWSAgent reads your extension list from extensiontower.com to find the open item, reads that listing's package to show what it holds, and on **Sync** downloads its images too.
 - **Your API key stays inside the extension.** It's kept in the extension's own storage and used only by its background worker, never on the console page.
 - **No permissions requested**. It only runs on the developer console pages, and the [code is open](entrypoints) for anyone to check.
 
