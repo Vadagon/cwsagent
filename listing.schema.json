@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Vadagon/cwsagent/main/listing.schema.json",
+  "title": "CWSAgent listing.json",
+  "description": "Store details, privacy answers and test instructions for one Chrome Web Store item. Every key is optional; missing keys leave the console untouched. See FORMAT.md.",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "itemId": {
+      "description": "Item the package is for. CWSAgent warns before filling a different item.",
+      "type": "string",
+      "pattern": "^[a-p]{32}$"
+    },
+    "itemName": {
+      "description": "Shown in the panel. Not applied: the name comes from the uploaded extension.",
+      "type": "string"
+    },
+    "extractedAt": {
+      "description": "Written by Extract.",
+      "type": "string"
+    },
+    "category": {
+      "description": "Console label (\"Developer Tools\") or code (\"CATEGORY_DEVELOPER_TOOLS\").",
+      "type": "string"
+    },
+    "officialUrl": {
+      "description": "One of your verified sites, matched by its text in the console.",
+      "type": "string"
+    },
+    "homepageUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "supportUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "matureContent": {
+      "type": "boolean"
+    },
+    "promoVideo": {
+      "description": "Global promo video (YouTube URL).",
+      "type": "string",
+      "format": "uri"
+    },
+    "languages": {
+      "description": "Per-language values, keyed by Chrome _locales code (en, pt_BR, es_419 …). Descriptions live in languages/<code>/description.txt.",
+      "type": "object",
+      "propertyNames": {
+        "pattern": "^[A-Za-z]{2,3}([_-][A-Za-z0-9]{2,4})?$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "promoVideo": {
+            "description": "Localized promo video (YouTube URL).",
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "properties": {
+        "singlePurpose": {
+          "type": "string"
+        },
+        "permissions": {
+          "description": "Justification per manifest permission, keyed by its name (storage, activeTab …).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "hostPermission": {
+          "description": "Covers host permissions and content-script matches.",
+          "type": "string"
+        },
+        "remoteCode": {
+          "type": "boolean"
+        },
+        "remoteCodeJustification": {
+          "type": "string"
+        },
+        "dataCollected": {
+          "description": "Data types collected. Unlisted types are unticked; leave the key out to keep the console's answers.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "pii",
+              "health",
+              "financial",
+              "authentication",
+              "communications",
+              "location",
+              "webHistory",
+              "userActivity",
+              "websiteContent"
+            ]
+          }
+        },
+        "privacyPolicyUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "testInstructions": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "description": "Filled when given. Keep it out of files you commit.",
+          "type": "string"
+        },
+        "instructions": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

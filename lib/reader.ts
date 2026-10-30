@@ -1,10 +1,10 @@
-// Turns a dropped meta folder, its ZIP, or a cws-listing ZIP into one Package.
+// Turns a dropped listing package (folder or ZIP, layout in FORMAT.md) into one Package.
 import { store } from './store';
 import type { DataTypeKey, FileEntry, Package, Privacy } from './types';
 import { unzip } from './zip';
 
-const IGNORED = /(^|\/)(__MACOSX|\.DS_Store|raw|prompts|competitors|live|node_modules)(\/|$)/;
-const MARKERS = ['listing.json', 'descriptions/', 'data/dashboard.json', 'screenshots/', 'promo/', 'images/'];
+const IGNORED = /(^|\/)(__MACOSX|\.DS_Store|Thumbs\.db|node_modules)(\/|$)/;
+const MARKERS = ['listing.json', 'languages/', 'images/'];
 
 export const DATA_TYPES: Record<DataTypeKey, string> = {
   pii: 'Personally identifiable information',
@@ -81,10 +81,9 @@ function findRoot(paths: string[]): string | null {
   return scored[0]?.root ?? null;
 }
 
-// ---- Shared normalization -------------------------------------------------
+// ---- Normalization ---------------------------------------------------------
 
 type Json = Record<string, any>;
-const byNumber = (a: { name: string }, b: { name: string }) => parseInt(a.name, 10) - parseInt(b.name, 10);
 
 async function readJson(file: Blob | undefined, notes: string[]): Promise<Json> {
   if (!file) return {};
@@ -121,153 +120,71 @@ function normalizePrivacy(p: Json, notes: string[]): Privacy {
   return out;
 }
 
-type Parts = Pick<Package, 'details' | 'languages' | 'images' | 'privacy' | 'test'> & { blobs: Record<string, Blob> };
-const empty = (): Parts => ({ details: {}, languages: {}, images: { screenshots: [] }, privacy: {}, test: null, blobs: {} });
-
 const DETAIL_KEYS = ['category', 'officialUrl', 'homepageUrl', 'supportUrl', 'matureContent', 'promoVideo'] as const;
+const IMAGE = '(png|jpe?g)';
+const SINGLE = { icon: 'icon', smallTile: 'small-tile', marquee: 'marquee' } as const;
 
-/** Host patterns go to the single host field; named permissions keep their own. */
-function splitPermissions(entries: unknown, skipUnused: boolean) {
-  const permissions: Record<string, string> = {};
-  const hostParts: string[] = [];
-  for (const entry of Array.isArray(entries) ? entries : []) {
-    if (!entry?.permission || !entry.justification || (skipUnused && entry.unused)) continue;
-    if (/[:*<]/.test(entry.permission)) hostParts.push(entry.justification);
-    else permissions[entry.permission] = entry.justification;
-  }
-  return { permissions, host: hostParts.length ? [...new Set(hostParts)].join('\n') : undefined };
-}
+// ---- Package layout ----------------------------------------------------------
 
-// ---- meta/ folder (Extension Marketing skill layout + listing.json) -------
+type Parts = Pick<Package, 'details' | 'languages' | 'images' | 'privacy' | 'test' | 'blobs'>;
 
-async function fromMetaFolder(rel: Map<string, Blob>, listing: Json, notes: string[]): Promise<Parts> {
-  const pkg = empty();
-  const keep = (path: string) => { pkg.blobs[path] = rel.get(path)!; return path; };
-  const lang = (code: string) => (pkg.languages[code] ??= {});
-  const dashboard = await readJson(rel.get('data/dashboard.json'), notes);
-  const localized: Record<string, { name: string; path: string }[]> = {};
+async function readLayout(rel: Map<string, Blob>, listing: Json, notes: string[]): Promise<Parts> {
+  const parts: Parts = { details: {}, languages: {}, images: { screenshots: [] }, privacy: {}, test: null, blobs: {} };
+  const keep = (path: string) => { parts.blobs[path] = rel.get(path)!; return path; };
+  const lang = (code: string) => (parts.languages[code] ??= {});
+  const shots: Record<string, { n: number; path: string }[]> = {};
+  const unknown: string[] = [];
 
   for (const [path, blob] of rel) {
     let m: RegExpMatchArray | null;
-    if ((m = path.match(/^descriptions\/([A-Za-z_-]+)\.txt$/))) {
-      lang(m[1]!).description = (await blob.text()).replace(/\r\n/g, '\n').trim();
-    } else if ((m = path.match(/^screenshots\/([A-Za-z_-]+)\/(\d+)\.(png|jpe?g)$/i))) {
-      (localized[m[1]!] ??= []).push({ name: m[2]!, path: keep(path) });
+    if (path === 'listing.json' || /^(analytics|support)\//.test(path)) continue; // Extract's reports
+    if ((m = path.match(/^languages\/([A-Za-z_-]+)\/description\.txt$/))) {
+      const text = (await blob.text()).replace(/\r\n/g, '\n').trim();
+      if (text) lang(m[1]!).description = text; else notes.push(`${path} is empty, skipped.`);
     }
+    else if ((m = path.match(new RegExp(`^languages/([A-Za-z_-]+)/screenshots/(\\d+)\\.${IMAGE}$`, 'i')))) (shots[m[1]!] ??= []).push({ n: +m[2]!, path });
+    else if ((m = path.match(new RegExp(`^images/screenshots/(\\d+)\\.${IMAGE}$`, 'i')))) (shots[''] ??= []).push({ n: +m[1]!, path });
+    else if ((m = path.match(new RegExp(`^images/(icon|small-tile|marquee)\\.${IMAGE}$`, 'i')))) {
+      const slot = (Object.keys(SINGLE) as (keyof typeof SINGLE)[]).find((k) => SINGLE[k] === m![1]!.toLowerCase())!;
+      parts.images[slot] = keep(path);
+    } else unknown.push(path);
   }
-  for (const [code, shots] of Object.entries(localized)) {
-    lang(code).screenshots = shots.sort(byNumber).slice(0, 5).map((s) => s.path);
+  for (const [code, list] of Object.entries(shots)) {
+    const sorted = list.sort((a, b) => a.n - b.n);
+    if (sorted.length > 5) notes.push(`${code || 'Global'} screenshots: only the first 5 are used.`);
+    const paths = sorted.slice(0, 5).map((s) => keep(s.path));
+    if (code) lang(code).screenshots = paths; else parts.images.screenshots = paths;
   }
+  if (unknown.length) notes.push(`Not part of the format, ignored: ${unknown.slice(0, 5).join(', ')}${unknown.length > 5 ? ` and ${unknown.length - 5} more` : ''}.`);
+
   for (const [code, v] of Object.entries((listing.languages ?? {}) as Record<string, Json>)) {
-    if (v.description) lang(code).description = String(v.description).trim();
-    if (v.promoVideo) lang(code).promoVideo = String(v.promoVideo);
+    if (v?.promoVideo) lang(code).promoVideo = String(v.promoVideo);
   }
-
-  const pick = (...names: string[]) => names.find((n) => rel.has(n));
-  pkg.images.screenshots = [...rel.keys()]
-    .map((p) => p.match(/^screenshots\/(\d+)\.(png|jpe?g)$/i))
-    .filter((m): m is RegExpMatchArray => !!m)
-    .map((m) => ({ name: m[1]!, path: m[0] }))
-    .sort(byNumber)
-    .slice(0, 5)
-    .map((s) => keep(s.path));
-  const icon = pick('icon/store-128.png', 'icon/128.png', 'icon/icon-128.png', 'store-icon.png', 'icon/store-128.jpg');
-  const small = pick('promo/small-440x280.png', 'promo/small-440x280.jpg', 'promo/small-440x280.jpeg');
-  const marquee = pick('promo/marquee-1400x560.png', 'promo/marquee-1400x560.jpg', 'promo/marquee-1400x560.jpeg');
-  if (icon) pkg.images.icon = keep(icon);
-  if (small) pkg.images.smallTile = keep(small);
-  if (marquee) pkg.images.marquee = keep(marquee);
-
   for (const k of DETAIL_KEYS) {
-    if (listing[k] !== undefined && listing[k] !== null && listing[k] !== '') (pkg.details as Json)[k] = listing[k];
+    if (listing[k] !== undefined && listing[k] !== null && listing[k] !== '') (parts.details as Json)[k] = listing[k];
   }
-  if (pkg.details.category === undefined && dashboard.category) pkg.details.category = dashboard.category;
-
-  // Privacy: dashboard.json first, listing.json wins
-  const p: Json = listing.privacy ?? {};
-  const { permissions, host } = splitPermissions(dashboard.permissions, true);
-  Object.assign(permissions, p.permissions ?? {});
-  pkg.privacy = normalizePrivacy({
-    ...p,
-    permissions,
-    hostPermission: p.hostPermission ?? host,
-    singlePurpose: p.singlePurpose ?? dashboard.singlePurpose,
-  }, notes);
-
-  if (listing.testInstructions) pkg.test = listing.testInstructions;
+  parts.privacy = normalizePrivacy(listing.privacy ?? {}, notes);
+  if (listing.testInstructions) parts.test = listing.testInstructions;
   if (listing.distribution) notes.push('distribution in listing.json is ignored: visibility and pricing are never changed.');
-  if ([...rel.keys()].some((k) => k.startsWith('locales/'))) {
-    notes.push('locales/ is not applied: the title and summary come from the uploaded package.');
-  }
-  return pkg;
-}
-
-// ---- cws-listing ZIP (CWS Listing Filler / Extension Marketing export) ----
-
-async function fromCwsListing(rel: Map<string, Blob>, listing: Json, notes: string[]): Promise<Parts> {
-  const pkg = empty();
-  const s: Json = listing.storeListing ?? {};
-  const file = (path: string | null | undefined, what: string) => {
-    if (!path) return null;
-    if (!rel.has(path)) { notes.push(`${what}: ${path} is missing from the ZIP.`); return null; }
-    pkg.blobs[path] = rel.get(path)!;
-    return path;
-  };
-
-  for (const [code, path] of Object.entries((s.descriptions ?? {}) as Record<string, string>)) {
-    const blob = rel.get(path);
-    if (blob) (pkg.languages[code] ??= {}).description = (await blob.text()).replace(/\r\n/g, '\n').trim();
-    else notes.push(`Description ${code}: ${path} is missing from the ZIP.`);
-  }
-  for (const [code, paths] of Object.entries((s.localizedScreenshots ?? {}) as Record<string, string[]>)) {
-    const kept = (paths ?? []).map((p) => file(p, `Screenshot ${code}`)).filter((p): p is string => !!p);
-    if (kept.length) (pkg.languages[code] ??= {}).screenshots = kept.slice(0, 5);
-  }
-  pkg.images.screenshots = ((s.screenshots ?? []) as string[]).map((p) => file(p, 'Screenshot')).filter((p): p is string => !!p).slice(0, 5);
-  const icon = file(s.icon, 'Icon');
-  const small = file(s.promoSmall, 'Small promo tile');
-  const marquee = file(s.promoMarquee, 'Marquee');
-  if (icon) pkg.images.icon = icon;
-  if (small) pkg.images.smallTile = small;
-  if (marquee) pkg.images.marquee = marquee;
-
-  for (const k of DETAIL_KEYS) {
-    if (s[k] !== undefined && s[k] !== null && s[k] !== '') (pkg.details as Json)[k] = s[k];
-  }
-
-  const p: Json = listing.privacy ?? {};
-  const { permissions, host } = splitPermissions(p.permissions, false);
-  pkg.privacy = normalizePrivacy({
-    singlePurpose: p.singlePurpose,
-    permissions,
-    hostPermission: host,
-    remoteCode: p.remoteCode?.uses,
-    remoteCodeJustification: p.remoteCode?.justification,
-    dataCollected: p.dataCollected,
-    privacyPolicyUrl: p.privacyPolicyUrl,
-  }, notes);
-  if (listing.package) notes.push('package name and summary are not applied: they come from the uploaded package.');
-  return pkg;
+  return parts;
 }
 
 // ---- Entry point -----------------------------------------------------------
 
 export async function buildPackage(files: FileEntry[], sourceName?: string): Promise<Package> {
   const root = findRoot(files.map((f) => f.path));
-  if (root === null) throw new Error('No listing found: expected listing.json, descriptions/, screenshots/ or promo/.');
+  if (root === null) throw new Error('No listing found: expected listing.json, languages/ or images/.');
 
   const rel = new Map<string, Blob>();
   for (const f of files) if (f.path.startsWith(root)) rel.set(f.path.slice(root.length), f.blob);
 
   const notes: string[] = [];
   const listing = await readJson(rel.get('listing.json'), notes);
-  const isCws = listing.format === 'cws-listing';
-  const pkg = isCws ? await fromCwsListing(rel, listing, notes) : await fromMetaFolder(rel, listing, notes);
+  const parts = await readLayout(rel, listing, notes);
 
   return {
-    ...pkg,
-    format: isCws ? 'cws-listing' : 'meta',
-    name: sourceName || listing.itemName || root.replace(/\/$/, '') || 'listing',
+    ...parts,
+    name: sourceName || listing.itemName || root.replace(/\/$/, '').split('/').pop() || 'listing',
     itemId: typeof listing.itemId === 'string' ? listing.itemId : null,
     loadedAt: Date.now(),
     notes,

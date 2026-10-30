@@ -21,10 +21,10 @@ describe('zip', () => {
   });
 
   it('reads deflated ZIPs written by other tools', async () => {
-    const file = new Blob([readFileSync(new URL('../fixtures/cws-listing.zip', import.meta.url))]);
+    const file = new Blob([readFileSync(new URL('../fixtures/package.zip', import.meta.url))]);
     const out = await unzip(file);
-    expect(out.map((f) => f.path)).toContain('images/promo-small.png');
-    expect(await out.find((f) => f.path === 'descriptions/en.txt')!.blob.text()).toContain('English');
+    expect(out.map((f) => f.path)).toContain('images/small-tile.png');
+    expect(await out.find((f) => f.path === 'languages/en/description.txt')!.blob.text()).toContain('English');
   });
 
   it('rejects files that are not ZIPs', async () => {

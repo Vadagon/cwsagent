@@ -1,5 +1,5 @@
-// Saves an item's listing from the console as a ZIP in the meta/ layout that
-// Fill reads (see FORMAT.md), so a listing can round-trip.
+// Saves an item's listing from the console as a ZIP in the package layout that
+// Autofill reads (see FORMAT.md), so a listing can round-trip.
 //
 // The console reloads the page between tabs, so a run is a small state machine
 // kept in IndexedDB under "export": listing → privacy → test → installs →
@@ -129,13 +129,13 @@ async function extractListing(ctx: RunContext, state: ExportState) {
     ctx.ok('Details');
   }
 
-  if (images) for (const [type, base, title] of [['icon', 'icon/store-128', 'Store icon'], ['smallTile', 'promo/small-440x280', 'Small promo tile'], ['marquee', 'promo/marquee-1400x560', 'Marquee']] as const) {
+  if (images) for (const [type, base, title] of [['icon', 'images/icon', 'Store icon'], ['smallTile', 'images/small-tile', 'Small promo tile'], ['marquee', 'images/marquee', 'Marquee']] as const) {
     const src = uploadBox(type)?.querySelector('img')?.src;
     if (src && (await grabImages(ctx, [src], (_, ext) => `${base}.${ext}`, files, title)).length) ctx.ok(title);
   }
   const globalShots = images ? boxImages(uploadBox('screenshot', true)).map((i) => i.src) : [];
   if (globalShots.length) {
-    const got = await grabImages(ctx, globalShots, (i, ext) => `screenshots/${i + 1}.${ext}`, files, 'Screenshot');
+    const got = await grabImages(ctx, globalShots, (i, ext) => `images/screenshots/${i + 1}.${ext}`, files, 'Screenshot');
     ctx.ok(`${got.length} global screenshots`);
   }
 
@@ -151,13 +151,13 @@ async function extractListing(ctx: RunContext, state: ExportState) {
       const code = toLocalesCode(value);
       if (text) {
         const desc = byLabel<HTMLTextAreaElement>('textarea', /^Description/)?.value?.trim();
-        if (desc) { files[`descriptions/${code}.txt`] = new Blob([desc + '\n'], { type: 'text/plain' }); described++; }
+        if (desc) { files[`languages/${code}/description.txt`] = new Blob([desc + '\n'], { type: 'text/plain' }); described++; }
         const video = byLabel('input', /^Localized promo video/)?.value;
         if (video) (languages[code] ??= {}).promoVideo = video;
       }
       const shots = images ? boxImages(uploadBox('screenshot', false)).map((i) => i.src) : [];
       if (shots.length) {
-        const got = await grabImages(ctx, shots, (i, ext) => `screenshots/${code}/${i + 1}.${ext}`, files, `${code} screenshot`);
+        const got = await grabImages(ctx, shots, (i, ext) => `languages/${code}/screenshots/${i + 1}.${ext}`, files, `${code} screenshot`);
         if (got.length) ctx.ok(`${code}: ${got.length} localized screenshots`);
       }
     }
@@ -246,7 +246,7 @@ async function extractSupport(ctx: RunContext, state: ExportState) {
 const slug = (s: unknown) => String(s || 'listing').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'listing';
 
 export async function buildExportZip(state: ExportState) {
-  const listing: Record<string, unknown> = { format: 'cwsagent', version: 1, itemId: state.itemId, ...state.listing, extractedAt: new Date().toISOString() };
+  const listing: Record<string, unknown> = { itemId: state.itemId, ...state.listing, extractedAt: new Date().toISOString() };
   const entries: { path: string; data: Blob | string }[] = [{ path: 'listing.json', data: JSON.stringify(listing, null, 2) + '\n' }];
   if (state.analytics && Object.keys(state.analytics).length) {
     entries.push({ path: 'analytics/summary.json', data: JSON.stringify(state.analytics, null, 2) + '\n' });

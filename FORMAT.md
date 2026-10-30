@@ -1,92 +1,99 @@
-# Meta folder format
+# Listing package format
 
-A *meta folder* holds everything a Chrome Web Store listing needs. Drop it (or a
-`.zip` of it) on **CWSAgent** in the developer console and press **Autofill** on each
-tab. Nothing is saved or submitted for you: you review and press **Save draft**.
+A *listing package* is a folder, usually `meta/` in your extension's repo, that holds a
+Chrome Web Store listing: text, images, privacy answers and test instructions. Drop it, or a
+`.zip` of it, on **CWSAgent** in the developer console and press **Autofill** on each tab.
+Nothing is saved or submitted for you: you review and press **Save draft**.
 
-It is the same layout the `extension-marketing` skill writes to `meta/`, plus an
-optional `listing.json` for everything the skill doesn't produce. Every file is
-optional; whatever is missing is left untouched in the console.
-
-CWSAgent also reads a `cws-listing` ZIP (the CWS Listing Filler format, recognized
-by `"format": "cws-listing"` in its `listing.json`), and **Extract** writes this same
-meta layout back out (`"format": "cwsagent"`), so an extracted listing can be
-edited and dropped again.
+Write it by hand, with a coding agent using the [cwsagent-package skill](skills/cwsagent-package/SKILL.md),
+or export it from Extension Tower. **Extract** writes the same layout, so a live listing can be
+edited and dropped back. A working sample is in [example/](example).
 
 ```text
 meta/
-  listing.json                    store details, privacy, test instructions (below)
-  descriptions/
-    en.txt  de.txt  pt_BR.txt …   full description per language (≤ 16,000 chars)
-  screenshots/
-    1.png … 5.png                 global screenshots, 1280×800 or 640×400
-    de/1.png … de/5.png           localized screenshots for one language
-  promo/
-    small-440x280.png             small promo tile
-    marquee-1400x560.png          marquee promo tile
-  icon/
-    store-128.png                 store icon, 128×128 (also: icon/128.png, icon/icon-128.png)
-  data/
-    dashboard.json                category, singlePurpose, permissions (from the skill)
-  locales/<code>/messages.json    not applied: title and summary come from the package
+  listing.json                       details, privacy, test instructions (below)
+  images/                            used for every language
+    icon.png                         store icon, 128×128
+    small-tile.png                   small promo tile, 440×280
+    marquee.png                      marquee promo tile, 1400×560
+    screenshots/1.png … 5.png        1280×800 or 640×400, in display order
+  languages/
+    en/description.txt               full description, plain text, ≤ 16,000 characters
+    de/description.txt
+    de/screenshots/1.png … 5.png     only where this language needs its own screenshots
 ```
 
-Folders the skill uses for drafts (`screenshots/raw/`, `*/prompts/`, `competitors/`,
-`live/`, variants such as `small-440x280-b.png`) are ignored.
+Every file and key is optional. Whatever is missing stays as it is in the console. Files
+outside this layout are listed as ignored when the package loads.
 
 ## Languages
 
-File and folder names use Chrome's `_locales` codes (`en`, `pt_BR`, `es_419`,
-`zh_CN`, `he`, …). They are matched to the console's language list (`pt-BR`,
-`iw`, …) automatically. The console only offers languages the uploaded package
-contains; a description for any other language is reported as skipped.
+Folder names are Chrome `_locales` codes (`en`, `pt_BR`, `es_419`, `zh_CN`, `he`, …),
+the same as your extension's `_locales/`. They're matched to the console's language list
+(`pt-BR`, `iw`, …) automatically. The console only offers languages your uploaded
+extension contains; a description for any other language is reported as skipped.
+
+A language without its own `screenshots/` keeps the global ones from `images/`. The
+Privacy and Test instructions tabs aren't translated, so their answers live once in `listing.json`.
+
+## Name and short description
+
+They aren't in the package. The Web Store takes the item's name and short description from
+the uploaded extension (`manifest.json`, or `_locales/<code>/messages.json` when the manifest
+uses `__MSG_…__`). Change them there and upload a new version.
 
 ## Images
 
-JPEG or PNG. The store rejects PNGs with an alpha channel, so those are
-converted to JPEG before upload. Sizes are checked and reported, not changed.
-Screenshots, when present, **replace** the existing set (global or per language).
+PNG or JPEG (`.png`, `.jpg`, `.jpeg`), at the exact sizes above. The icon's artwork should sit
+inside 96×96 with transparent padding. The store rejects PNGs with an alpha channel in
+screenshots and tiles, so CWSAgent converts those to JPEG before upload. Sizes are checked
+and reported, not changed. Up to 5 screenshots per set, ordered by number.
+
+Screenshots in a package **replace** the existing set for that language (or the global set),
+after you confirm. Leave the folder out to keep what's there.
 
 ## listing.json
 
-All keys are optional. Values here override `data/dashboard.json`.
+All keys are optional. [listing.schema.json](listing.schema.json) describes them; the
+`$schema` line gives you editor checks.
 
 ```json
 {
-  "category": "Tools",
+  "$schema": "https://raw.githubusercontent.com/Vadagon/cwsagent/main/listing.schema.json",
+  "itemId": "abcdefghijklmnopabcdefghijklmnop",
+
+  "category": "Developer Tools",
   "officialUrl": "example.com",
   "homepageUrl": "https://example.com",
   "supportUrl": "https://example.com/support",
   "matureContent": false,
   "promoVideo": "https://www.youtube.com/watch?v=XXXXXXXXXXX",
-
   "languages": {
-    "de": { "description": "…overrides descriptions/de.txt…", "promoVideo": "https://www.youtube.com/watch?v=YYYYYYYYYYY" }
+    "de": { "promoVideo": "https://www.youtube.com/watch?v=YYYYYYYYYYY" }
   },
-
-  "itemId": "abcdefghijklmnopabcdefghijklmnop",
 
   "privacy": {
     "singlePurpose": "One sentence: the one job, in user terms.",
-    "permissions": { "storage": "Saves the user's settings.", "activeTab": "…" },
+    "permissions": {
+      "storage": "Saves the user's settings.",
+      "activeTab": "Reads the open page when the user presses the button."
+    },
     "hostPermission": "Why the extension needs access to these sites.",
     "remoteCode": false,
-    "remoteCodeJustification": "Only when remoteCode is true.",
-    "dataCollected": ["websiteContent", "userActivity"],
+    "dataCollected": ["websiteContent"],
     "privacyPolicyUrl": "https://example.com/privacy"
   },
 
   "testInstructions": {
     "username": "reviewer@example.com",
-    "password": "…",
     "instructions": "Steps for the reviewer (≤ 500 chars)."
   }
 }
 ```
 
-| Key | Console field | Where |
+| Key | Console field | Tab |
 |---|---|---|
-| `itemId` | Optional. CWSAgent warns before filling a different item | — |
+| `itemId` | None. CWSAgent warns before filling a different item | — |
 | `category` | Category: label (`"Developer Tools"`) or code (`"CATEGORY_DEVELOPER_TOOLS"`) | Store listing |
 | `officialUrl` | Official URL: one of your verified sites, matched by text | Store listing |
 | `homepageUrl`, `supportUrl` | Homepage URL, Support URL | Store listing |
@@ -94,26 +101,25 @@ All keys are optional. Values here override `data/dashboard.json`.
 | `promoVideo` | Global promo video | Store listing |
 | `languages.<code>.promoVideo` | Localized promo video | Store listing, per language |
 | `privacy.singlePurpose` | Single purpose description | Privacy |
-| `privacy.permissions.<name>` | `<name> justification` | Privacy |
-| `privacy.hostPermission` | Host permission justification | Privacy |
-| `privacy.remoteCode` | Remote code radio (+ justification) | Privacy |
-| `privacy.dataCollected` | Data usage checkboxes; unlisted ones are unchecked | Privacy |
+| `privacy.permissions.<name>` | `<name>` justification, keyed by the exact manifest permission | Privacy |
+| `privacy.hostPermission` | Host permission justification: host permissions and content-script matches | Privacy |
+| `privacy.remoteCode` | Remote code radio, plus `remoteCodeJustification` when `true` | Privacy |
+| `privacy.dataCollected` | Data usage checkboxes; unlisted ones are unticked | Privacy |
 | `privacy.privacyPolicyUrl` | Privacy policy URL | Privacy |
 | `testInstructions.*` | Username, Password, Additional instructions | Test instructions |
 
-`dataCollected` keys: `pii`, `health`, `financial`, `authentication`,
-`communications`, `location`, `webHistory`, `userActivity`, `websiteContent`
-(or the console's own labels).
+`dataCollected` keys: `pii`, `health`, `financial`, `authentication`, `communications`,
+`location`, `webHistory`, `userActivity`, `websiteContent`. Leave the key out to keep the
+console's current answers; an empty list unticks them all.
 
-From `data/dashboard.json` the extension reads `category`, `singlePurpose` and
-`permissions` (`[{ "permission": "storage", "justification": "…" }]`). Entries
-whose permission is a match pattern (`https://*/*`, `<all_urls>`) are joined
-into the host permission justification; entries with `"unused": true` are skipped.
+## Test password
+
+`testInstructions.password` is filled when given, but **Extract** never writes it. Keep it out
+of any `listing.json` you commit: add it just before zipping, or type it into the console.
 
 ## What Extract adds
 
-Besides the files above, Extract writes these when you tick them. Autofill
-ignores them.
+Besides the package, Extract writes these when you tick them. Autofill skips them.
 
 ```text
 analytics/
@@ -134,7 +140,5 @@ messages: keep the ZIP private.
 
 ## Never applied
 
-The three data-use certifications (you tick them; CWSAgent highlights them),
-distribution, pricing and visibility, and anything in `locales/` or a
-`cws-listing` `package` block. A `certify` or `distribution` key is reported and
-ignored. The test password is filled when given but never written by **Extract**.
+The three data-use certifications (you tick them; CWSAgent highlights them), distribution,
+pricing and visibility. A `certify` or `distribution` key is reported and ignored.

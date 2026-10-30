@@ -1,4 +1,5 @@
 {
+  "$schema": "../listing.schema.json",
   "category": "Tools",
   "homepageUrl": "https://example.com",
   "supportUrl": "https://example.com/support",
@@ -7,6 +8,11 @@
     "de": { "promoVideo": "https://www.youtube.com/watch?v=XXXXXXXXXXX" }
   },
   "privacy": {
+    "singlePurpose": "Record your screen, a browser tab or your camera and share the recording as a link.",
+    "permissions": {
+      "storage": "Saves the user's recording settings."
+    },
+    "hostPermission": "Shows the camera bubble on the page being recorded.",
     "remoteCode": false,
     "dataCollected": [],
     "privacyPolicyUrl": "https://example.com/privacy"

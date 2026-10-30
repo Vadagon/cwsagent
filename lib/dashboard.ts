@@ -524,3 +524,42 @@ export async function fillTest(ctx: RunContext, pkg: Package) {
 
 export const pageButton = (text: string) =>
   [...document.querySelectorAll('button')].find((b) => visible(b) && clean(b.innerText) === text) || null;
+
+// ---- Finding an item for Extension Tower ------------------------------------------
+
+/** The console's item list (/devconsole or /devconsole/<publisher>), not an item page. */
+export const isItemList = (path = location.pathname) => /^\/webstore\/devconsole(\/[0-9a-f-]{36})?\/?$/.test(path);
+
+function itemRows() {
+  return [...document.querySelectorAll<HTMLAnchorElement>('a[href*="/devconsole/"]')].flatMap((a) => {
+    const id = a.getAttribute('href')?.match(/\/([a-p]{32})\/edit/)?.[1];
+    if (!id) return [];
+    const cell = a.closest('tr, [role="row"]')?.querySelector<HTMLElement>('td, [role="cell"]');
+    const name = clean((a.innerText || cell?.innerText || '').split('\n')[0]).replace(/\s*Version\s.*$/, '');
+    return [{ id, href: a.href, name }];
+  });
+}
+
+/** Looks through every page of the item list for an item ID, or else a unique name match. */
+export async function findItem(itemId: string | null, name: string, match: <T>(n: string, items: T[], of: (i: T) => string) => T | null) {
+  for (let page = 0; page < 20; page++) {
+    const loaded = await waitFor(() => itemRows().length > 0 || /\b0 of 0\b/.test(document.body.innerText), { timeout: 15000 });
+    if (!loaded) return null;
+    const rows = itemRows();
+    const hit = (itemId && rows.find((r) => r.id === itemId)) || match(name, rows, (r) => r.name);
+    if (hit) return hit;
+    const next = [...document.querySelectorAll<HTMLButtonElement>('button')]
+      .find((b) => !b.disabled && (/navigate_next/.test(b.textContent || '') || /^next page$/i.test(b.getAttribute('aria-label') || '')));
+    if (!next) return null;
+    const first = rows[0]?.id;
+    next.click();
+    if (!(await waitFor(() => itemRows()[0]?.id !== first, { timeout: 8000 }))) return null;
+  }
+  return null;
+}
+
+/** Item IDs on the list page as it is now. */
+export const listedItems = () => itemRows().map((r) => r.id);
+
+export const newItemButton = () =>
+  [...document.querySelectorAll<HTMLButtonElement>('button')].find((b) => /\bNew item\b/.test(b.innerText || ''));

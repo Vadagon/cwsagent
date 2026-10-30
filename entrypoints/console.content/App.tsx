@@ -8,13 +8,19 @@ import { Icon, type IconName } from '../../components/Icon';
 import { RANGE_LABELS, type RangeChoice } from '../../lib/analytics';
 import {
   fillListing, fillPrivacy, fillTest, pageButton, pageKind, planListing, planPrivacy, planTest,
-  readyLanguageCount, Stopped, tabUrl, type TabKind,
+  findItem, isItemList, listedItems, newItemButton, readyLanguageCount, Stopped, tabUrl, type TabKind,
 } from '../../lib/dashboard';
 import {
   cancelExport, continueExport, DEFAULT_EXTRACT, exportState, startExport, stepsFor, type ExtractOptions,
 } from '../../lib/extract';
 import { buildPackage, clearPackage, filesFromDrop, filesFromInput, loadPackage, savePackage } from '../../lib/reader';
 import { store } from '../../lib/store';
+import { NotFound } from '../../components/NotFound';
+import { matchName } from '../../lib/match';
+import {
+  towerConnect, towerDisconnect, towerDone, towerFiles, towerHello, towerLink, towerMode, towerReady, towerStatus,
+  type Pending, type TowerExtension, type TowerStatus,
+} from '../../lib/tower';
 import type { FileEntry, ListingOptions, Package, Page, PlanStep, RunContext, RunRecord } from '../../lib/types';
 
 const TAB_NAMES: Record<TabKind, string> = { listing: 'Store listing', privacy: 'Privacy', test: 'Test instructions' };
@@ -62,6 +68,7 @@ interface Run { ctx: RunContext; status: string; stop: () => void; stopping: boo
 interface Status { text: ReactNode; tone?: 'ok' | 'bad'; icon?: IconName; onClick?: () => void }
 interface Confirm { kind: TabKind; opts: ListingOptions; steps: PlanStep[] }
 type PanelName = 'settings' | 'info' | 'history' | 'extract';
+type Tower = TowerStatus & { error?: string };
 
 function makeCtx(onProgress: (text: string) => void) {
   const records: RunRecord[] = [];
@@ -94,6 +101,11 @@ export default function App() {
   const [opts, setOpts] = useState<ListingOptions | null>(null);
   const [extract, setExtract] = useState<ExtractOptions>(readExtract);
   const [over, setOver] = useState(false);
+  const [tower, setTower] = useState<Tower | null>(null);
+  const [autoFill, setAutoFill] = useState(false);
+  const [linked, setLinked] = useState<TowerExtension | null>(null);
+  const [notFound, setNotFound] = useState<Pending | null>(null);
+  const [pick, setPick] = useState<Pending | null>(null);
   const dirInput = useRef<HTMLInputElement>(null);
   const zipInput = useRef<HTMLInputElement>(null);
   const pkgRef = useRef(pkg);
@@ -200,10 +212,70 @@ export default function App() {
       setOpts(listingDefaults(next));
       setConfirm(null);
       setFlash(null);
+      return true;
     } catch (e) {
       setFlash({ text: (e as Error).message, tone: 'bad' });
+      return false;
     }
   };
+
+  // ---- Extension Tower -----------------------------------------------------------
+
+  const refreshTower = useCallback(async () => {
+    if (!towerReady()) return;
+    try { setTower(await towerStatus(page.itemId ?? '')); } catch (e) { setTower({ connected: true, error: (e as Error).message }); }
+  }, [page.itemId]);
+  useEffect(() => { refreshTower(); }, [refreshTower]);
+
+  const syncFrom = (id: string) => load(() => towerFiles(id), 'Extension Tower');
+  const towerId = linked?.id ?? (tower?.available ? page.itemId : undefined);
+  const sync = () => { if (towerId) syncFrom(towerId); };
+  const linkHere = async (id: string) => {
+    if (!page.itemId) return;
+    try {
+      setLinked((await towerLink('chrome', page.itemId)).linked);
+      setPick(null);
+      await towerDone();
+      if (await syncFrom(id)) setAutoFill(true);
+    } catch (e) { setFlash({ text: (e as Error).message, tone: 'bad' }); }
+  };
+
+  // Tell the background CWSAgent runs here (the popup warns until it has), and
+  // carry on an update the popup started: on the item list, find the item and
+  // open it (or offer a new listing); on the item, link it, sync and autofill.
+  useEffect(() => {
+    if (!towerReady()) return;
+    let gone = false;
+    (async () => {
+      const publisher = location.pathname.match(/\/devconsole\/([0-9a-f-]{36})(?:\/|$)/)?.[1] ?? null;
+      const h = await towerHello('chrome', page.itemId ?? null, publisher).catch(() => null);
+      if (!h || gone) return;
+      setLinked(h.linked);
+      const p = h.pending;
+      if (!p) return;
+      if (page.itemId) {
+        show(true);
+        if (h.linked?.id === p.id) { await towerDone(); if (await syncFrom(p.id)) setAutoFill(true); }
+        else if (!h.linked && p.mode === 'create' && !p.existing?.includes(page.itemId)) await linkHere(p.id);
+        else if (!h.linked) setPick(p);
+        return;
+      }
+      if (p.mode !== 'find' || !isItemList()) return;
+      show(true);
+      setFlash({ text: `Looking for ${p.name}…`, icon: 'sync' });
+      const hit = await findItem(p.itemId, p.name, matchName);
+      if (gone) return;
+      setFlash(null);
+      if (!hit) return setNotFound(p);
+      await towerLink('chrome', hit.id).catch(() => {});
+      location.href = hit.href;
+    })();
+    return () => { gone = true; };
+  }, [page.itemId]);
+  const connect = async (key: string) => {
+    try { setTower(await towerConnect(key)); await refreshTower(); } catch (e) { setTower({ connected: false, error: (e as Error).message }); }
+  };
+  const disconnect = async () => { await towerDisconnect().catch(() => {}); setTower({ connected: false }); };
 
   const onDrop = (e: DragEvent) => {
     e.preventDefault();
@@ -251,6 +323,11 @@ export default function App() {
   // ---- What the card shows ----------------------------------------------------------
 
   const canFill = !!pkg && isTab(page.kind) && has(pkg, page.kind);
+  useEffect(() => {
+    if (!autoFill || !pkg) return;
+    setAutoFill(false);
+    if (canFill) requestFill(page.kind as TabKind);
+  }, [autoFill, pkg]);
   const wrongItem = !!(pkg?.itemId && page.itemId && pkg.itemId !== page.itemId);
 
   let status: Status;
@@ -320,12 +397,19 @@ export default function App() {
 
   return (
     <div className="wrap">
+      {notFound && (
+        <NotFound name={notFound.name} store="this Chrome Web Store account"
+          onCreate={async () => { setNotFound(null); await towerMode('create', listedItems()).catch(() => {}); newItemButton()?.click(); setFlash({ text: 'Upload the package; CWSAgent links the new item' }); }}
+          onPick={() => { setPick(notFound); setNotFound(null); towerMode('pick').catch(() => {}); setFlash({ text: `Open ${notFound.name}, then press Link` }); }}
+          onCancel={() => { setNotFound(null); towerDone().catch(() => {}); }}
+        />
+      )}
       {open && panel === 'extract' && !run && (
         <ExtractPanel options={extract} onChange={changeExtract} onStart={startExtract} onCancel={() => setPanel(null)} />
       )}
       {open && panel === 'settings' && (
         <SettingsPanel
-          pkg={pkg} page={page} opts={opts} setOpts={setOpts}
+          pkg={pkg} page={page} opts={opts} setOpts={setOpts} tower={tower} onConnect={connect} onDisconnect={disconnect}
           onForget={async () => { await clearPackage(); setPkg(null); setFlash(null); setPanel(null); }}
           onZip={() => zipInput.current?.click()} onFolder={() => dirInput.current?.click()}
         />
@@ -350,6 +434,19 @@ export default function App() {
             <div className="status" aria-live="polite">{status.text}</div>
           </div>
           <div className="buttons">{mainButton}{secondButton}</div>
+          {!run && !confirm && page.itemId && towerId && (
+            <div className="tower">
+              <span>In Extension Tower</span>
+              <button className="mini" onClick={sync}>Sync</button>
+            </div>
+          )}
+          {!run && !confirm && page.itemId && !towerId && pick && (
+            <div className="tower">
+              <span>Link {pick.name} here?</span>
+              <button className="mini" onClick={() => linkHere(pick.id)}>Link</button>
+            </div>
+          )}
+          {!run && tower?.error && <div className="tower bad-text">{tower.error}</div>}
         </div>
       ) : (
         <button className="bubble" title="Autofill or extract this listing" aria-label="Open listing tools"
@@ -408,9 +505,13 @@ function ExtractPanel({ options, onChange, onStart, onCancel }: {
 
 // ---- Settings ----------------------------------------------------------------------------
 
+const GUIDE_URL = 'https://github.com/Vadagon/cwsagent#make-a-listing-package';
+const TOWER_URL = 'https://extensiontower.com/dashboard';
+
 function SettingsPanel(props: {
   pkg: Package | null; page: Page; opts: ListingOptions | null; setOpts: (o: ListingOptions) => void;
   onForget: () => void; onZip: () => void; onFolder: () => void;
+  tower: Tower | null; onConnect: (key: string) => void; onDisconnect: () => void;
 }) {
   const { pkg, opts, setOpts } = props;
   const defaults = pkg ? listingDefaults(pkg) : null;
@@ -436,8 +537,28 @@ function SettingsPanel(props: {
           <button className="link" onClick={props.onFolder}>Upload a folder</button>
           <button className="link" onClick={props.onZip}>Upload a ZIP</button>
           {pkg && <button className="link" onClick={props.onForget}>Forget loaded listing</button>}
+          <a href={GUIDE_URL} target="_blank" rel="noreferrer">Make a package</a>
         </div>
       </div>
+      {towerReady() && (
+        <div>
+          <div className="sec-title">Extension Tower</div>
+          {props.tower?.connected ? (
+            <div className="links"><span>Connected</span><button className="link" onClick={props.onDisconnect}>Disconnect</button></div>
+          ) : (
+            <form className="key" onSubmit={(e) => {
+              e.preventDefault();
+              const input = e.currentTarget.elements.namedItem('key') as HTMLInputElement;
+              props.onConnect(input.value);
+              input.value = '';
+            }}>
+              <input name="key" type="password" placeholder="API key" autoComplete="off" spellCheck={false} aria-label="Extension Tower API key" />
+              <button className="mini" type="submit">Connect</button>
+            </form>
+          )}
+          {!props.tower?.connected && <a href={TOWER_URL} target="_blank" rel="noreferrer">Get a key</a>}
+        </div>
+      )}
       <div className="muted">Never saves, submits, ticks certifications or changes visibility.</div>
     </div>
   );

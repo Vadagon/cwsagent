@@ -1,19 +1,35 @@
 # CWSAgent
 
-Autofill and extract Chrome Web Store listings from the developer console.
+Open-source Chrome extension that fills your Chrome Web Store and Microsoft Edge Add-ons listings
+from one folder or ZIP, or from your [Extension Tower](https://extensiontower.com) account. You, your
+coding agent or Extension Tower write the listing; CWSAgent puts it into the store's dashboard.
 
 | | |
 |---|---|
-| **Autofill** | Drop a listing folder or ZIP → fills descriptions in every language, icon, tiles, screenshots, privacy and test instructions |
-| **Extract** | Saves a listing to one ZIP. Optional: installs, impressions, users, ratings, user support |
+| **Autofill** | Drop a listing package → fills descriptions in every language, icon, tiles, screenshots, privacy and test instructions |
+| **Extract** | Saves a live listing as a package ZIP. Optional: installs, impressions, users, ratings, user support |
 
-Extract's ZIP is the format Autofill reads ([FORMAT.md](FORMAT.md), [example](example)).
+## Make a listing package
+
+A package is a plain folder: `listing.json` for details and privacy answers, `images/` for the icon,
+tiles and screenshots, and `languages/<code>/` for each language's description and screenshots
+([FORMAT.md](FORMAT.md), [example](example), [listing.schema.json](listing.schema.json)).
+Keep it in your extension's repo as `meta/` and drop the folder, or a ZIP of it, on CWSAgent.
+
+| Way | How |
+|---|---|
+| **With your coding agent** | Add the [cwsagent-package skill](skills/cwsagent-package/SKILL.md) to Claude Code, Codex or any agent that reads skills, then ask it to *"make a CWSAgent listing package for this extension"*. Agents without skills: point them at the SKILL.md URL. |
+| **With [Extension Tower](https://extensiontower.com)** | See every language, image and store answer side by side and edit them. Connect your API key in the CWSAgent popup: it lists your extensions, each with **Chrome** and **Edge** buttons that open that store's dashboard, sync the listing and fill it. |
+| **From your live listing** | **Extract** it, edit the files, drop the ZIP back. |
+
+The package holds only what you put in it. Anything missing stays as it is in the console.
 
 ## Private by design
 
-- **Runs only on your computer**, inside your own Chrome. There is no server and no account.
+- **Runs on your computer**, inside your own Chrome, only on the Web Store developer console and Partner Center's Edge pages. No account needed.
 - **Sends nothing out**: no analytics, no tracking. Your listings, stats and user messages never leave your browser.
-- The only network traffic is between you and Google's own console: the console uploading your images and saving your draft, and Extract downloading your listing's images.
+- Network traffic is between you and Google's own console (uploading your images, saving your draft, Extract downloading your listing's images), plus Extension Tower only if you connect it: then CWSAgent asks extensiontower.com whether the open item is in your account, and on **Sync** downloads that listing.
+- **Your API key stays inside the extension.** It's kept in the extension's own storage and used only by its background worker, never on the console page.
 - **No permissions requested**. It only runs on the developer console pages, and the [code is open](entrypoints) for anyone to check.
 
 ## Install
@@ -53,6 +69,20 @@ google-chrome --user-data-dir="$HOME/.chrome-publishing" --apps-gallery-url=http
 Always open the publishing window with the same command. To update, download the ZIP again, replace the folder, and press reload on CWSAgent in `chrome://extensions`.
 
 ## Use
+
+### Microsoft Edge Add-ons
+
+Partner Center doesn't block extensions, so no publishing window is needed there.
+
+1. In the popup, press **Edge** next to an extension. The first time, CWSAgent looks for it by name in Partner Center, links it and opens it. If it isn't there, a dialog offers **Create new listing** (upload the package; CWSAgent links the new extension) or **Choose it myself** (open it, then press **Link**).
+2. The panel syncs the listing from Extension Tower. Open **Properties**, **Privacy** or a language's **Edit details** under Store listings and press **Autofill**.
+3. Review and press **Save & Continue** or **Save draft** yourself. Partner Center saves each language separately.
+
+On Edge, images belong to each language, uploads are PNG (converted when needed), up to 6 screenshots are used, and descriptions over 10,000 characters are reported, not cut. Edge asks descriptions not to mention other browsers; the panel points it out.
+
+### Chrome Web Store
+
+From the popup, **Chrome** opens the item, or looks for it in your item list (by ID, then by name) and opens it. If it isn't there, the same dialog offers a new listing or picking it yourself.
 
 | Step | Action |
 |---|---|

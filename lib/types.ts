@@ -41,9 +41,8 @@ export interface TestInstructions {
   instructions?: string;
 }
 
-/** Everything one dropped listing holds, normalized from either input format. */
+/** Everything one dropped listing package holds. */
 export interface Package {
-  format: 'meta' | 'cws-listing';
   name: string;
   itemId: string | null;
   loadedAt: number;
