@@ -389,7 +389,7 @@ export default function App({ host }: { host: HTMLElement }) {
   }, [autoFill, pkg]);
   const wrongItem = !!(pkg?.itemId && page.itemId && pkg.itemId !== page.itemId);
 
-  const useTower = !!source && !dropped;
+  const useTower = !!source && !dropped && !tower?.locked;
   let packageStatus: Status | null = null;
   if (pkg) {
     if (wrongItem) packageStatus = { text: 'Made for another item', tone: 'bad', onClick: () => setPanel('info') };
@@ -419,6 +419,7 @@ export default function App({ host }: { host: HTMLElement }) {
   else if (dropped && packageStatus) status = packageStatus;
   else if (towerReady() && (!tower || matching)) status = { text: 'Matching…' };
   else if (tower?.connected && tower.error) status = { text: tower.error, tone: 'bad' };
+  else if (tower?.locked) status = packageStatus ?? { text: `${source?.name ?? 'This listing'}: one-click Sync needs a package. Or drop its ZIP here.` };
   else if (fromTower) status = { text: fromTower };
   else if (packageStatus) status = packageStatus;
   else if (!towerReady()) status = { text: 'No listing loaded' };
@@ -454,6 +455,8 @@ export default function App({ host }: { host: HTMLElement }) {
       );
     } else if (canFill) {
       action = <button className="btn" onClick={() => requestFill(page.kind as TabKind)}><Icon name="autofill" /><span>Autofill</span></button>;
+    } else if (tower?.locked) {
+      action = <a className="btn" href={PRICING_URL} target="_blank" rel="noreferrer"><span>Get a package</span></a>;
     } else if (towerReady() && tower?.connected && !matching) {
       action = <button className="btn ghost" onClick={refreshTower}><Icon name="sync" /><span>{tower.error ? 'Retry' : 'Check again'}</span></button>;
     }
@@ -577,6 +580,7 @@ function ExtractPanel({ options, onChange, onStart, onCancel }: {
 const GUIDE_URL = 'https://github.com/Vadagon/cwsagent#make-a-listing-package';
 const TOWER_URL = 'https://extensiontower.com/dashboard';
 const SIGNUP_URL = 'https://extensiontower.com/signup';
+const PRICING_URL = 'https://extensiontower.com/pricing';
 
 const TowerMark = () => (
   <svg viewBox="0 0 32 35" width="18" height="20" fill="none" stroke="#c74719" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

@@ -63,9 +63,10 @@ async function list(): Promise<TowerExtension[]> {
 }
 
 /** What a listing's package holds. Only for the card: unknown when it can't be read. */
-async function packageDetails(id: string): Promise<TowerDetails | undefined> {
+async function packageDetails(id: string): Promise<TowerDetails | 'locked' | undefined> {
   try {
     const res = await request(`/api/v1/extensions/${id}/package`);
+    if (res.status === 403) return 'locked'; // one-click Sync is paid; a dropped ZIP or folder stays free
     if (!res.ok) return undefined;
     const { files } = await res.json() as { files: { path: string; text?: string }[] };
     const paths = files.map((f) => f.path);
@@ -96,7 +97,8 @@ async function match(itemId: string, title?: string | null): Promise<TowerMatch>
     const free = extensions.filter((e) => !map[e.id] && !/[a-p]{32}/.test(e.storeUrl ?? ''));
     const source = byId ?? (title ? matchName(title, free, (e) => e.name) : null);
     if (!source) return { connected: true, source: null };
-    return { connected: true, source, details: await packageDetails(source.id) };
+    const details = await packageDetails(source.id);
+    return details === 'locked' ? { connected: true, source, locked: true } : { connected: true, source, details };
   } catch (e) {
     if (e instanceof TowerRejected) return { connected: false, invalid: true };
     throw e;
