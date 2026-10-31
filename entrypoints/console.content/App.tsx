@@ -419,7 +419,7 @@ export default function App({ host }: { host: HTMLElement }) {
   else if (dropped && packageStatus) status = packageStatus;
   else if (towerReady() && (!tower || matching)) status = { text: 'Matching…' };
   else if (tower?.connected && tower.error) status = { text: tower.error, tone: 'bad' };
-  else if (tower?.locked) status = packageStatus ?? { text: `${source?.name ?? 'This listing'}: one-click Sync needs a package. Or drop its ZIP here.` };
+  else if (tower?.locked) status = packageStatus ?? { text: `${source?.name ?? 'This listing'}: one-click Sync needs a package. Or drop a ZIP or folder here.` };
   else if (fromTower) status = { text: fromTower };
   else if (packageStatus) status = packageStatus;
   else if (!towerReady()) status = { text: 'No listing loaded' };
