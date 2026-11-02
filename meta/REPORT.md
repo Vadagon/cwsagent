@@ -9,3 +9,5 @@ Screenshot scenes: fill a listing; package by language; Chrome and Edge; extract
 Promo concepts: direct form-fill action; multilingual package; extract/edit/autofill sequence; two-store workflow; manual-save control. There was no selected promo asset in this repo. Options stay unselected. Owner can choose in index.html without publishing or overwriting files.
 
 No tests, builds, typechecks, lint, validation or browser/product checks. Artwork/translation fit and behavior remain unverified. Native review is outstanding for all translations. Source 0.6.1 has not been built, packaged, uploaded or submitted. Firebase and public-page outcomes are recorded separately in EXTENSIONTOWER.md.
+
+Publication update: all 55 copies/screenshots and the current icon are saved to the verified owner account with Complete; shared page/policy/asset support is deployed through Vercel production dpl_BmKAZKqm8HyZa18S8L8PDybvHAbx. The necessary provider deployment build completed. No separate checks or page/asset HTTP responses were run. Exact URLs and immutable-package state are in EXTENSIONTOWER.md.

@@ -1,6 +1,6 @@
 {
   "date": "2026-11-02T13:12:25.383Z",
-  "status": "firebase_prepared_publication_saved_deployment_pending",
+  "status": "firebase_saved_shared_support_deployed_manual_verification_pending",
   "id": "egjoponpponakdmofgdkcnlanelhmkpo",
   "uid": "bDESBAJRFTfjOiP9UoVsKQDzaZA3",
   "publicationRevision": 1,
@@ -14,12 +14,27 @@
   "otherPrivateEditsPreserved": true,
   "productUrl": "https://extensiontower.com/extensions/egjoponpponakdmofgdkcnlanelhmkpo/en",
   "privacyUrl": "https://extensiontower.com/pages/z4qDLWIY6Gg5C9qv/privacy",
-  "requiresDeployment": [
+  "nativeReviewed": false,
+  "verified": false,
+  "deployment": {
+    "id": "dpl_BmKAZKqm8HyZa18S8L8PDybvHAbx",
+    "url": "https://extensiontower-jv8dsmtol-vadagons-projects.vercel.app",
+    "productionAlias": "https://extensiontower.com",
+    "sourceCommit": "365c696",
+    "providerState": "READY"
+  },
+  "deployedSupport": [
     "owner-product asset route",
     "owner-authored product eligibility and interface locales",
     "exact product-specific privacy body",
     "private bulk package Sync reader"
   ],
-  "nativeReviewed": false,
-  "verified": false
+  "storageReadPermission": {
+    "status": "saved",
+    "principal": "extensiontower-api@extensiontower.iam.gserviceaccount.com",
+    "scope": "exact approved object ACLs only",
+    "portfolioObjectCount": 2157,
+    "bucketPolicyChanged": false,
+    "publicAccessGranted": false
+  }
 }

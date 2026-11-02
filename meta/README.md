@@ -1,6 +1,6 @@
 # CWSAgent listing kit
 
-Prepared 2 November 2026 from the 0.6.0 source, with localized manifest sources prepared for 0.6.1. **Unverified. Translations have not been native-reviewed.** No tests, typechecks, builds, linters, validation commands or product UI checks were run. HTML-to-PNG rendering created the deliverable artwork only.
+Prepared 2 November 2026 from the 0.6.0 source, with localized manifest sources prepared for 0.6.1. **Unverified. Translations have not been native-reviewed.** No local tests, typechecks, builds, linters, validation commands or product UI checks were run. A necessary shared Vercel publication release runs the provider’s ordinary deployment build. HTML-to-PNG rendering created the deliverable artwork only.
 
 Open **index.html** to review English and 55 locale copies, five screenshot scenes per locale and five distinct promo options at both store dimensions. Names retain CWSAgent and its existing Autofill & Extract positioning. Copy is code-authored, not keyword researched; no demand or ranking metrics are claimed.
 
