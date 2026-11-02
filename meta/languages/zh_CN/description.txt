@@ -1,0 +1,28 @@
+CWSAgent – 商店信息自动填写与导出
+
+填写并导出 Chrome 和 Edge 商店信息：描述、翻译后的截图、推广图片和隐私问题答案。
+
+填写商店信息
+加载 ZIP 或文件夹，或连接 ExtensionTower 后选择 Sync。填写已打开商店标签页中支持的字段。
+
+一个资料包，多种语言
+按语言整理描述和截图。商店提供的语言取决于已上传扩展程序所包含的语言。
+
+支持 Chrome 和 Edge
+使用 Chrome Web Store 开发者控制台或 Microsoft Edge Partner Center。自行检查并保存每份草稿。
+
+编辑之前先导出
+将 Chrome 文本和图片导出为可编辑资料包。也可选择导出控制台统计和支持消息。
+
+由你决定最终保存
+CWSAgent 负责填写表单，不会自动保存或提交、勾选数据使用认证，也不会更改价格和可见性。
+
+资料包、操作记录和设置保留在浏览器存储中。导出文件下载到电脑。支持消息可能含有个人信息，请私下保管。
+
+连接 ExtensionTower 为可选操作。API 密钥保存在扩展程序的 IndexedDB 中，仅由后台进程使用，不会传给商店页面。连接会从 extensiontower.com 读取扩展程序列表和资料包；Sync 还会下载图片。图片导出会访问控制台使用的图片服务器。商店操作使用你自己的 Google 或 Microsoft 会话。未集成分析或追踪服务。
+
+Chrome 需要使用 --apps-gallery-url 启动独立的发布配置文件，请参阅安装指南。Edge 不需要专用窗口。本地资料包导入免费；Sync 需要为该条目购买 ExtensionTower 套餐。与 Google 或 Microsoft 无关联。
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

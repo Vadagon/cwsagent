@@ -112,3 +112,7 @@ npm run mock      # mock console at http://127.0.0.1:8767, no real listing neede
 Releases are built by GitHub Actions: pushing a `v*` tag publishes the ZIPs.
 
 React + TypeScript on [WXT](https://wxt.dev). Not affiliated with Google.
+
+## Listing kit — 2 November 2026
+
+The owner-requested listing deliverables are in [meta/](meta/README.md): 55 locale drafts, five screenshots per locale, five unselected promo concepts at both dimensions and a [local review page](meta/index.html). Manifest name/description sources are localized for 0.6.1, unbuilt and unverified. Account grants, privacy and public-page release state are recorded in [meta/EXTENSIONTOWER.md](meta/EXTENSIONTOWER.md). No store submission occurred.

@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "CWSAgent – 商店信息自动填写与导出"
+  },
+  "extDescription": {
+    "message": "填写并导出 Chrome 和 Edge 商店信息：描述、翻译后的截图、推广图片和隐私问题答案。"
+  }
+}

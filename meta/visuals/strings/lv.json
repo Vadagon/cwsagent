@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Aizpildiet savu ierakstu",
+    "Viena pakotne. Visas valodas.",
+    "Chrome un Edge",
+    "Eksportējiet pirms labošanas",
+    "Saglabāšanu izvēlaties jūs"
+  ],
+  "details": [
+    "Ielādējiet ZIP vai mapi vai savienojiet ExtensionTower un izvēlieties Sync. Aizpildiet atvērtās veikala cilnes atbalstītos laukus.",
+    "Glabājiet katras valodas aprakstu un ekrānattēlus kopā. Veikals piedāvā augšupielādētā paplašinājuma valodas.",
+    "Izmantojiet Chrome Web Store konsoli vai Microsoft Edge Partner Center. Pārskatiet un saglabājiet katru melnrakstu paši.",
+    "Eksportējiet Chrome tekstus un attēlus rediģējamā pakotnē. Konsoles statistika un atbalsta ziņojumi ir neobligāti.",
+    "CWSAgent aizpilda veidlapas. Tas automātiski nesaglabā un neiesniedz, neatzīmē apliecinājumus un nemaina cenas vai redzamību."
+  ]
+}

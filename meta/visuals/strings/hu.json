@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Töltsd ki az adatlapod",
+    "Egy csomag. Minden nyelv.",
+    "Chrome és Edge",
+    "Exportálj szerkesztés előtt",
+    "Te döntesz a mentésről"
+  ],
+  "details": [
+    "Tölts be ZIP-et vagy mappát, vagy csatlakoztasd az ExtensionTowert, majd válaszd a Sync gombot. Töltsd ki a megnyitott lap támogatott mezőit.",
+    "Tartsd együtt az egyes nyelvek leírásait és képernyőképeit. Az áruház a feltöltött bővítmény nyelveit kínálja fel.",
+    "Használd a Chrome Web Store konzolt vagy a Microsoft Edge Partner Centert. Minden piszkozatot magad ellenőrizz és ments.",
+    "Exportáld a Chrome szövegeit és képeit szerkeszthető csomagba. A konzolstatisztikák és támogatási üzenetek választhatók.",
+    "A CWSAgent űrlapokat tölt ki. Nem ment vagy küld be automatikusan, nem jelöl be tanúsításokat, és nem módosít árakat vagy láthatóságot."
+  ]
+}

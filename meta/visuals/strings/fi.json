@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Täytä kauppasivusi",
+    "Yksi paketti. Kaikki kielet.",
+    "Chrome ja Edge",
+    "Vie ennen muokkaamista",
+    "Päätät itse tallennuksesta"
+  ],
+  "details": [
+    "Lataa ZIP tai kansio tai yhdistä ExtensionTower ja valitse Sync. Täytä avoimen kauppavälilehden tuetut kentät.",
+    "Pidä kunkin kielen kuvaukset ja kuvakaappaukset yhdessä. Kauppa tarjoaa ladatun laajennuksen kielet.",
+    "Käytä Chrome Web Store -konsolia tai Microsoft Edge Partner Centeriä. Tarkista ja tallenna jokainen luonnos itse.",
+    "Vie Chromen tekstit ja kuvat muokattavaan pakettiin. Konsolitilastot ja tukiviestit ovat valinnaisia.",
+    "CWSAgent täyttää lomakkeet. Se ei tallenna tai lähetä automaattisesti, rastita vakuutuksia eikä muuta hintoja tai näkyvyyttä."
+  ]
+}

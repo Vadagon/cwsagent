@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Izpolnite svojo stran",
+    "En paket. Vsi jeziki.",
+    "Chrome in Edge",
+    "Izvozite pred urejanjem",
+    "Sami odločite o shranjevanju"
+  ],
+  "details": [
+    "Naložite ZIP ali mapo ali povežite ExtensionTower in izberite Sync. Izpolnite podprta polja odprtega zavihka trgovine.",
+    "Opise in posnetke hranite skupaj za vsak jezik. Trgovina ponuja jezike naložene razširitve.",
+    "Uporabite konzolo Chrome Web Store ali Microsoft Edge Partner Center. Sami preglejte in shranite vsak osnutek.",
+    "Izvozite besedila in slike Chrome v paket za urejanje. Statistika konzole in sporočila podpore so izbirna.",
+    "CWSAgent izpolnjuje obrazce. Ne shranjuje ali pošilja samodejno, ne potrjuje izjav ter ne spreminja cen ali vidnosti."
+  ]
+}

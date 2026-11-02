@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Completează pagina",
+    "Un pachet. Toate limbile.",
+    "Chrome și Edge",
+    "Exportă înainte de editare",
+    "Tu alegi când salvezi"
+  ],
+  "details": [
+    "Încarcă un ZIP sau un dosar, ori conectează ExtensionTower și alege Sync. Completează câmpurile acceptate din fila deschisă.",
+    "Păstrează descrierea și capturile fiecărei limbi împreună. Magazinul oferă limbile incluse în extensia încărcată.",
+    "Folosește consola Chrome Web Store sau Microsoft Edge Partner Center. Verifică și salvează personal fiecare ciornă.",
+    "Exportă textele și imaginile Chrome într-un pachet editabil. Statisticile consolei și mesajele de asistență sunt opționale.",
+    "CWSAgent completează formulare. Nu salvează sau trimite automat, nu bifează certificări și nu modifică prețuri ori vizibilitate."
+  ]
+}

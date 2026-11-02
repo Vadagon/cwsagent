@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Isi penyenaraian anda",
+    "Satu pakej. Semua bahasa.",
+    "Chrome dan Edge",
+    "Eksport sebelum menyunting",
+    "Anda yang menyimpan"
+  ],
+  "details": [
+    "Muatkan ZIP atau folder, atau sambungkan ExtensionTower dan pilih Sync. Isi medan yang disokong pada tab kedai yang terbuka.",
+    "Simpan huraian dan tangkapan skrin setiap bahasa bersama. Kedai menawarkan bahasa yang disertakan dalam sambungan dimuat naik.",
+    "Gunakan konsol Chrome Web Store atau Microsoft Edge Partner Center. Semak dan simpan sendiri setiap draf.",
+    "Eksport teks dan imej Chrome ke pakej boleh sunting. Statistik konsol dan mesej sokongan adalah pilihan.",
+    "CWSAgent mengisi borang. Ia tidak menyimpan atau menghantar secara automatik, menanda perakuan atau mengubah harga dan keterlihatan."
+  ]
+}

@@ -1,0 +1,28 @@
+CWSAgent – Compila ed esporta schede degli store
+
+Compila ed esporta schede Chrome e Edge: descrizioni, schermate tradotte, immagini promozionali e risposte sulla privacy.
+
+Compila la tua scheda
+Carica uno ZIP o una cartella, oppure collega ExtensionTower e scegli Sync. Compila i campi supportati della scheda aperta.
+
+Un pacchetto. Tutte le lingue.
+Raggruppa descrizioni e schermate per lingua. Lo store offre le lingue incluse nell’estensione caricata.
+
+Chrome e Edge
+Usa la console di Chrome Web Store o Microsoft Edge Partner Center. Controlla e salva personalmente ogni bozza.
+
+Esporta prima di modificare
+Esporta testi e immagini di Chrome in un pacchetto modificabile. Puoi includere statistiche della console e messaggi di assistenza.
+
+Decidi tu quando salvare
+CWSAgent compila moduli. Non salva né invia automaticamente, non seleziona certificazioni e non modifica prezzi o visibilità.
+
+Pacchetti, cronologia e impostazioni restano nel browser. Gli export vengono scaricati sul computer. I messaggi di assistenza possono contenere dati personali: mantieni privati i file.
+
+ExtensionTower è facoltativo. La chiave API resta nell’IndexedDB dell’estensione e viene usata solo in background, mai nella pagina dello store. La connessione legge elenco e pacchetti su extensiontower.com; Sync scarica anche le immagini. L’estrazione contatta i server di immagini della console. Le azioni usano la tua sessione Google o Microsoft. Nessun servizio di analisi o tracciamento integrato.
+
+Chrome richiede un profilo di pubblicazione separato avviato con --apps-gallery-url; consulta la guida. Edge non richiede finestre speciali. L’importazione locale è gratuita; Sync richiede un pacchetto ExtensionTower per la scheda. Non affiliato a Google o Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

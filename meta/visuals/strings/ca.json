@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Emplena la teva fitxa",
+    "Un paquet. Totes les llengües.",
+    "Chrome i Edge",
+    "Exporta abans d’editar",
+    "Tu decideixes quan desar"
+  ],
+  "details": [
+    "Carrega un ZIP o una carpeta, o connecta ExtensionTower i tria Sync. Emplena els camps compatibles de la pestanya oberta.",
+    "Agrupa la descripció i les captures de cada llengua. La botiga ofereix les llengües de l’extensió pujada.",
+    "Fes servir la consola de Chrome Web Store o Microsoft Edge Partner Center. Revisa i desa cada esborrany personalment.",
+    "Exporta textos i imatges de Chrome a un paquet editable. Les estadístiques de consola i els missatges d’assistència són opcionals.",
+    "CWSAgent emplena formularis. No desa ni envia automàticament, no marca certificacions ni canvia preus o visibilitat."
+  ]
+}

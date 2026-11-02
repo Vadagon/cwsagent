@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Preencha a sua página",
+    "Um pacote. Todas as línguas.",
+    "Chrome e Edge",
+    "Exporte antes de editar",
+    "É você que guarda"
+  ],
+  "details": [
+    "Carregue um ZIP ou uma pasta, ou ligue o ExtensionTower e escolha Sync. Preencha os campos compatíveis do separador aberto.",
+    "Organize a descrição e as capturas por língua. A loja apresenta as línguas incluídas na extensão enviada.",
+    "Utilize a consola do Chrome Web Store ou o Microsoft Edge Partner Center. Reveja e guarde cada rascunho manualmente.",
+    "Exporte textos e imagens do Chrome para um pacote editável. Pode incluir estatísticas da consola e mensagens de apoio.",
+    "O CWSAgent preenche formulários. Não guarda nem envia automaticamente, não assinala certificações e não altera preços ou visibilidade."
+  ]
+}

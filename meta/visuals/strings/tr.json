@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Listenizi doldurun",
+    "Tek paket. Tüm diller.",
+    "Chrome ve Edge",
+    "Düzenlemeden önce dışa aktarın",
+    "Kaydetmek sizin elinizde"
+  ],
+  "details": [
+    "ZIP veya klasör yükleyin ya da ExtensionTower’ı bağlayıp Sync’i seçin. Açık mağaza sekmesindeki desteklenen alanları doldurun.",
+    "Her dilin açıklamasını ve ekran görüntülerini bir arada tutun. Mağaza, yüklediğiniz uzantıdaki dilleri sunar.",
+    "Chrome Web Store konsolunu veya Microsoft Edge Partner Center’ı kullanın. Her taslağı kendiniz inceleyip kaydedin.",
+    "Chrome metin ve görsellerini düzenlenebilir pakete aktarın. Konsol istatistikleri ve destek mesajları isteğe bağlıdır.",
+    "CWSAgent formları doldurur. Otomatik kaydetmez veya göndermez, onay kutularını işaretlemez, fiyat ve görünürlüğü değiştirmez."
+  ]
+}

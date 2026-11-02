@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Täida oma poekirje",
+    "Üks pakett. Kõik keeled.",
+    "Chrome ja Edge",
+    "Ekspordi enne muutmist",
+    "Salvestamise otsustad sina"
+  ],
+  "details": [
+    "Laadi ZIP või kaust või ühenda ExtensionTower ja vali Sync. Täida avatud poe vahekaardi toetatud väljad.",
+    "Hoia iga keele kirjeldus ja kuvatõmmised koos. Pood pakub üleslaaditud laienduse keeli.",
+    "Kasuta Chrome Web Store’i konsooli või Microsoft Edge Partner Centerit. Vaata iga mustand ise üle ja salvesta.",
+    "Ekspordi Chrome’i tekstid ja pildid muudetavaks paketiks. Konsooli statistika ja tugisõnumid on valikulised.",
+    "CWSAgent täidab vorme. See ei salvesta ega esita automaatselt, ei märgi kinnitusi ega muuda hindu või nähtavust."
+  ]
+}

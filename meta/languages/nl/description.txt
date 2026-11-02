@@ -1,0 +1,28 @@
+CWSAgent – Winkelvermeldingen invullen en exporteren
+
+Vul Chrome- en Edge-vermeldingen in en exporteer ze: beschrijvingen, vertaalde screenshots, promotiebeelden en privacyantwoorden.
+
+Vul je vermelding in
+Laad een ZIP of map, of verbind ExtensionTower en kies Sync. Vul ondersteunde velden in het geopende winkeltabblad in.
+
+Eén pakket. Alle talen.
+Bewaar beschrijvingen en screenshots per taal bij elkaar. De winkel biedt de talen uit je geüploade extensie.
+
+Chrome en Edge
+Gebruik de Chrome Web Store-console of Microsoft Edge Partner Center. Controleer en bewaar elk concept zelf.
+
+Exporteer vóór het bewerken
+Exporteer Chrome-teksten en afbeeldingen als bewerkbaar pakket. Consolestatistieken en supportberichten zijn optioneel.
+
+Jij slaat zelf op
+CWSAgent vult formulieren in. Het slaat niets automatisch op, dient niets in, vinkt geen verklaringen aan en wijzigt geen prijzen of zichtbaarheid.
+
+Pakketten, geschiedenis en instellingen blijven in browseropslag. Exports worden naar je computer gedownload. Supportberichten kunnen persoonlijk zijn: houd deze bestanden privé.
+
+ExtensionTower verbinden is optioneel. De API-sleutel staat in de IndexedDB van de extensie en wordt alleen door de achtergrondwerker gebruikt, nooit op de winkelpagina. De verbinding leest je extensielijst en pakketten op extensiontower.com; Sync downloadt ook afbeeldingen. Extractie benadert de beeldservers van de console. Winkelacties gebruiken je Google- of Microsoft-sessie. Geen geïntegreerde analyse- of trackingdienst.
+
+Chrome vereist een apart publicatieprofiel met --apps-gallery-url; zie de handleiding. Edge vereist geen speciaal venster. Lokale import is gratis; Sync vereist een ExtensionTower-pakket voor die vermelding. Niet verbonden aan Google of Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

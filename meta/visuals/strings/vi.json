@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Điền trang cửa hàng",
+    "Một gói. Mọi ngôn ngữ.",
+    "Chrome và Edge",
+    "Xuất trước khi chỉnh sửa",
+    "Bạn tự quyết định lưu"
+  ],
+  "details": [
+    "Tải ZIP hoặc thư mục, hoặc kết nối ExtensionTower rồi chọn Sync. Điền các trường hỗ trợ trong thẻ cửa hàng đang mở.",
+    "Giữ mô tả và ảnh chụp của từng ngôn ngữ cùng nhau. Cửa hàng cung cấp các ngôn ngữ trong tiện ích đã tải lên.",
+    "Dùng bảng điều khiển Chrome Web Store hoặc Microsoft Edge Partner Center. Tự xem lại và lưu từng bản nháp.",
+    "Xuất văn bản và hình ảnh Chrome thành gói có thể sửa. Có thể chọn xuất thống kê và tin nhắn hỗ trợ.",
+    "CWSAgent điền biểu mẫu. Không tự lưu hoặc gửi, không đánh dấu chứng nhận hay thay đổi giá và chế độ hiển thị."
+  ]
+}

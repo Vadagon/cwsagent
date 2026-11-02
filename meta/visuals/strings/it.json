@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Compila la tua scheda",
+    "Un pacchetto. Tutte le lingue.",
+    "Chrome e Edge",
+    "Esporta prima di modificare",
+    "Decidi tu quando salvare"
+  ],
+  "details": [
+    "Carica uno ZIP o una cartella, oppure collega ExtensionTower e scegli Sync. Compila i campi supportati della scheda aperta.",
+    "Raggruppa descrizioni e schermate per lingua. Lo store offre le lingue incluse nell’estensione caricata.",
+    "Usa la console di Chrome Web Store o Microsoft Edge Partner Center. Controlla e salva personalmente ogni bozza.",
+    "Esporta testi e immagini di Chrome in un pacchetto modificabile. Puoi includere statistiche della console e messaggi di assistenza.",
+    "CWSAgent compila moduli. Non salva né invia automaticamente, non seleziona certificazioni e non modifica prezzi o visibilità."
+  ]
+}

@@ -1,0 +1,28 @@
+CWSAgent – Kauppasivujen täyttö ja vienti
+
+Täytä ja vie Chrome- ja Edge-sivut: kuvaukset, käännetyt kuvakaappaukset, mainoskuvat ja tietosuojavastaukset.
+
+Täytä kauppasivusi
+Lataa ZIP tai kansio tai yhdistä ExtensionTower ja valitse Sync. Täytä avoimen kauppavälilehden tuetut kentät.
+
+Yksi paketti. Kaikki kielet.
+Pidä kunkin kielen kuvaukset ja kuvakaappaukset yhdessä. Kauppa tarjoaa ladatun laajennuksen kielet.
+
+Chrome ja Edge
+Käytä Chrome Web Store -konsolia tai Microsoft Edge Partner Centeriä. Tarkista ja tallenna jokainen luonnos itse.
+
+Vie ennen muokkaamista
+Vie Chromen tekstit ja kuvat muokattavaan pakettiin. Konsolitilastot ja tukiviestit ovat valinnaisia.
+
+Päätät itse tallennuksesta
+CWSAgent täyttää lomakkeet. Se ei tallenna tai lähetä automaattisesti, rastita vakuutuksia eikä muuta hintoja tai näkyvyyttä.
+
+Paketit, historia ja asetukset pysyvät selaimessa. Viennit ladataan tietokoneelle. Tukiviestit voivat olla henkilökohtaisia: pidä tiedostot yksityisinä.
+
+ExtensionTower-yhteys on valinnainen. API-avain on laajennuksen IndexedDB:ssä, ja vain taustaprosessi käyttää sitä, ei kauppasivu. Yhteys lukee listan ja paketit extensiontower.comista; Sync lataa myös kuvat. Vienti ottaa yhteyttä konsolin kuvapalvelimiin. Toiminnot käyttävät Google- tai Microsoft-istuntoasi. Ei integroitua analytiikkaa tai seurantaa.
+
+Chrome vaatii erillisen julkaisuprofiilin käynnistyksellä --apps-gallery-url; katso ohje. Edge ei tarvitse erityistä ikkunaa. Paikallinen tuonti on ilmainen; Sync vaatii sivulle ExtensionTower-paketin. Ei yhteyttä Googleen tai Microsoftiin.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

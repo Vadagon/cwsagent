@@ -1,0 +1,28 @@
+CWSAgent – Preencher e extrair páginas das lojas
+
+Preencha e exporte páginas do Chrome e Edge: descrições, capturas traduzidas, imagens promocionais e informações de privacidade.
+
+Preencha a sua página
+Carregue um ZIP ou uma pasta, ou ligue o ExtensionTower e escolha Sync. Preencha os campos compatíveis do separador aberto.
+
+Um pacote. Todas as línguas.
+Organize a descrição e as capturas por língua. A loja apresenta as línguas incluídas na extensão enviada.
+
+Chrome e Edge
+Utilize a consola do Chrome Web Store ou o Microsoft Edge Partner Center. Reveja e guarde cada rascunho manualmente.
+
+Exporte antes de editar
+Exporte textos e imagens do Chrome para um pacote editável. Pode incluir estatísticas da consola e mensagens de apoio.
+
+É você que guarda
+O CWSAgent preenche formulários. Não guarda nem envia automaticamente, não assinala certificações e não altera preços ou visibilidade.
+
+Pacotes, histórico e definições ficam no navegador. Os ficheiros são descarregados para o computador. Mensagens de apoio podem ser pessoais: mantenha estes ficheiros privados.
+
+A ligação ao ExtensionTower é opcional. A chave API fica no IndexedDB da extensão e só é usada em segundo plano, nunca na página da loja. A ligação lê a lista de extensões e pacotes em extensiontower.com; Sync também descarrega imagens. A extração contacta os servidores de imagens da consola. As ações usam a sua sessão Google ou Microsoft. Não há serviços de análise ou rastreio integrados.
+
+O Chrome exige um perfil de publicação separado iniciado com --apps-gallery-url; consulte o guia. O Edge dispensa uma janela especial. Importar pacotes locais é grátis; Sync exige um pacote ExtensionTower para a página. Sem afiliação à Google ou Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

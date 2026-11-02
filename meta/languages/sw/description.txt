@@ -1,0 +1,28 @@
+CWSAgent – Jaza na Hamisha Orodha za Duka
+
+Jaza na hamisha orodha za Chrome na Edge: maelezo, picha za skrini zilizotafsiriwa, picha za matangazo na majibu ya faragha.
+
+Jaza orodha yako
+Pakia ZIP au folda, au unganisha ExtensionTower na uchague Sync. Jaza sehemu zinazotumika kwenye kichupo cha duka kilicho wazi.
+
+Kifurushi kimoja. Lugha zote.
+Weka maelezo na picha za kila lugha pamoja. Duka hutoa lugha zilizomo katika kiendelezi kilichopakiwa.
+
+Chrome na Edge
+Tumia dashibodi ya Chrome Web Store au Microsoft Edge Partner Center. Kagua na uhifadhi kila rasimu mwenyewe.
+
+Hamisha kabla ya kuhariri
+Hamisha maandishi na picha za Chrome kuwa kifurushi kinachoharirika. Takwimu na ujumbe wa msaada ni hiari.
+
+Unadhibiti kuhifadhi
+CWSAgent hujaza fomu. Haihifadhi au kuwasilisha kiotomatiki, haiweki alama za uthibitisho wala kubadilisha bei au mwonekano.
+
+Vifurushi, historia na mipangilio hubaki katika kivinjari. Faili huhifadhiwa kwenye kompyuta. Ujumbe wa msaada unaweza kuwa wa binafsi: weka faili hizo faraghani.
+
+Kuunganisha ExtensionTower ni hiari. Ufunguo wa API hubaki katika IndexedDB ya kiendelezi na hutumiwa tu na mchakato wa nyuma, si ukurasa wa duka. Muunganisho husoma orodha na vifurushi kutoka extensiontower.com; Sync hupakua picha pia. Uhamishaji wa picha huwasiliana na seva za picha za dashibodi. Vitendo hutumia kipindi chako cha Google au Microsoft. Hakuna huduma ya uchanganuzi au ufuatiliaji iliyojumuishwa.
+
+Chrome inahitaji wasifu tofauti wa uchapishaji wenye --apps-gallery-url; tazama mwongozo. Edge haihitaji dirisha maalum. Uingizaji wa ndani ni bure; Sync inahitaji kifurushi cha ExtensionTower kwa orodha hiyo. Haihusiani na Google au Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

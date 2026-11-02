@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Vyplňte svoj záznam",
+    "Jeden balík. Všetky jazyky.",
+    "Chrome a Edge",
+    "Exportujte pred úpravou",
+    "Ukladáte iba vy"
+  ],
+  "details": [
+    "Načítajte ZIP či priečinok alebo pripojte ExtensionTower a vyberte Sync. Vyplňte podporované polia otvorenej karty obchodu.",
+    "Uchovávajte popisy a snímky podľa jazyka. Obchod ponúka jazyky nahraného rozšírenia.",
+    "Použite konzolu Chrome Web Store alebo Microsoft Edge Partner Center. Každý koncept sami skontrolujte a uložte.",
+    "Exportujte texty a obrázky Chrome do upraviteľného balíka. Štatistiky konzoly a správy podpory sú voliteľné.",
+    "CWSAgent vypĺňa formuláre. Automaticky neukladá ani neodosiela, neoznačuje certifikácie a nemení ceny ani viditeľnosť."
+  ]
+}

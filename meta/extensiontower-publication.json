@@ -1,0 +1,685 @@
+{
+  "schemaVersion": 1,
+  "productKey": "cwsagent",
+  "storeUrl": "",
+  "downloadUrl": "https://github.com/Vadagon/cwsagent#install",
+  "version": "0.6.0",
+  "icon": "images/icon.png",
+  "copies": {
+    "en": {
+      "name": "CWSAgent – Web Store Listing Autofill & Extract",
+      "summary": "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.",
+      "descriptionPath": "languages/en/description.txt",
+      "screenshots": [
+        "languages/en/screenshots/1.png",
+        "languages/en/screenshots/2.png",
+        "languages/en/screenshots/3.png",
+        "languages/en/screenshots/4.png",
+        "languages/en/screenshots/5.png"
+      ]
+    },
+    "de": {
+      "name": "CWSAgent – Store-Einträge ausfüllen & exportieren",
+      "summary": "Chrome- und Edge-Einträge ausfüllen und exportieren: Beschreibungen, lokalisierte Screenshots, Werbebilder und Datenschutzangaben.",
+      "descriptionPath": "languages/de/description.txt",
+      "screenshots": [
+        "languages/de/screenshots/1.png",
+        "languages/de/screenshots/2.png",
+        "languages/de/screenshots/3.png",
+        "languages/de/screenshots/4.png",
+        "languages/de/screenshots/5.png"
+      ]
+    },
+    "es": {
+      "name": "CWSAgent – Rellenar y extraer fichas de tiendas",
+      "summary": "Rellena y extrae fichas de Chrome y Edge: descripciones, capturas localizadas, imágenes promocionales y respuestas de privacidad.",
+      "descriptionPath": "languages/es/description.txt",
+      "screenshots": [
+        "languages/es/screenshots/1.png",
+        "languages/es/screenshots/2.png",
+        "languages/es/screenshots/3.png",
+        "languages/es/screenshots/4.png",
+        "languages/es/screenshots/5.png"
+      ]
+    },
+    "fr": {
+      "name": "CWSAgent – Remplir et extraire les fiches de stores",
+      "summary": "Remplissez et exportez les fiches Chrome et Edge : descriptions, captures localisées, visuels et réponses de confidentialité.",
+      "descriptionPath": "languages/fr/description.txt",
+      "screenshots": [
+        "languages/fr/screenshots/1.png",
+        "languages/fr/screenshots/2.png",
+        "languages/fr/screenshots/3.png",
+        "languages/fr/screenshots/4.png",
+        "languages/fr/screenshots/5.png"
+      ]
+    },
+    "it": {
+      "name": "CWSAgent – Compila ed esporta schede degli store",
+      "summary": "Compila ed esporta schede Chrome e Edge: descrizioni, schermate tradotte, immagini promozionali e risposte sulla privacy.",
+      "descriptionPath": "languages/it/description.txt",
+      "screenshots": [
+        "languages/it/screenshots/1.png",
+        "languages/it/screenshots/2.png",
+        "languages/it/screenshots/3.png",
+        "languages/it/screenshots/4.png",
+        "languages/it/screenshots/5.png"
+      ]
+    },
+    "pt-BR": {
+      "name": "CWSAgent – Preencha e extraia páginas das lojas",
+      "summary": "Preencha e exporte páginas do Chrome e Edge: descrições, capturas traduzidas, imagens promocionais e respostas de privacidade.",
+      "descriptionPath": "languages/pt_BR/description.txt",
+      "screenshots": [
+        "languages/pt_BR/screenshots/1.png",
+        "languages/pt_BR/screenshots/2.png",
+        "languages/pt_BR/screenshots/3.png",
+        "languages/pt_BR/screenshots/4.png",
+        "languages/pt_BR/screenshots/5.png"
+      ]
+    },
+    "pt-PT": {
+      "name": "CWSAgent – Preencher e extrair páginas das lojas",
+      "summary": "Preencha e exporte páginas do Chrome e Edge: descrições, capturas traduzidas, imagens promocionais e informações de privacidade.",
+      "descriptionPath": "languages/pt_PT/description.txt",
+      "screenshots": [
+        "languages/pt_PT/screenshots/1.png",
+        "languages/pt_PT/screenshots/2.png",
+        "languages/pt_PT/screenshots/3.png",
+        "languages/pt_PT/screenshots/4.png",
+        "languages/pt_PT/screenshots/5.png"
+      ]
+    },
+    "nl": {
+      "name": "CWSAgent – Winkelvermeldingen invullen en exporteren",
+      "summary": "Vul Chrome- en Edge-vermeldingen in en exporteer ze: beschrijvingen, vertaalde screenshots, promotiebeelden en privacyantwoorden.",
+      "descriptionPath": "languages/nl/description.txt",
+      "screenshots": [
+        "languages/nl/screenshots/1.png",
+        "languages/nl/screenshots/2.png",
+        "languages/nl/screenshots/3.png",
+        "languages/nl/screenshots/4.png",
+        "languages/nl/screenshots/5.png"
+      ]
+    },
+    "uk": {
+      "name": "CWSAgent – Заповнення й експорт сторінок магазинів",
+      "summary": "Заповнюйте й експортуйте сторінки Chrome та Edge: описи, перекладені знімки екрана, промозображення й відповіді про приватність.",
+      "descriptionPath": "languages/uk/description.txt",
+      "screenshots": [
+        "languages/uk/screenshots/1.png",
+        "languages/uk/screenshots/2.png",
+        "languages/uk/screenshots/3.png",
+        "languages/uk/screenshots/4.png",
+        "languages/uk/screenshots/5.png"
+      ]
+    },
+    "ru": {
+      "name": "CWSAgent – Заполнение и экспорт страниц магазинов",
+      "summary": "Заполняйте и экспортируйте страницы Chrome и Edge: описания, переведённые скриншоты, промоизображения и сведения о приватности.",
+      "descriptionPath": "languages/ru/description.txt",
+      "screenshots": [
+        "languages/ru/screenshots/1.png",
+        "languages/ru/screenshots/2.png",
+        "languages/ru/screenshots/3.png",
+        "languages/ru/screenshots/4.png",
+        "languages/ru/screenshots/5.png"
+      ]
+    },
+    "pl": {
+      "name": "CWSAgent – Wypełnianie i eksport ofert sklepów",
+      "summary": "Wypełniaj i eksportuj oferty Chrome i Edge: opisy, przetłumaczone zrzuty ekranu, grafiki promocyjne i odpowiedzi o prywatności.",
+      "descriptionPath": "languages/pl/description.txt",
+      "screenshots": [
+        "languages/pl/screenshots/1.png",
+        "languages/pl/screenshots/2.png",
+        "languages/pl/screenshots/3.png",
+        "languages/pl/screenshots/4.png",
+        "languages/pl/screenshots/5.png"
+      ]
+    },
+    "cs": {
+      "name": "CWSAgent – Vyplnění a export záznamů obchodů",
+      "summary": "Vyplňte a exportujte záznamy Chrome a Edge: popisy, přeložené snímky, propagační obrázky a odpovědi k soukromí.",
+      "descriptionPath": "languages/cs/description.txt",
+      "screenshots": [
+        "languages/cs/screenshots/1.png",
+        "languages/cs/screenshots/2.png",
+        "languages/cs/screenshots/3.png",
+        "languages/cs/screenshots/4.png",
+        "languages/cs/screenshots/5.png"
+      ]
+    },
+    "sk": {
+      "name": "CWSAgent – Vyplnenie a export záznamov obchodov",
+      "summary": "Vyplňte a exportujte záznamy Chrome a Edge: popisy, preložené snímky, propagačné obrázky a odpovede o súkromí.",
+      "descriptionPath": "languages/sk/description.txt",
+      "screenshots": [
+        "languages/sk/screenshots/1.png",
+        "languages/sk/screenshots/2.png",
+        "languages/sk/screenshots/3.png",
+        "languages/sk/screenshots/4.png",
+        "languages/sk/screenshots/5.png"
+      ]
+    },
+    "ro": {
+      "name": "CWSAgent – Completare și export de pagini din magazine",
+      "summary": "Completează și exportă pagini Chrome și Edge: descrieri, capturi traduse, imagini promoționale și răspunsuri de confidențialitate.",
+      "descriptionPath": "languages/ro/description.txt",
+      "screenshots": [
+        "languages/ro/screenshots/1.png",
+        "languages/ro/screenshots/2.png",
+        "languages/ro/screenshots/3.png",
+        "languages/ro/screenshots/4.png",
+        "languages/ro/screenshots/5.png"
+      ]
+    },
+    "hu": {
+      "name": "CWSAgent – Áruházi adatlapok kitöltése és exportja",
+      "summary": "Chrome- és Edge-adatlapok kitöltése és exportja: leírások, lefordított képernyőképek, promóképek és adatvédelmi válaszok.",
+      "descriptionPath": "languages/hu/description.txt",
+      "screenshots": [
+        "languages/hu/screenshots/1.png",
+        "languages/hu/screenshots/2.png",
+        "languages/hu/screenshots/3.png",
+        "languages/hu/screenshots/4.png",
+        "languages/hu/screenshots/5.png"
+      ]
+    },
+    "bg": {
+      "name": "CWSAgent – Попълване и експорт на страници в магазини",
+      "summary": "Попълвайте и експортирайте страници в Chrome и Edge: описания, преведени снимки, промоизображения и отговори за поверителност.",
+      "descriptionPath": "languages/bg/description.txt",
+      "screenshots": [
+        "languages/bg/screenshots/1.png",
+        "languages/bg/screenshots/2.png",
+        "languages/bg/screenshots/3.png",
+        "languages/bg/screenshots/4.png",
+        "languages/bg/screenshots/5.png"
+      ]
+    },
+    "hr": {
+      "name": "CWSAgent – Ispunjavanje i izvoz stranica trgovina",
+      "summary": "Ispunite i izvezite stranice Chromea i Edgea: opise, prevedene snimke, promotivne slike i odgovore o privatnosti.",
+      "descriptionPath": "languages/hr/description.txt",
+      "screenshots": [
+        "languages/hr/screenshots/1.png",
+        "languages/hr/screenshots/2.png",
+        "languages/hr/screenshots/3.png",
+        "languages/hr/screenshots/4.png",
+        "languages/hr/screenshots/5.png"
+      ]
+    },
+    "sr": {
+      "name": "CWSAgent – Попуњавање и извоз страница продавница",
+      "summary": "Попуните и извезите странице Chrome-а и Edge-а: описе, преведене снимке, промотивне слике и одговоре о приватности.",
+      "descriptionPath": "languages/sr/description.txt",
+      "screenshots": [
+        "languages/sr/screenshots/1.png",
+        "languages/sr/screenshots/2.png",
+        "languages/sr/screenshots/3.png",
+        "languages/sr/screenshots/4.png",
+        "languages/sr/screenshots/5.png"
+      ]
+    },
+    "sl": {
+      "name": "CWSAgent – Izpolnjevanje in izvoz strani trgovin",
+      "summary": "Izpolnite in izvozite strani Chrome in Edge: opise, prevedene posnetke, promocijske slike in odgovore o zasebnosti.",
+      "descriptionPath": "languages/sl/description.txt",
+      "screenshots": [
+        "languages/sl/screenshots/1.png",
+        "languages/sl/screenshots/2.png",
+        "languages/sl/screenshots/3.png",
+        "languages/sl/screenshots/4.png",
+        "languages/sl/screenshots/5.png"
+      ]
+    },
+    "el": {
+      "name": "CWSAgent – Συμπλήρωση και εξαγωγή καταχωρίσεων",
+      "summary": "Συμπληρώστε και εξαγάγετε καταχωρίσεις Chrome και Edge: περιγραφές, μεταφρασμένες εικόνες, προωθητικά γραφικά και απόρρητο.",
+      "descriptionPath": "languages/el/description.txt",
+      "screenshots": [
+        "languages/el/screenshots/1.png",
+        "languages/el/screenshots/2.png",
+        "languages/el/screenshots/3.png",
+        "languages/el/screenshots/4.png",
+        "languages/el/screenshots/5.png"
+      ]
+    },
+    "tr": {
+      "name": "CWSAgent – Mağaza Listesi Doldurma ve Dışa Aktarma",
+      "summary": "Listenizi doldurun. Tek paket. Tüm diller. Chrome ve Edge.",
+      "descriptionPath": "languages/tr/description.txt",
+      "screenshots": [
+        "languages/tr/screenshots/1.png",
+        "languages/tr/screenshots/2.png",
+        "languages/tr/screenshots/3.png",
+        "languages/tr/screenshots/4.png",
+        "languages/tr/screenshots/5.png"
+      ]
+    },
+    "sv": {
+      "name": "CWSAgent – Fyll i och exportera butikssidor",
+      "summary": "Fyll i och exportera Chrome- och Edge-sidor: beskrivningar, översatta skärmbilder, reklambilder och integritetssvar.",
+      "descriptionPath": "languages/sv/description.txt",
+      "screenshots": [
+        "languages/sv/screenshots/1.png",
+        "languages/sv/screenshots/2.png",
+        "languages/sv/screenshots/3.png",
+        "languages/sv/screenshots/4.png",
+        "languages/sv/screenshots/5.png"
+      ]
+    },
+    "da": {
+      "name": "CWSAgent – Udfyld og eksporter butikssider",
+      "summary": "Udfyld og eksporter Chrome- og Edge-sider: beskrivelser, oversatte skærmbilleder, reklamebilleder og svar om privatliv.",
+      "descriptionPath": "languages/da/description.txt",
+      "screenshots": [
+        "languages/da/screenshots/1.png",
+        "languages/da/screenshots/2.png",
+        "languages/da/screenshots/3.png",
+        "languages/da/screenshots/4.png",
+        "languages/da/screenshots/5.png"
+      ]
+    },
+    "no": {
+      "name": "CWSAgent – Fyll ut og eksporter butikksider",
+      "summary": "Fyll ut og eksporter Chrome- og Edge-sider: beskrivelser, oversatte skjermbilder, reklamebilder og personvernsvar.",
+      "descriptionPath": "languages/no/description.txt",
+      "screenshots": [
+        "languages/no/screenshots/1.png",
+        "languages/no/screenshots/2.png",
+        "languages/no/screenshots/3.png",
+        "languages/no/screenshots/4.png",
+        "languages/no/screenshots/5.png"
+      ]
+    },
+    "fi": {
+      "name": "CWSAgent – Kauppasivujen täyttö ja vienti",
+      "summary": "Täytä ja vie Chrome- ja Edge-sivut: kuvaukset, käännetyt kuvakaappaukset, mainoskuvat ja tietosuojavastaukset.",
+      "descriptionPath": "languages/fi/description.txt",
+      "screenshots": [
+        "languages/fi/screenshots/1.png",
+        "languages/fi/screenshots/2.png",
+        "languages/fi/screenshots/3.png",
+        "languages/fi/screenshots/4.png",
+        "languages/fi/screenshots/5.png"
+      ]
+    },
+    "et": {
+      "name": "CWSAgent – Poekirjete täitmine ja eksport",
+      "summary": "Täida ja ekspordi Chrome’i ja Edge’i kirjeid: kirjeldused, tõlgitud kuvatõmmised, reklaampildid ning privaatsusvastused.",
+      "descriptionPath": "languages/et/description.txt",
+      "screenshots": [
+        "languages/et/screenshots/1.png",
+        "languages/et/screenshots/2.png",
+        "languages/et/screenshots/3.png",
+        "languages/et/screenshots/4.png",
+        "languages/et/screenshots/5.png"
+      ]
+    },
+    "lv": {
+      "name": "CWSAgent – Veikalu ierakstu aizpildīšana un eksports",
+      "summary": "Aizpildiet un eksportējiet Chrome un Edge ierakstus: aprakstus, tulkotus ekrānattēlus, reklāmas attēlus un privātuma atbildes.",
+      "descriptionPath": "languages/lv/description.txt",
+      "screenshots": [
+        "languages/lv/screenshots/1.png",
+        "languages/lv/screenshots/2.png",
+        "languages/lv/screenshots/3.png",
+        "languages/lv/screenshots/4.png",
+        "languages/lv/screenshots/5.png"
+      ]
+    },
+    "lt": {
+      "name": "CWSAgent – Parduotuvių įrašų pildymas ir eksportas",
+      "summary": "Pildykite ir eksportuokite Chrome ir Edge įrašus: aprašymus, verstas ekrano kopijas, reklaminius vaizdus ir privatumo atsakymus.",
+      "descriptionPath": "languages/lt/description.txt",
+      "screenshots": [
+        "languages/lt/screenshots/1.png",
+        "languages/lt/screenshots/2.png",
+        "languages/lt/screenshots/3.png",
+        "languages/lt/screenshots/4.png",
+        "languages/lt/screenshots/5.png"
+      ]
+    },
+    "ca": {
+      "name": "CWSAgent – Emplena i exporta fitxes de botigues",
+      "summary": "Emplena i exporta fitxes de Chrome i Edge: descripcions, captures traduïdes, imatges promocionals i respostes de privadesa.",
+      "descriptionPath": "languages/ca/description.txt",
+      "screenshots": [
+        "languages/ca/screenshots/1.png",
+        "languages/ca/screenshots/2.png",
+        "languages/ca/screenshots/3.png",
+        "languages/ca/screenshots/4.png",
+        "languages/ca/screenshots/5.png"
+      ]
+    },
+    "id": {
+      "name": "CWSAgent – Isi & Ekspor Listing Toko",
+      "summary": "Isi dan ekspor listing Chrome dan Edge: deskripsi, screenshot terjemahan, gambar promosi, dan jawaban privasi.",
+      "descriptionPath": "languages/id/description.txt",
+      "screenshots": [
+        "languages/id/screenshots/1.png",
+        "languages/id/screenshots/2.png",
+        "languages/id/screenshots/3.png",
+        "languages/id/screenshots/4.png",
+        "languages/id/screenshots/5.png"
+      ]
+    },
+    "ms": {
+      "name": "CWSAgent – Isi & Eksport Penyenaraian Kedai",
+      "summary": "Isi dan eksport penyenaraian Chrome dan Edge: huraian, tangkapan skrin terjemahan, imej promosi dan jawapan privasi.",
+      "descriptionPath": "languages/ms/description.txt",
+      "screenshots": [
+        "languages/ms/screenshots/1.png",
+        "languages/ms/screenshots/2.png",
+        "languages/ms/screenshots/3.png",
+        "languages/ms/screenshots/4.png",
+        "languages/ms/screenshots/5.png"
+      ]
+    },
+    "fil": {
+      "name": "CWSAgent – Punan at I-export ang Store Listing",
+      "summary": "Punan at i-export ang Chrome at Edge listing: mga paglalarawan, isinaling screenshot, promo image at sagot sa privacy.",
+      "descriptionPath": "languages/fil/description.txt",
+      "screenshots": [
+        "languages/fil/screenshots/1.png",
+        "languages/fil/screenshots/2.png",
+        "languages/fil/screenshots/3.png",
+        "languages/fil/screenshots/4.png",
+        "languages/fil/screenshots/5.png"
+      ]
+    },
+    "vi": {
+      "name": "CWSAgent – Điền và xuất trang cửa hàng",
+      "summary": "Điền và xuất trang Chrome và Edge: mô tả, ảnh chụp đã dịch, hình quảng bá và câu trả lời về quyền riêng tư.",
+      "descriptionPath": "languages/vi/description.txt",
+      "screenshots": [
+        "languages/vi/screenshots/1.png",
+        "languages/vi/screenshots/2.png",
+        "languages/vi/screenshots/3.png",
+        "languages/vi/screenshots/4.png",
+        "languages/vi/screenshots/5.png"
+      ]
+    },
+    "ja": {
+      "name": "CWSAgent – ストア掲載情報の自動入力・抽出",
+      "summary": "Chrome と Edge の掲載情報を入力・書き出し。説明文、翻訳済みスクリーンショット、宣伝画像、プライバシー回答に対応。",
+      "descriptionPath": "languages/ja/description.txt",
+      "screenshots": [
+        "languages/ja/screenshots/1.png",
+        "languages/ja/screenshots/2.png",
+        "languages/ja/screenshots/3.png",
+        "languages/ja/screenshots/4.png",
+        "languages/ja/screenshots/5.png"
+      ]
+    },
+    "ko": {
+      "name": "CWSAgent – 스토어 등록 정보 자동 입력 및 추출",
+      "summary": "Chrome과 Edge 등록 정보를 입력하고 내보내세요. 설명, 번역된 스크린샷, 홍보 이미지, 개인정보 답변을 지원합니다.",
+      "descriptionPath": "languages/ko/description.txt",
+      "screenshots": [
+        "languages/ko/screenshots/1.png",
+        "languages/ko/screenshots/2.png",
+        "languages/ko/screenshots/3.png",
+        "languages/ko/screenshots/4.png",
+        "languages/ko/screenshots/5.png"
+      ]
+    },
+    "zh-CN": {
+      "name": "CWSAgent – 商店信息自动填写与导出",
+      "summary": "填写并导出 Chrome 和 Edge 商店信息：描述、翻译后的截图、推广图片和隐私问题答案。",
+      "descriptionPath": "languages/zh_CN/description.txt",
+      "screenshots": [
+        "languages/zh_CN/screenshots/1.png",
+        "languages/zh_CN/screenshots/2.png",
+        "languages/zh_CN/screenshots/3.png",
+        "languages/zh_CN/screenshots/4.png",
+        "languages/zh_CN/screenshots/5.png"
+      ]
+    },
+    "zh-TW": {
+      "name": "CWSAgent – 商店資訊自動填寫與匯出",
+      "summary": "填寫並匯出 Chrome 和 Edge 商店資訊：說明、翻譯後的螢幕擷取畫面、宣傳圖片與隱私問題答案。",
+      "descriptionPath": "languages/zh_TW/description.txt",
+      "screenshots": [
+        "languages/zh_TW/screenshots/1.png",
+        "languages/zh_TW/screenshots/2.png",
+        "languages/zh_TW/screenshots/3.png",
+        "languages/zh_TW/screenshots/4.png",
+        "languages/zh_TW/screenshots/5.png"
+      ]
+    },
+    "ar": {
+      "name": "CWSAgent – تعبئة واستخراج صفحات المتاجر",
+      "summary": "املأ وصدّر صفحات Chrome وEdge: الأوصاف ولقطات الشاشة المترجمة والصور الترويجية وإجابات الخصوصية.",
+      "descriptionPath": "languages/ar/description.txt",
+      "screenshots": [
+        "languages/ar/screenshots/1.png",
+        "languages/ar/screenshots/2.png",
+        "languages/ar/screenshots/3.png",
+        "languages/ar/screenshots/4.png",
+        "languages/ar/screenshots/5.png"
+      ]
+    },
+    "he": {
+      "name": "CWSAgent – מילוי וייצוא דפי חנות",
+      "summary": "מילוי וייצוא דפי Chrome ו-Edge: תיאורים, צילומי מסך מתורגמים, תמונות קידום ותשובות פרטיות.",
+      "descriptionPath": "languages/he/description.txt",
+      "screenshots": [
+        "languages/he/screenshots/1.png",
+        "languages/he/screenshots/2.png",
+        "languages/he/screenshots/3.png",
+        "languages/he/screenshots/4.png",
+        "languages/he/screenshots/5.png"
+      ]
+    },
+    "fa": {
+      "name": "CWSAgent – تکمیل و خروجی گرفتن از صفحه فروشگاه",
+      "summary": "صفحه‌های Chrome و Edge را پر و صادر کنید: توضیحات، تصاویر ترجمه‌شده، تصاویر تبلیغاتی و پاسخ‌های حریم خصوصی.",
+      "descriptionPath": "languages/fa/description.txt",
+      "screenshots": [
+        "languages/fa/screenshots/1.png",
+        "languages/fa/screenshots/2.png",
+        "languages/fa/screenshots/3.png",
+        "languages/fa/screenshots/4.png",
+        "languages/fa/screenshots/5.png"
+      ]
+    },
+    "hi": {
+      "name": "CWSAgent – स्टोर लिस्टिंग भरें और एक्सपोर्ट करें",
+      "summary": "Chrome और Edge लिस्टिंग भरें और निर्यात करें: विवरण, अनूदित स्क्रीनशॉट, प्रचार चित्र और गोपनीयता के जवाब।",
+      "descriptionPath": "languages/hi/description.txt",
+      "screenshots": [
+        "languages/hi/screenshots/1.png",
+        "languages/hi/screenshots/2.png",
+        "languages/hi/screenshots/3.png",
+        "languages/hi/screenshots/4.png",
+        "languages/hi/screenshots/5.png"
+      ]
+    },
+    "bn": {
+      "name": "CWSAgent – স্টোর তালিকা পূরণ ও এক্সপোর্ট",
+      "summary": "Chrome ও Edge তালিকা পূরণ ও রপ্তানি করুন: বিবরণ, অনূদিত স্ক্রিনশট, প্রচার ছবি এবং গোপনীয়তার উত্তর।",
+      "descriptionPath": "languages/bn/description.txt",
+      "screenshots": [
+        "languages/bn/screenshots/1.png",
+        "languages/bn/screenshots/2.png",
+        "languages/bn/screenshots/3.png",
+        "languages/bn/screenshots/4.png",
+        "languages/bn/screenshots/5.png"
+      ]
+    },
+    "gu": {
+      "name": "CWSAgent – સ્ટોર લિસ્ટિંગ ભરો અને નિકાસ કરો",
+      "summary": "Chrome અને Edge લિસ્ટિંગ ભરો અને નિકાસ કરો: વર્ણન, અનુવાદિત સ્ક્રીનશૉટ, પ્રચાર ચિત્રો અને ગોપનીયતાના જવાબો.",
+      "descriptionPath": "languages/gu/description.txt",
+      "screenshots": [
+        "languages/gu/screenshots/1.png",
+        "languages/gu/screenshots/2.png",
+        "languages/gu/screenshots/3.png",
+        "languages/gu/screenshots/4.png",
+        "languages/gu/screenshots/5.png"
+      ]
+    },
+    "kn": {
+      "name": "CWSAgent – ಸ್ಟೋರ್ ಪಟ್ಟಿ ಭರ್ತಿ ಮತ್ತು ರಫ್ತು",
+      "summary": "Chrome ಮತ್ತು Edge ಪಟ್ಟಿಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ ರಫ್ತು ಮಾಡಿ: ವಿವರಣೆ, ಅನುವಾದಿತ ಸ್ಕ್ರೀನ್‌ಶಾಟ್, ಪ್ರಚಾರ ಚಿತ್ರ ಮತ್ತು ಗೌಪ್ಯತಾ ಉತ್ತರಗಳು.",
+      "descriptionPath": "languages/kn/description.txt",
+      "screenshots": [
+        "languages/kn/screenshots/1.png",
+        "languages/kn/screenshots/2.png",
+        "languages/kn/screenshots/3.png",
+        "languages/kn/screenshots/4.png",
+        "languages/kn/screenshots/5.png"
+      ]
+    },
+    "ml": {
+      "name": "CWSAgent – സ്റ്റോർ ലിസ്റ്റിംഗ് പൂരിപ്പിക്കലും കയറ്റുമതിയും",
+      "summary": "ലിസ്റ്റിംഗ് പൂരിപ്പിക്കൂ. ഒരു പാക്കേജ്. എല്ലാ ഭാഷകളും. Chrome, Edge.",
+      "descriptionPath": "languages/ml/description.txt",
+      "screenshots": [
+        "languages/ml/screenshots/1.png",
+        "languages/ml/screenshots/2.png",
+        "languages/ml/screenshots/3.png",
+        "languages/ml/screenshots/4.png",
+        "languages/ml/screenshots/5.png"
+      ]
+    },
+    "mr": {
+      "name": "CWSAgent – स्टोअर लिस्टिंग भरा आणि निर्यात करा",
+      "summary": "Chrome आणि Edge लिस्टिंग भरा व निर्यात करा: वर्णने, अनुवादित स्क्रीनशॉट, प्रचार चित्रे आणि गोपनीयतेची उत्तरे.",
+      "descriptionPath": "languages/mr/description.txt",
+      "screenshots": [
+        "languages/mr/screenshots/1.png",
+        "languages/mr/screenshots/2.png",
+        "languages/mr/screenshots/3.png",
+        "languages/mr/screenshots/4.png",
+        "languages/mr/screenshots/5.png"
+      ]
+    },
+    "ta": {
+      "name": "CWSAgent – ஸ்டோர் பட்டியல் நிரப்பல் மற்றும் ஏற்றுமதி",
+      "summary": "உங்கள் பட்டியலை நிரப்புங்கள். ஒரு தொகுப்பு. எல்லா மொழிகளும். Chrome மற்றும் Edge.",
+      "descriptionPath": "languages/ta/description.txt",
+      "screenshots": [
+        "languages/ta/screenshots/1.png",
+        "languages/ta/screenshots/2.png",
+        "languages/ta/screenshots/3.png",
+        "languages/ta/screenshots/4.png",
+        "languages/ta/screenshots/5.png"
+      ]
+    },
+    "te": {
+      "name": "CWSAgent – స్టోర్ లిస్టింగ్ పూరణ మరియు ఎగుమతి",
+      "summary": "Chrome, Edge లిస్టింగ్‌లు నింపి ఎగుమతి చేయండి: వివరణలు, అనువదించిన స్క్రీన్‌షాట్‌లు, ప్రచార చిత్రాలు, గోప్యత సమాధానాలు.",
+      "descriptionPath": "languages/te/description.txt",
+      "screenshots": [
+        "languages/te/screenshots/1.png",
+        "languages/te/screenshots/2.png",
+        "languages/te/screenshots/3.png",
+        "languages/te/screenshots/4.png",
+        "languages/te/screenshots/5.png"
+      ]
+    },
+    "th": {
+      "name": "CWSAgent – กรอกและส่งออกข้อมูลหน้าร้าน",
+      "summary": "กรอกและส่งออกข้อมูล Chrome และ Edge: คำอธิบาย ภาพหน้าจอที่แปลแล้ว รูปโปรโมต และคำตอบความเป็นส่วนตัว",
+      "descriptionPath": "languages/th/description.txt",
+      "screenshots": [
+        "languages/th/screenshots/1.png",
+        "languages/th/screenshots/2.png",
+        "languages/th/screenshots/3.png",
+        "languages/th/screenshots/4.png",
+        "languages/th/screenshots/5.png"
+      ]
+    },
+    "sw": {
+      "name": "CWSAgent – Jaza na Hamisha Orodha za Duka",
+      "summary": "Jaza na hamisha orodha za Chrome na Edge: maelezo, picha za skrini zilizotafsiriwa, picha za matangazo na majibu ya faragha.",
+      "descriptionPath": "languages/sw/description.txt",
+      "screenshots": [
+        "languages/sw/screenshots/1.png",
+        "languages/sw/screenshots/2.png",
+        "languages/sw/screenshots/3.png",
+        "languages/sw/screenshots/4.png",
+        "languages/sw/screenshots/5.png"
+      ]
+    },
+    "am": {
+      "name": "CWSAgent – የሱቅ ዝርዝር መሙላትና ማውጣት",
+      "summary": "የChrome እና Edge ዝርዝሮችን ይሙሉና ያውጡ፦ መግለጫዎች፣ የተተረጎሙ ስክሪንሾቶች፣ የማስታወቂያ ምስሎችና የግላዊነት መልሶች።",
+      "descriptionPath": "languages/am/description.txt",
+      "screenshots": [
+        "languages/am/screenshots/1.png",
+        "languages/am/screenshots/2.png",
+        "languages/am/screenshots/3.png",
+        "languages/am/screenshots/4.png",
+        "languages/am/screenshots/5.png"
+      ]
+    },
+    "en-AU": {
+      "name": "CWSAgent – Web Store Listing Autofill & Extract",
+      "summary": "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.",
+      "descriptionPath": "languages/en_AU/description.txt",
+      "screenshots": [
+        "languages/en_AU/screenshots/1.png",
+        "languages/en_AU/screenshots/2.png",
+        "languages/en_AU/screenshots/3.png",
+        "languages/en_AU/screenshots/4.png",
+        "languages/en_AU/screenshots/5.png"
+      ]
+    },
+    "en-GB": {
+      "name": "CWSAgent – Web Store Listing Autofill & Extract",
+      "summary": "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.",
+      "descriptionPath": "languages/en_GB/description.txt",
+      "screenshots": [
+        "languages/en_GB/screenshots/1.png",
+        "languages/en_GB/screenshots/2.png",
+        "languages/en_GB/screenshots/3.png",
+        "languages/en_GB/screenshots/4.png",
+        "languages/en_GB/screenshots/5.png"
+      ]
+    },
+    "en-US": {
+      "name": "CWSAgent – Web Store Listing Autofill & Extract",
+      "summary": "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.",
+      "descriptionPath": "languages/en_US/description.txt",
+      "screenshots": [
+        "languages/en_US/screenshots/1.png",
+        "languages/en_US/screenshots/2.png",
+        "languages/en_US/screenshots/3.png",
+        "languages/en_US/screenshots/4.png",
+        "languages/en_US/screenshots/5.png"
+      ]
+    },
+    "es-419": {
+      "name": "CWSAgent – Rellenar y extraer fichas de tiendas",
+      "summary": "Rellena y extrae fichas de Chrome y Edge: descripciones, capturas localizadas, imágenes promocionales y respuestas de privacidad.",
+      "descriptionPath": "languages/es_419/description.txt",
+      "screenshots": [
+        "languages/es_419/screenshots/1.png",
+        "languages/es_419/screenshots/2.png",
+        "languages/es_419/screenshots/3.png",
+        "languages/es_419/screenshots/4.png",
+        "languages/es_419/screenshots/5.png"
+      ]
+    }
+  },
+  "policy": {
+    "developer": "CWSAgent / ExtensionTower",
+    "email": "verbalike@gmail.com",
+    "website": "https://extensiontower.com/cws-agent",
+    "collected": [
+      "authentication",
+      "content",
+      "communications",
+      "personal"
+    ],
+    "purpose": "Optional ExtensionTower authentication and listing-package retrieval. User-directed reading, autofill and export of developer-console listing content, optional statistics and support messages. No integrated analytics or tracking service.",
+    "storage": "device",
+    "sharedWith": "Google and Microsoft operate their developer consoles using your existing session. Image extraction contacts the console image hosts. If connected, ExtensionTower receives the API key in authenticated requests and serves your extension list, packages and images.",
+    "additional": "The extension reads and fills supported Chrome Web Store and Edge Partner Center forms. It does not save drafts, submit items, tick certifications or change visibility or pricing. Local listing packages, settings and bounded run history are stored in browser IndexedDB on the relevant origin. Extract preferences are also stored in console-origin localStorage. Imported images and content stay in browser storage until replaced or cleared. The optional API key is stored in extension-origin IndexedDB and used only by the background worker; it is never passed to the developer-console page. ExtensionTower requests use credentials: omit. The extension caches a slim extension list, store item links, publisher IDs and pending operations locally. Optional Chrome exports may include console statistics and personal support messages with sender details; they are downloaded to the user’s computer, not sent to ExtensionTower by this extension. The Chrome console capture script reads console responses locally to support extraction. Extraction fetches console image URLs without cookies. Clearing the relevant browser site data and extension data removes local records; uninstalling does not necessarily clear developer-console origin data. The store account and any ExtensionTower account data have their respective providers’ retention policies. There is no sale of data or integrated advertising, analytics or tracking SDK. For access, deletion or privacy questions contact verbalike@gmail.com. Policy prepared from source version 0.6.0 on 2 November 2026; behavior has not been run or manually verified in this task."
+  }
+}

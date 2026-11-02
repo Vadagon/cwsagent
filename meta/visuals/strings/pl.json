@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Wypełnij swoją ofertę",
+    "Jeden pakiet. Wszystkie języki.",
+    "Chrome i Edge",
+    "Eksportuj przed edycją",
+    "To Ty zapisujesz"
+  ],
+  "details": [
+    "Wczytaj ZIP lub folder albo połącz ExtensionTower i wybierz Sync. Wypełnij obsługiwane pola otwartej karty sklepu.",
+    "Przechowuj opisy i zrzuty razem dla każdego języka. Sklep udostępnia języki przesłanego rozszerzenia.",
+    "Używaj konsoli Chrome Web Store lub Microsoft Edge Partner Center. Samodzielnie sprawdzaj i zapisuj każdy szkic.",
+    "Eksportuj teksty i obrazy Chrome do edytowalnego pakietu. Opcjonalnie dołącz statystyki konsoli i wiadomości pomocy.",
+    "CWSAgent wypełnia formularze. Nie zapisuje ani nie przesyła automatycznie, nie zaznacza oświadczeń i nie zmienia cen ani widoczności."
+  ]
+}

@@ -1,0 +1,28 @@
+CWSAgent – Isi & Ekspor Listing Toko
+
+Isi dan ekspor listing Chrome dan Edge: deskripsi, screenshot terjemahan, gambar promosi, dan jawaban privasi.
+
+Isi listing Anda
+Muat ZIP atau folder, atau hubungkan ExtensionTower lalu pilih Sync. Isi kolom yang didukung pada tab toko yang terbuka.
+
+Satu paket. Semua bahasa.
+Simpan deskripsi dan screenshot tiap bahasa bersama. Toko menawarkan bahasa yang disertakan dalam ekstensi yang diunggah.
+
+Chrome dan Edge
+Gunakan konsol Chrome Web Store atau Microsoft Edge Partner Center. Tinjau dan simpan sendiri setiap draf.
+
+Ekspor sebelum mengedit
+Ekspor teks dan gambar Chrome ke paket yang dapat diedit. Statistik konsol dan pesan dukungan bersifat opsional.
+
+Anda yang menyimpan
+CWSAgent mengisi formulir. Tidak menyimpan atau mengirim otomatis, mencentang sertifikasi, atau mengubah harga dan visibilitas.
+
+Paket, riwayat, dan pengaturan tetap di penyimpanan browser. Ekspor diunduh ke komputer. Pesan dukungan dapat bersifat pribadi: simpan file secara privat.
+
+Koneksi ExtensionTower opsional. Kunci API disimpan di IndexedDB ekstensi dan hanya dipakai proses latar belakang, bukan halaman toko. Koneksi membaca daftar dan paket dari extensiontower.com; Sync juga mengunduh gambar. Ekstraksi menghubungi server gambar konsol. Tindakan menggunakan sesi Google atau Microsoft Anda. Tidak ada layanan analitik atau pelacakan terintegrasi.
+
+Chrome memerlukan profil penerbitan terpisah dengan --apps-gallery-url; lihat panduan. Edge tidak memerlukan jendela khusus. Impor lokal gratis; Sync memerlukan paket ExtensionTower untuk listing itu. Tidak berafiliasi dengan Google atau Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

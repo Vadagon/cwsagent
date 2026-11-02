@@ -1,0 +1,28 @@
+CWSAgent – Poekirjete täitmine ja eksport
+
+Täida ja ekspordi Chrome’i ja Edge’i kirjeid: kirjeldused, tõlgitud kuvatõmmised, reklaampildid ning privaatsusvastused.
+
+Täida oma poekirje
+Laadi ZIP või kaust või ühenda ExtensionTower ja vali Sync. Täida avatud poe vahekaardi toetatud väljad.
+
+Üks pakett. Kõik keeled.
+Hoia iga keele kirjeldus ja kuvatõmmised koos. Pood pakub üleslaaditud laienduse keeli.
+
+Chrome ja Edge
+Kasuta Chrome Web Store’i konsooli või Microsoft Edge Partner Centerit. Vaata iga mustand ise üle ja salvesta.
+
+Ekspordi enne muutmist
+Ekspordi Chrome’i tekstid ja pildid muudetavaks paketiks. Konsooli statistika ja tugisõnumid on valikulised.
+
+Salvestamise otsustad sina
+CWSAgent täidab vorme. See ei salvesta ega esita automaatselt, ei märgi kinnitusi ega muuda hindu või nähtavust.
+
+Paketid, ajalugu ja seaded jäävad brauserisse. Eksport laaditakse arvutisse. Tugisõnumid võivad olla isiklikud: hoia failid privaatsena.
+
+ExtensionTower on valikuline. API-võti jääb laienduse IndexedDB-sse ja seda kasutab ainult taustaprotsess, mitte poe leht. Ühendus loeb nimekirju ja pakette extensiontower.com-ist; Sync laadib ka pildid. Eksport kasutab konsooli pildiservereid. Toimingud kasutavad sinu Google’i või Microsofti seanssi. Puudub integreeritud analüütika või jälgimine.
+
+Chrome nõuab eraldi avaldamisprofiili võtmega --apps-gallery-url; vaata juhendit. Edge ei vaja erilist akent. Kohalik import on tasuta; Sync nõuab selle kirje ExtensionTower-paketti. Pole seotud Google’i ega Microsoftiga.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

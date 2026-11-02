@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/Vadagon/cwsagent/main/listing.schema.json",
+  "category": "Developer Tools",
+  "homepageUrl": "https://extensiontower.com/cws-agent",
+  "supportUrl": "https://github.com/Vadagon/cwsagent/issues",
+  "privacy": {
+    "singlePurpose": "Fill supported developer-console listing fields from a prepared package and extract Chrome Web Store listing content into an editable package.",
+    "permissions": {},
+    "hostPermission": "Content scripts run only on https://chrome.google.com/webstore/devconsole/* and https://partner.microsoft.com/*/dashboard/microsoftedge/* to read and fill the developer’s own listing form. The Chrome main-world script reads console responses for user-requested extraction. Broad browsing access is not requested.",
+    "remoteCode": false,
+    "dataCollected": [
+      "authentication",
+      "websiteContent",
+      "communications",
+      "pii"
+    ],
+    "privacyPolicyUrl": "https://extensiontower.com/pages/z4qDLWIY6Gg5C9qv/privacy"
+  },
+  "testInstructions": {
+    "instructions": "See github.com/Vadagon/cwsagent#install. In a separate Chrome publishing profile with --apps-gallery-url, load the unpacked extension. Open your item’s Store listing, load a prepared ZIP/folder and choose Autofill. Inspect the filled fields; save manually. On Edge, open the item in Partner Center and use Autofill. Optional ExtensionTower Sync requires an account key and a package for that listing."
+  }
+}

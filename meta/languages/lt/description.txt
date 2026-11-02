@@ -1,0 +1,28 @@
+CWSAgent – Parduotuvių įrašų pildymas ir eksportas
+
+Pildykite ir eksportuokite Chrome ir Edge įrašus: aprašymus, verstas ekrano kopijas, reklaminius vaizdus ir privatumo atsakymus.
+
+Užpildykite savo įrašą
+Įkelkite ZIP ar aplanką arba prijunkite ExtensionTower ir pasirinkite Sync. Užpildykite atverto parduotuvės skirtuko palaikomus laukus.
+
+Vienas paketas. Visos kalbos.
+Laikykite kiekvienos kalbos aprašymą ir ekrano kopijas kartu. Parduotuvė siūlo įkelto plėtinio kalbas.
+
+Chrome ir Edge
+Naudokite Chrome Web Store konsolę arba Microsoft Edge Partner Center. Patys peržiūrėkite ir išsaugokite kiekvieną juodraštį.
+
+Eksportuokite prieš keisdami
+Eksportuokite Chrome tekstus ir vaizdus į redaguojamą paketą. Konsolės statistika ir pagalbos žinutės neprivalomos.
+
+Išsaugojimą valdote jūs
+CWSAgent pildo formas. Jis automatiškai neišsaugo ir nepateikia, nežymi patvirtinimų ir nekeičia kainų ar matomumo.
+
+Paketai, istorija ir nuostatos lieka naršyklėje. Eksportai atsisiunčiami į kompiuterį. Pagalbos žinutės gali būti asmeninės: laikykite failus privačiai.
+
+ExtensionTower prijungimas neprivalomas. API raktas lieka plėtinio IndexedDB ir naudojamas tik fone, ne parduotuvės puslapyje. Ryšys skaito sąrašą ir paketus iš extensiontower.com; Sync atsisiunčia ir vaizdus. Eksportas kreipiasi į konsolės vaizdų serverius. Veiksmai naudoja jūsų Google arba Microsoft seansą. Nėra integruotos analitikos ar sekimo.
+
+Chrome reikia atskiro publikavimo profilio su --apps-gallery-url; žr. vadovą. Edge nereikia specialaus lango. Vietinis importas nemokamas; Sync reikia ExtensionTower paketo šiam įrašui. Nesusiję su Google ar Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

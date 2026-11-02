@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Vul je vermelding in",
+    "Eén pakket. Alle talen.",
+    "Chrome en Edge",
+    "Exporteer vóór het bewerken",
+    "Jij slaat zelf op"
+  ],
+  "details": [
+    "Laad een ZIP of map, of verbind ExtensionTower en kies Sync. Vul ondersteunde velden in het geopende winkeltabblad in.",
+    "Bewaar beschrijvingen en screenshots per taal bij elkaar. De winkel biedt de talen uit je geüploade extensie.",
+    "Gebruik de Chrome Web Store-console of Microsoft Edge Partner Center. Controleer en bewaar elk concept zelf.",
+    "Exporteer Chrome-teksten en afbeeldingen als bewerkbaar pakket. Consolestatistieken en supportberichten zijn optioneel.",
+    "CWSAgent vult formulieren in. Het slaat niets automatisch op, dient niets in, vinkt geen verklaringen aan en wijzigt geen prijzen of zichtbaarheid."
+  ]
+}

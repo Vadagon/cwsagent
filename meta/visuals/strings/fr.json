@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Remplissez votre fiche",
+    "Un dossier. Toutes les langues.",
+    "Chrome et Edge",
+    "Exportez avant de modifier",
+    "Vous gardez la main"
+  ],
+  "details": [
+    "Chargez un ZIP ou un dossier, ou connectez ExtensionTower puis choisissez Sync. Remplissez les champs pris en charge de l’onglet ouvert.",
+    "Regroupez description et captures par langue. Le store propose les langues incluses dans l’extension envoyée.",
+    "Utilisez la console Chrome Web Store ou Microsoft Edge Partner Center. Vérifiez et enregistrez chaque brouillon vous-même.",
+    "Exportez les textes et images Chrome dans un dossier modifiable. Les statistiques de la console et messages d’assistance sont facultatifs.",
+    "CWSAgent remplit les formulaires. Il n’enregistre ni ne soumet automatiquement, ne coche aucune certification et ne change ni tarifs ni visibilité."
+  ]
+}

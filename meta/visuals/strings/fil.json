@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Punan ang iyong listing",
+    "Isang pakete. Lahat ng wika.",
+    "Chrome at Edge",
+    "I-export bago mag-edit",
+    "Ikaw ang magse-save"
+  ],
+  "details": [
+    "Mag-load ng ZIP o folder, o ikonekta ang ExtensionTower at piliin ang Sync. Punan ang suportadong field ng bukas na tab ng store.",
+    "Pagsamahin ang paglalarawan at screenshot ng bawat wika. Iniaalok ng store ang mga wikang kasama sa na-upload na extension.",
+    "Gamitin ang Chrome Web Store console o Microsoft Edge Partner Center. Ikaw mismo ang sumuri at mag-save ng bawat draft.",
+    "I-export ang teksto at larawan sa Chrome bilang nae-edit na pakete. Opsyonal ang console analytics at mga mensahe sa suporta.",
+    "Pinupunan ng CWSAgent ang mga form. Hindi ito awtomatikong nagse-save o nagsusumite, nagche-check ng sertipikasyon o nagpapalit ng presyo at visibility."
+  ]
+}

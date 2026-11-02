@@ -1,0 +1,18 @@
+{
+  "status":"code-authored candidates; not keyword researched",
+  "recommended":0,
+  "names":[
+    {"name":"CWSAgent – Web Store Listing Autofill & Extract","intent":"listing autofill and extraction","trademark":"clear generic descriptor; brand retained"},
+    {"name":"CWSAgent – Chrome & Edge Listing Autofill","intent":"two-store form filling","trademark":"caution: compatibility names"},
+    {"name":"CWSAgent – Autofill Store Descriptions & Screenshots","intent":"supported content upload","trademark":"clear"},
+    {"name":"CWSAgent – Web Store Listing Export & Autofill","intent":"export first workflow","trademark":"clear"},
+    {"name":"CWSAgent – Multilingual Store Listing Helper","intent":"localized listing preparation","trademark":"clear"}
+  ],
+  "summaries":[
+    "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.",
+    "Autofill supported Chrome and Edge listing fields from a ZIP or folder. Review and save each draft yourself.",
+    "Load descriptions and localized screenshots from one package. Fill Chrome and Edge listing forms, then review your draft.",
+    "Export Chrome listing text and images to an editable package, then autofill supported store fields.",
+    "Keep localized descriptions and screenshots together. Import a listing package or connect ExtensionTower for Sync."
+  ]
+}

@@ -1,0 +1,28 @@
+CWSAgent – Store-Einträge ausfüllen & exportieren
+
+Chrome- und Edge-Einträge ausfüllen und exportieren: Beschreibungen, lokalisierte Screenshots, Werbebilder und Datenschutzangaben.
+
+Eintrag ausfüllen
+ZIP oder Ordner laden oder ExtensionTower verbinden und Sync wählen. Unterstützte Felder im geöffneten Store-Tab ausfüllen.
+
+Ein Paket. Alle Sprachen.
+Beschreibungen und Screenshots je Sprache zusammenhalten. Verfügbar sind die Sprachen des hochgeladenen Erweiterungspakets.
+
+Chrome und Edge
+Die Chrome-Entwicklerkonsole oder Microsoft Edge Partner Center verwenden. Jeden Store-Entwurf selbst prüfen und speichern.
+
+Vor dem Bearbeiten exportieren
+Chrome-Texte und Bilder als bearbeitbares Paket exportieren. Optional auch Konsolenstatistiken und Supportnachrichten exportieren.
+
+Du speicherst selbst
+CWSAgent füllt Formulare. Es speichert und übermittelt nichts automatisch, bestätigt keine Datennutzung und ändert weder Preise noch Sichtbarkeit.
+
+Pakete, Verlauf und Einstellungen bleiben im Browserspeicher. Exporte landen auf deinem Computer. Supportexporte können persönliche Nachrichten enthalten und sollten privat bleiben.
+
+ExtensionTower ist optional. Der API-Schlüssel liegt in der IndexedDB der Erweiterung und wird nur vom Hintergrundprozess verwendet. Er wird nicht an Store-Seiten weitergegeben. Von extensiontower.com werden Erweiterungsliste und Pakete gelesen; Sync lädt auch Bilder. Bildexporte kontaktieren die Bildserver der Konsole. Store-Aktionen verwenden deine Google- oder Microsoft-Sitzung. Kein Analyse- oder Trackingdienst ist integriert.
+
+Chrome benötigt ein separates Veröffentlichungsprofil mit --apps-gallery-url; siehe Installationsanleitung. Edge benötigt kein besonderes Fenster. Lokale Pakete sind kostenlos; Sync benötigt ein ExtensionTower-Paket für den Eintrag. Nicht mit Google oder Microsoft verbunden.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

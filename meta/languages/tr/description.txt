@@ -1,0 +1,28 @@
+CWSAgent – Mağaza Listesi Doldurma ve Dışa Aktarma
+
+Listenizi doldurun. Tek paket. Tüm diller. Chrome ve Edge.
+
+Listenizi doldurun
+ZIP veya klasör yükleyin ya da ExtensionTower’ı bağlayıp Sync’i seçin. Açık mağaza sekmesindeki desteklenen alanları doldurun.
+
+Tek paket. Tüm diller.
+Her dilin açıklamasını ve ekran görüntülerini bir arada tutun. Mağaza, yüklediğiniz uzantıdaki dilleri sunar.
+
+Chrome ve Edge
+Chrome Web Store konsolunu veya Microsoft Edge Partner Center’ı kullanın. Her taslağı kendiniz inceleyip kaydedin.
+
+Düzenlemeden önce dışa aktarın
+Chrome metin ve görsellerini düzenlenebilir pakete aktarın. Konsol istatistikleri ve destek mesajları isteğe bağlıdır.
+
+Kaydetmek sizin elinizde
+CWSAgent formları doldurur. Otomatik kaydetmez veya göndermez, onay kutularını işaretlemez, fiyat ve görünürlüğü değiştirmez.
+
+Paketler, geçmiş ve ayarlar tarayıcıda kalır. Dışa aktarılan dosyalar bilgisayara indirilir. Destek mesajları kişisel olabilir: dosyaları gizli tutun.
+
+ExtensionTower bağlantısı isteğe bağlıdır. API anahtarı uzantının IndexedDB’sinde kalır ve yalnızca arka plan işlemi tarafından kullanılır, mağaza sayfasına gönderilmez. Bağlantı extensiontower.com üzerinden liste ve paketleri okur; Sync görselleri de indirir. Dışa aktarma konsolun görsel sunucularına bağlanır. İşlemler Google veya Microsoft oturumunuzu kullanır. Entegre analiz veya takip hizmeti yoktur.
+
+Chrome, --apps-gallery-url ile başlatılan ayrı bir yayın profili gerektirir; kılavuza bakın. Edge özel pencere gerektirmez. Yerel içe aktarma ücretsizdir; Sync bu liste için ExtensionTower paketi gerektirir. Google veya Microsoft ile bağlantılı değildir.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

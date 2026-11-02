@@ -1,0 +1,28 @@
+CWSAgent – Emplena i exporta fitxes de botigues
+
+Emplena i exporta fitxes de Chrome i Edge: descripcions, captures traduïdes, imatges promocionals i respostes de privadesa.
+
+Emplena la teva fitxa
+Carrega un ZIP o una carpeta, o connecta ExtensionTower i tria Sync. Emplena els camps compatibles de la pestanya oberta.
+
+Un paquet. Totes les llengües.
+Agrupa la descripció i les captures de cada llengua. La botiga ofereix les llengües de l’extensió pujada.
+
+Chrome i Edge
+Fes servir la consola de Chrome Web Store o Microsoft Edge Partner Center. Revisa i desa cada esborrany personalment.
+
+Exporta abans d’editar
+Exporta textos i imatges de Chrome a un paquet editable. Les estadístiques de consola i els missatges d’assistència són opcionals.
+
+Tu decideixes quan desar
+CWSAgent emplena formularis. No desa ni envia automàticament, no marca certificacions ni canvia preus o visibilitat.
+
+Paquets, historial i configuració queden al navegador. Els exports es baixen a l’ordinador. Els missatges d’assistència poden ser personals: mantén privats els fitxers.
+
+Connectar ExtensionTower és opcional. La clau API queda a l’IndexedDB de l’extensió i només s’utilitza en segon pla, mai a la pàgina de la botiga. La connexió llegeix la llista i els paquets d’extensiontower.com; Sync també baixa imatges. L’extracció contacta els servidors d’imatges de la consola. Les accions fan servir la teva sessió de Google o Microsoft. Sense serveis d’anàlisi ni seguiment integrats.
+
+Chrome necessita un perfil de publicació separat amb --apps-gallery-url; consulta la guia. Edge no necessita cap finestra especial. La importació local és gratuïta; Sync requereix un paquet ExtensionTower per a la fitxa. Sense afiliació a Google o Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

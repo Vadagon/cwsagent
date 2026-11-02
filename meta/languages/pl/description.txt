@@ -1,0 +1,28 @@
+CWSAgent – Wypełnianie i eksport ofert sklepów
+
+Wypełniaj i eksportuj oferty Chrome i Edge: opisy, przetłumaczone zrzuty ekranu, grafiki promocyjne i odpowiedzi o prywatności.
+
+Wypełnij swoją ofertę
+Wczytaj ZIP lub folder albo połącz ExtensionTower i wybierz Sync. Wypełnij obsługiwane pola otwartej karty sklepu.
+
+Jeden pakiet. Wszystkie języki.
+Przechowuj opisy i zrzuty razem dla każdego języka. Sklep udostępnia języki przesłanego rozszerzenia.
+
+Chrome i Edge
+Używaj konsoli Chrome Web Store lub Microsoft Edge Partner Center. Samodzielnie sprawdzaj i zapisuj każdy szkic.
+
+Eksportuj przed edycją
+Eksportuj teksty i obrazy Chrome do edytowalnego pakietu. Opcjonalnie dołącz statystyki konsoli i wiadomości pomocy.
+
+To Ty zapisujesz
+CWSAgent wypełnia formularze. Nie zapisuje ani nie przesyła automatycznie, nie zaznacza oświadczeń i nie zmienia cen ani widoczności.
+
+Pakiety, historia i ustawienia pozostają w pamięci przeglądarki. Eksporty trafiają na komputer. Wiadomości pomocy mogą być osobiste: zachowaj je prywatnie.
+
+Połączenie ExtensionTower jest opcjonalne. Klucz API pozostaje w IndexedDB rozszerzenia i korzysta z niego tylko proces w tle, nigdy strona sklepu. Połączenie pobiera listę rozszerzeń i pakiety z extensiontower.com; Sync pobiera też obrazy. Eksport kontaktuje serwery obrazów konsoli. Działania używają Twojej sesji Google lub Microsoft. Brak zintegrowanej analityki i śledzenia.
+
+Chrome wymaga osobnego profilu publikacji z --apps-gallery-url; zobacz instrukcję. Edge nie wymaga specjalnego okna. Import lokalny jest bezpłatny; Sync wymaga pakietu ExtensionTower dla oferty. Brak powiązania z Google i Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

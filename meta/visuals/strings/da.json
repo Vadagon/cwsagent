@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Udfyld din butiksside",
+    "Én pakke. Alle sprog.",
+    "Chrome og Edge",
+    "Eksporter før redigering",
+    "Du vælger, hvornår du gemmer"
+  ],
+  "details": [
+    "Indlæs en ZIP eller mappe, eller forbind ExtensionTower og vælg Sync. Udfyld understøttede felter i den åbne butiksfane.",
+    "Saml beskrivelser og skærmbilleder pr. sprog. Butikken tilbyder sprogene i den uploadede udvidelse.",
+    "Brug Chrome Web Store-konsollen eller Microsoft Edge Partner Center. Gennemgå og gem selv hvert udkast.",
+    "Eksporter Chrome-tekst og billeder til en redigerbar pakke. Konsolstatistik og supportbeskeder er valgfrie.",
+    "CWSAgent udfylder formularer. Den gemmer eller sender ikke automatisk, markerer ikke erklæringer og ændrer ikke priser eller synlighed."
+  ]
+}

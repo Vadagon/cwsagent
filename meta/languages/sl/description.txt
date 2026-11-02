@@ -1,0 +1,28 @@
+CWSAgent – Izpolnjevanje in izvoz strani trgovin
+
+Izpolnite in izvozite strani Chrome in Edge: opise, prevedene posnetke, promocijske slike in odgovore o zasebnosti.
+
+Izpolnite svojo stran
+Naložite ZIP ali mapo ali povežite ExtensionTower in izberite Sync. Izpolnite podprta polja odprtega zavihka trgovine.
+
+En paket. Vsi jeziki.
+Opise in posnetke hranite skupaj za vsak jezik. Trgovina ponuja jezike naložene razširitve.
+
+Chrome in Edge
+Uporabite konzolo Chrome Web Store ali Microsoft Edge Partner Center. Sami preglejte in shranite vsak osnutek.
+
+Izvozite pred urejanjem
+Izvozite besedila in slike Chrome v paket za urejanje. Statistika konzole in sporočila podpore so izbirna.
+
+Sami odločite o shranjevanju
+CWSAgent izpolnjuje obrazce. Ne shranjuje ali pošilja samodejno, ne potrjuje izjav ter ne spreminja cen ali vidnosti.
+
+Paketi, zgodovina in nastavitve ostanejo v brskalniku. Izvozi se prenesejo na računalnik. Sporočila podpore so lahko osebna: datoteke ohranite zasebne.
+
+Povezava ExtensionTower je izbirna. Ključ API ostane v IndexedDB razširitve in ga uporablja le proces v ozadju, nikoli stran trgovine. Povezava bere seznam in pakete z extensiontower.com; Sync prenese tudi slike. Izvoz uporablja slikovne strežnike konzole. Dejanja uporabljajo vašo sejo Google ali Microsoft. Brez vgrajene analitike ali sledenja.
+
+Chrome zahteva ločen profil za objavo z --apps-gallery-url; glejte navodila. Edge ne zahteva posebnega okna. Lokalni uvoz je brezplačen; Sync zahteva paket ExtensionTower za stran. Brez povezave z Googlom ali Microsoftom.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

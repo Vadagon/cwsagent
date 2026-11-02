@@ -1,0 +1,28 @@
+CWSAgent – Điền và xuất trang cửa hàng
+
+Điền và xuất trang Chrome và Edge: mô tả, ảnh chụp đã dịch, hình quảng bá và câu trả lời về quyền riêng tư.
+
+Điền trang cửa hàng
+Tải ZIP hoặc thư mục, hoặc kết nối ExtensionTower rồi chọn Sync. Điền các trường hỗ trợ trong thẻ cửa hàng đang mở.
+
+Một gói. Mọi ngôn ngữ.
+Giữ mô tả và ảnh chụp của từng ngôn ngữ cùng nhau. Cửa hàng cung cấp các ngôn ngữ trong tiện ích đã tải lên.
+
+Chrome và Edge
+Dùng bảng điều khiển Chrome Web Store hoặc Microsoft Edge Partner Center. Tự xem lại và lưu từng bản nháp.
+
+Xuất trước khi chỉnh sửa
+Xuất văn bản và hình ảnh Chrome thành gói có thể sửa. Có thể chọn xuất thống kê và tin nhắn hỗ trợ.
+
+Bạn tự quyết định lưu
+CWSAgent điền biểu mẫu. Không tự lưu hoặc gửi, không đánh dấu chứng nhận hay thay đổi giá và chế độ hiển thị.
+
+Gói, lịch sử và cài đặt ở lại trong bộ nhớ trình duyệt. Tệp xuất được tải xuống máy tính. Tin nhắn hỗ trợ có thể riêng tư: hãy giữ kín các tệp đó.
+
+Kết nối ExtensionTower là tùy chọn. Khóa API nằm trong IndexedDB của tiện ích và chỉ tiến trình nền sử dụng, không gửi đến trang cửa hàng. Kết nối đọc danh sách và gói từ extensiontower.com; Sync cũng tải hình ảnh. Việc xuất liên hệ máy chủ hình ảnh của bảng điều khiển. Thao tác dùng phiên Google hoặc Microsoft của bạn. Không tích hợp dịch vụ phân tích hay theo dõi.
+
+Chrome cần hồ sơ xuất bản riêng khởi động với --apps-gallery-url; xem hướng dẫn. Edge không cần cửa sổ đặc biệt. Nhập gói cục bộ miễn phí; Sync cần gói ExtensionTower cho trang đó. Không liên kết với Google hay Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

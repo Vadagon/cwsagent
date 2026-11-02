@@ -1,0 +1,8 @@
+{
+  "extName": {
+    "message": "CWSAgent – Web Store Listing Autofill & Extract"
+  },
+  "extDescription": {
+    "message": "Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers."
+  }
+}

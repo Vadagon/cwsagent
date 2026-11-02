@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Isi listing Anda",
+    "Satu paket. Semua bahasa.",
+    "Chrome dan Edge",
+    "Ekspor sebelum mengedit",
+    "Anda yang menyimpan"
+  ],
+  "details": [
+    "Muat ZIP atau folder, atau hubungkan ExtensionTower lalu pilih Sync. Isi kolom yang didukung pada tab toko yang terbuka.",
+    "Simpan deskripsi dan screenshot tiap bahasa bersama. Toko menawarkan bahasa yang disertakan dalam ekstensi yang diunggah.",
+    "Gunakan konsol Chrome Web Store atau Microsoft Edge Partner Center. Tinjau dan simpan sendiri setiap draf.",
+    "Ekspor teks dan gambar Chrome ke paket yang dapat diedit. Statistik konsol dan pesan dukungan bersifat opsional.",
+    "CWSAgent mengisi formulir. Tidak menyimpan atau mengirim otomatis, mencentang sertifikasi, atau mengubah harga dan visibilitas."
+  ]
+}

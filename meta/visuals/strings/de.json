@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Eintrag ausfüllen",
+    "Ein Paket. Alle Sprachen.",
+    "Chrome und Edge",
+    "Vor dem Bearbeiten exportieren",
+    "Du speicherst selbst"
+  ],
+  "details": [
+    "ZIP oder Ordner laden oder ExtensionTower verbinden und Sync wählen. Unterstützte Felder im geöffneten Store-Tab ausfüllen.",
+    "Beschreibungen und Screenshots je Sprache zusammenhalten. Verfügbar sind die Sprachen des hochgeladenen Erweiterungspakets.",
+    "Die Chrome-Entwicklerkonsole oder Microsoft Edge Partner Center verwenden. Jeden Store-Entwurf selbst prüfen und speichern.",
+    "Chrome-Texte und Bilder als bearbeitbares Paket exportieren. Optional auch Konsolenstatistiken und Supportnachrichten exportieren.",
+    "CWSAgent füllt Formulare. Es speichert und übermittelt nichts automatisch, bestätigt keine Datennutzung und ändert weder Preise noch Sichtbarkeit."
+  ]
+}

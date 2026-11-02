@@ -1,0 +1,28 @@
+CWSAgent – Isi & Eksport Penyenaraian Kedai
+
+Isi dan eksport penyenaraian Chrome dan Edge: huraian, tangkapan skrin terjemahan, imej promosi dan jawapan privasi.
+
+Isi penyenaraian anda
+Muatkan ZIP atau folder, atau sambungkan ExtensionTower dan pilih Sync. Isi medan yang disokong pada tab kedai yang terbuka.
+
+Satu pakej. Semua bahasa.
+Simpan huraian dan tangkapan skrin setiap bahasa bersama. Kedai menawarkan bahasa yang disertakan dalam sambungan dimuat naik.
+
+Chrome dan Edge
+Gunakan konsol Chrome Web Store atau Microsoft Edge Partner Center. Semak dan simpan sendiri setiap draf.
+
+Eksport sebelum menyunting
+Eksport teks dan imej Chrome ke pakej boleh sunting. Statistik konsol dan mesej sokongan adalah pilihan.
+
+Anda yang menyimpan
+CWSAgent mengisi borang. Ia tidak menyimpan atau menghantar secara automatik, menanda perakuan atau mengubah harga dan keterlihatan.
+
+Pakej, sejarah dan tetapan kekal dalam storan pelayar. Eksport dimuat turun ke komputer. Mesej sokongan mungkin peribadi: simpan fail secara sulit.
+
+Sambungan ExtensionTower adalah pilihan. Kunci API disimpan dalam IndexedDB sambungan dan hanya digunakan oleh proses latar, bukan halaman kedai. Sambungan membaca senarai dan pakej dari extensiontower.com; Sync turut memuat turun imej. Pengekstrakan menghubungi pelayan imej konsol. Tindakan menggunakan sesi Google atau Microsoft anda. Tiada perkhidmatan analitik atau penjejakan bersepadu.
+
+Chrome memerlukan profil penerbitan berasingan dengan --apps-gallery-url; lihat panduan. Edge tidak memerlukan tetingkap khas. Import setempat percuma; Sync memerlukan pakej ExtensionTower untuk penyenaraian itu. Tidak bersekutu dengan Google atau Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

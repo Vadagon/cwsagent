@@ -1,0 +1,28 @@
+CWSAgent – Rellenar y extraer fichas de tiendas
+
+Rellena y extrae fichas de Chrome y Edge: descripciones, capturas localizadas, imágenes promocionales y respuestas de privacidad.
+
+Rellena tu ficha
+Carga un ZIP o una carpeta, o conecta ExtensionTower y pulsa Sync. Rellena los campos compatibles de la pestaña abierta.
+
+Un paquete. Todos los idiomas.
+Organiza la descripción y las capturas de cada idioma. La tienda ofrece los idiomas incluidos en la extensión que subes.
+
+Chrome y Edge
+Usa la consola de Chrome Web Store o Microsoft Edge Partner Center. Revisa y guarda tú mismo cada borrador.
+
+Extrae antes de editar
+Exporta textos e imágenes de Chrome a un paquete editable. También puedes exportar estadísticas y mensajes de soporte.
+
+Tú decides cuándo guardar
+CWSAgent rellena formularios. No guarda ni envía automáticamente, no marca certificaciones ni cambia precios o visibilidad.
+
+Los paquetes, el historial y los ajustes quedan en el navegador. Los archivos se descargan a tu equipo. Los mensajes de soporte pueden contener datos personales: mantén privados esos archivos.
+
+Conectar ExtensionTower es opcional. La clave API se guarda en IndexedDB de la extensión y solo la usa el proceso en segundo plano; no llega a la página de la tienda. La conexión lee tu lista de extensiones y paquetes en extensiontower.com; Sync descarga también sus imágenes. La extracción accede a los servidores de imágenes de la consola. Las acciones usan tu sesión de Google o Microsoft. No integra servicios de análisis ni seguimiento.
+
+Chrome necesita un perfil de publicación separado iniciado con --apps-gallery-url; consulta la guía. Edge no necesita una ventana especial. La importación local es gratis; Sync necesita un paquete de ExtensionTower para esa ficha. Sin afiliación a Google ni Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

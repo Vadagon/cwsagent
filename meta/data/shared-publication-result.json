@@ -1,0 +1,25 @@
+{
+  "date": "2026-11-02T13:12:25.383Z",
+  "status": "firebase_prepared_publication_saved_deployment_pending",
+  "id": "egjoponpponakdmofgdkcnlanelhmkpo",
+  "uid": "bDESBAJRFTfjOiP9UoVsKQDzaZA3",
+  "publicationRevision": 1,
+  "workspaceRevision": 255,
+  "localeCount": 55,
+  "screenshots": 275,
+  "publicAssets": 259,
+  "privatePackageFiles": 332,
+  "storeAvailable": false,
+  "canonicalFactsUnchanged": true,
+  "otherPrivateEditsPreserved": true,
+  "productUrl": "https://extensiontower.com/extensions/egjoponpponakdmofgdkcnlanelhmkpo/en",
+  "privacyUrl": "https://extensiontower.com/pages/z4qDLWIY6Gg5C9qv/privacy",
+  "requiresDeployment": [
+    "owner-product asset route",
+    "owner-authored product eligibility and interface locales",
+    "exact product-specific privacy body",
+    "private bulk package Sync reader"
+  ],
+  "nativeReviewed": false,
+  "verified": false
+}

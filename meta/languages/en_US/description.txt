@@ -1,0 +1,28 @@
+CWSAgent – Web Store Listing Autofill & Extract
+
+Fill and extract Chrome Web Store and Edge listings: descriptions, localized screenshots, promo tiles and privacy answers.
+
+Fill your listing
+Load a ZIP or folder, or connect ExtensionTower and choose Sync. Fill supported fields on the open store tab.
+
+One package. Every language.
+Keep each language’s description and screenshots together. The store offers languages included in your uploaded extension.
+
+Chrome and Edge
+Use Chrome Web Store’s developer console or Microsoft Edge Partner Center. Review and save each store’s draft yourself.
+
+Extract before editing
+Export Chrome listing copy and images into an editable package. Optional exports include console analytics and support messages.
+
+You control the final save
+CWSAgent fills forms. It never saves, submits, ticks data-use certifications or changes pricing and visibility.
+
+Packages, run history and settings stay in browser storage. Extracted files are downloaded to your computer. Support exports may contain personal messages; keep them private.
+
+Connecting ExtensionTower is optional. Its API key is stored in the extension’s IndexedDB and used by the background worker, never sent to the store page. The connection reads your extension list and listing packages from extensiontower.com; Sync also downloads their images. Store image extraction contacts image hosts used by the console. Store actions use your own Google or Microsoft session. No analytics or tracking service is integrated.
+
+Chrome requires a separate publishing profile started with --apps-gallery-url; see the installation guide. Edge needs no special publishing window. Local package import is free; connected Sync requires a package for that listing on ExtensionTower. Not affiliated with Google or Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

@@ -1,0 +1,28 @@
+CWSAgent – Fyll i och exportera butikssidor
+
+Fyll i och exportera Chrome- och Edge-sidor: beskrivningar, översatta skärmbilder, reklambilder och integritetssvar.
+
+Fyll i din butikssida
+Ladda en ZIP eller mapp, eller anslut ExtensionTower och välj Sync. Fyll i stödda fält i den öppna butiksfliken.
+
+Ett paket. Alla språk.
+Samla beskrivningar och skärmbilder per språk. Butiken erbjuder språken i det uppladdade tillägget.
+
+Chrome och Edge
+Använd Chrome Web Store-konsolen eller Microsoft Edge Partner Center. Granska och spara varje utkast själv.
+
+Exportera före redigering
+Exportera Chrome-text och bilder till ett redigerbart paket. Konsolstatistik och supportmeddelanden är valfria.
+
+Du väljer när du sparar
+CWSAgent fyller i formulär. Det sparar eller skickar inte automatiskt, bockar inte i intyg och ändrar inte priser eller synlighet.
+
+Paket, historik och inställningar stannar i webbläsaren. Exporter laddas ned till datorn. Supportmeddelanden kan vara personliga: håll filerna privata.
+
+ExtensionTower är valfritt. API-nyckeln finns i tilläggets IndexedDB och används bara av bakgrundsprocessen, aldrig på butikssidan. Anslutningen läser listor och paket från extensiontower.com; Sync laddar även ned bilder. Export kontaktar konsolens bildservrar. Åtgärder använder din Google- eller Microsoft-session. Ingen integrerad analys eller spårning.
+
+Chrome kräver en separat publiceringsprofil med --apps-gallery-url; se guiden. Edge behöver inget särskilt fönster. Lokal import är gratis; Sync kräver ett ExtensionTower-paket för sidan. Ingen koppling till Google eller Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

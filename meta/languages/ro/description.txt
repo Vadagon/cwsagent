@@ -1,0 +1,28 @@
+CWSAgent – Completare și export de pagini din magazine
+
+Completează și exportă pagini Chrome și Edge: descrieri, capturi traduse, imagini promoționale și răspunsuri de confidențialitate.
+
+Completează pagina
+Încarcă un ZIP sau un dosar, ori conectează ExtensionTower și alege Sync. Completează câmpurile acceptate din fila deschisă.
+
+Un pachet. Toate limbile.
+Păstrează descrierea și capturile fiecărei limbi împreună. Magazinul oferă limbile incluse în extensia încărcată.
+
+Chrome și Edge
+Folosește consola Chrome Web Store sau Microsoft Edge Partner Center. Verifică și salvează personal fiecare ciornă.
+
+Exportă înainte de editare
+Exportă textele și imaginile Chrome într-un pachet editabil. Statisticile consolei și mesajele de asistență sunt opționale.
+
+Tu alegi când salvezi
+CWSAgent completează formulare. Nu salvează sau trimite automat, nu bifează certificări și nu modifică prețuri ori vizibilitate.
+
+Pachetele, istoricul și setările rămân în browser. Exporturile se descarcă pe calculator. Mesajele de asistență pot fi personale: păstrează fișierele private.
+
+Conectarea ExtensionTower este opțională. Cheia API rămâne în IndexedDB al extensiei și este folosită doar de procesul de fundal, niciodată de pagina magazinului. Conexiunea citește lista și pachetele de pe extensiontower.com; Sync descarcă și imaginile. Exportul contactează serverele de imagini ale consolei. Acțiunile folosesc sesiunea ta Google sau Microsoft. Fără servicii integrate de analiză sau urmărire.
+
+Chrome necesită un profil separat de publicare pornit cu --apps-gallery-url; vezi ghidul. Edge nu necesită o fereastră specială. Importul local este gratuit; Sync necesită un pachet ExtensionTower pentru pagină. Fără afiliere la Google sau Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

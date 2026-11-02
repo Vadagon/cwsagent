@@ -1,0 +1,28 @@
+CWSAgent – Veikalu ierakstu aizpildīšana un eksports
+
+Aizpildiet un eksportējiet Chrome un Edge ierakstus: aprakstus, tulkotus ekrānattēlus, reklāmas attēlus un privātuma atbildes.
+
+Aizpildiet savu ierakstu
+Ielādējiet ZIP vai mapi vai savienojiet ExtensionTower un izvēlieties Sync. Aizpildiet atvērtās veikala cilnes atbalstītos laukus.
+
+Viena pakotne. Visas valodas.
+Glabājiet katras valodas aprakstu un ekrānattēlus kopā. Veikals piedāvā augšupielādētā paplašinājuma valodas.
+
+Chrome un Edge
+Izmantojiet Chrome Web Store konsoli vai Microsoft Edge Partner Center. Pārskatiet un saglabājiet katru melnrakstu paši.
+
+Eksportējiet pirms labošanas
+Eksportējiet Chrome tekstus un attēlus rediģējamā pakotnē. Konsoles statistika un atbalsta ziņojumi ir neobligāti.
+
+Saglabāšanu izvēlaties jūs
+CWSAgent aizpilda veidlapas. Tas automātiski nesaglabā un neiesniedz, neatzīmē apliecinājumus un nemaina cenas vai redzamību.
+
+Pakotnes, vēsture un iestatījumi paliek pārlūkā. Eksporti tiek lejupielādēti datorā. Atbalsta ziņojumi var būt personiski: turiet failus privātus.
+
+ExtensionTower savienojums nav obligāts. API atslēga paliek paplašinājuma IndexedDB un tiek lietota tikai fonā, nevis veikala lapā. Savienojums lasa sarakstu un pakotnes no extensiontower.com; Sync lejupielādē arī attēlus. Eksports sazinās ar konsoles attēlu serveriem. Darbības izmanto jūsu Google vai Microsoft sesiju. Nav integrētas analītikas vai izsekošanas.
+
+Chrome vajadzīgs atsevišķs publicēšanas profils ar --apps-gallery-url; skatiet ceļvedi. Edge nav vajadzīgs īpašs logs. Vietējais imports ir bez maksas; Sync vajadzīga ExtensionTower pakotne šim ierakstam. Nav saistīts ar Google vai Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

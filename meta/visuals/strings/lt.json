@@ -1,0 +1,17 @@
+{
+  "brand": "CWSAgent",
+  "titles": [
+    "Užpildykite savo įrašą",
+    "Vienas paketas. Visos kalbos.",
+    "Chrome ir Edge",
+    "Eksportuokite prieš keisdami",
+    "Išsaugojimą valdote jūs"
+  ],
+  "details": [
+    "Įkelkite ZIP ar aplanką arba prijunkite ExtensionTower ir pasirinkite Sync. Užpildykite atverto parduotuvės skirtuko palaikomus laukus.",
+    "Laikykite kiekvienos kalbos aprašymą ir ekrano kopijas kartu. Parduotuvė siūlo įkelto plėtinio kalbas.",
+    "Naudokite Chrome Web Store konsolę arba Microsoft Edge Partner Center. Patys peržiūrėkite ir išsaugokite kiekvieną juodraštį.",
+    "Eksportuokite Chrome tekstus ir vaizdus į redaguojamą paketą. Konsolės statistika ir pagalbos žinutės neprivalomos.",
+    "CWSAgent pildo formas. Jis automatiškai neišsaugo ir nepateikia, nežymi patvirtinimų ir nekeičia kainų ar matomumo."
+  ]
+}

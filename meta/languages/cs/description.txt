@@ -1,0 +1,28 @@
+CWSAgent – Vyplnění a export záznamů obchodů
+
+Vyplňte a exportujte záznamy Chrome a Edge: popisy, přeložené snímky, propagační obrázky a odpovědi k soukromí.
+
+Vyplňte svůj záznam
+Načtěte ZIP či složku nebo připojte ExtensionTower a zvolte Sync. Vyplňte podporovaná pole otevřené karty obchodu.
+
+Jeden balíček. Všechny jazyky.
+Uchovávejte popisy a snímky podle jazyka. Obchod nabízí jazyky obsažené v nahraném rozšíření.
+
+Chrome a Edge
+Použijte konzoli Chrome Web Store nebo Microsoft Edge Partner Center. Každý koncept sami zkontrolujte a uložte.
+
+Exportujte před úpravou
+Exportujte texty a obrázky Chrome do upravitelného balíčku. Statistiky konzole a zprávy podpory jsou volitelné.
+
+Ukládáte jen vy
+CWSAgent vyplňuje formuláře. Automaticky neukládá ani neodesílá, nezaškrtává certifikace a nemění ceny ani viditelnost.
+
+Balíčky, historie a nastavení zůstávají v úložišti prohlížeče. Exporty se stahují do počítače. Zprávy podpory mohou být osobní; zachovejte je soukromé.
+
+Připojení ExtensionTower je volitelné. Klíč API je v IndexedDB rozšíření a používá ho jen proces na pozadí, nikoli stránka obchodu. Připojení čte seznam rozšíření a balíčky z extensiontower.com; Sync stahuje i obrázky. Export kontaktuje obrazové servery konzole. Akce využívají vaši relaci Google nebo Microsoft. Bez integrované analytiky a sledování.
+
+Chrome vyžaduje samostatný publikační profil s --apps-gallery-url; viz návod. Edge nepotřebuje zvláštní okno. Místní import je zdarma; Sync vyžaduje balíček ExtensionTower pro daný záznam. Bez spojení s Google či Microsoft.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com

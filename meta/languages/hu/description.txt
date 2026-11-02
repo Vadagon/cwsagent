@@ -1,0 +1,28 @@
+CWSAgent – Áruházi adatlapok kitöltése és exportja
+
+Chrome- és Edge-adatlapok kitöltése és exportja: leírások, lefordított képernyőképek, promóképek és adatvédelmi válaszok.
+
+Töltsd ki az adatlapod
+Tölts be ZIP-et vagy mappát, vagy csatlakoztasd az ExtensionTowert, majd válaszd a Sync gombot. Töltsd ki a megnyitott lap támogatott mezőit.
+
+Egy csomag. Minden nyelv.
+Tartsd együtt az egyes nyelvek leírásait és képernyőképeit. Az áruház a feltöltött bővítmény nyelveit kínálja fel.
+
+Chrome és Edge
+Használd a Chrome Web Store konzolt vagy a Microsoft Edge Partner Centert. Minden piszkozatot magad ellenőrizz és ments.
+
+Exportálj szerkesztés előtt
+Exportáld a Chrome szövegeit és képeit szerkeszthető csomagba. A konzolstatisztikák és támogatási üzenetek választhatók.
+
+Te döntesz a mentésről
+A CWSAgent űrlapokat tölt ki. Nem ment vagy küld be automatikusan, nem jelöl be tanúsításokat, és nem módosít árakat vagy láthatóságot.
+
+A csomagok, előzmények és beállítások a böngészőben maradnak. Az exportok a gépedre töltődnek. A támogatási üzenetek személyesek lehetnek: kezeld őket bizalmasan.
+
+Az ExtensionTower opcionális. Az API-kulcs a bővítmény IndexedDB-jében marad, és csak a háttérfolyamat használja, nem az áruházi oldal. A kapcsolat az extensiontower.com listáit és csomagjait olvassa; a Sync a képeket is letölti. Az export a konzol képszervereit éri el. A műveletek a Google- vagy Microsoft-munkamenetedet használják. Nincs integrált elemzés vagy követés.
+
+A Chrome külön közzétételi profilt igényel --apps-gallery-url indítással; lásd az útmutatót. Az Edge nem igényel külön ablakot. A helyi import ingyenes; a Sync ExtensionTower-csomagot igényel az adatlaphoz. Nem kapcsolódik a Google-höz vagy a Microsofthoz.
+
+https://github.com/Vadagon/cwsagent#install
+https://extensiontower.com/cws-agent
+verbalike@gmail.com
