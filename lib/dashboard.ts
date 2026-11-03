@@ -126,6 +126,14 @@ export function selectValue(comboLabel: string): string | null {
 // ---- Image uploads ---------------------------------------------------------
 
 type UploadType = 'icon' | 'screenshot' | 'smallTile' | 'marquee';
+// The console draws these as <div role="button">, older versions as <button>.
+const REMOVE_IMAGE = 'button[aria-label^="Remove image"], [role="button"][aria-label^="Remove image"]';
+
+/** Google's jsaction controls listen for mousedown/mouseup as well as click. */
+function press(el: HTMLElement) {
+  for (const type of ['mousedown', 'mouseup']) el.dispatchEvent(new MouseEvent(type, { bubbles: true, cancelable: true, view: window }));
+  el.click();
+}
 const UPLOAD: Record<UploadType, string> = { icon: '5', screenshot: '4', smallTile: '1', marquee: '3' };
 
 export function uploadBox(type: UploadType, global?: boolean): HTMLElement | null {
@@ -140,7 +148,7 @@ function uploadScope(box: HTMLElement): HTMLElement {
     const parent = scope.parentElement;
     if (parent.querySelectorAll('[data-image-upload-type]').length > 1) break;
     scope = parent;
-    if (scope.querySelector('button[aria-label^="Remove image"]')) break;
+    if (scope.querySelector(REMOVE_IMAGE)) break;
   }
   return scope;
 }
@@ -218,17 +226,17 @@ async function uploadImage(ctx: RunContext, box: HTMLElement, blob: Blob, name: 
 async function confirmDialogIfAny() {
   const dialog = await waitFor(() => [...document.querySelectorAll<HTMLElement>('[role="dialog"],[role="alertdialog"]')]
     .find((d) => visible(d) && /remove|delete/i.test(d.innerText)), { timeout: 700 });
-  const btn = dialog && [...dialog.querySelectorAll('button')].find((b) => /^(remove|delete|ok|confirm|yes)$/i.test(clean(b.innerText)));
-  btn?.click();
+  const btn = dialog && [...dialog.querySelectorAll<HTMLElement>('button, [role="button"]')].find((b) => /^(remove|delete|ok|confirm|yes)$/i.test(clean(b.innerText)));
+  if (btn) press(btn);
 }
 
 async function clearScreenshots(box: HTMLElement) {
   const scope = uploadScope(box);
   for (let guard = 0; guard < 10; guard++) {
-    const btn = scope.querySelector<HTMLButtonElement>('button[aria-label^="Remove image"]');
+    const btn = scope.querySelector<HTMLElement>(REMOVE_IMAGE);
     if (!btn) return;
     const before = imageCount(box);
-    btn.click();
+    press(btn);
     await confirmDialogIfAny();
     if (!(await waitFor(() => imageCount(box) < before, { timeout: 8000 }))) throw new Error('could not remove an existing screenshot');
   }
@@ -268,11 +276,14 @@ export function currentLanguage(): string | null {
   return m?.[1] ?? null;
 }
 
+// The picker's value and its label can differ: Hebrew is value "iw", label "Hebrew – he".
+const isCurrent = (value: string) => normLocale(currentLanguage() ?? '') === normLocale(value);
+
 export async function switchLanguage(value: string): Promise<boolean> {
-  if (currentLanguage() === value) return true;
+  if (isCurrent(value)) return true;
   const option = await selectOption('Language', (li) => li.getAttribute('data-value') === value);
   if (!option) return false;
-  const ok = await waitFor(() => currentLanguage() === value, { timeout: 8000 });
+  const ok = await waitFor(() => isCurrent(value), { timeout: 8000 });
   await sleep(700); // let the localized fields re-render
   return !!ok;
 }
