@@ -24,6 +24,41 @@ Keep it in your extension's repo as `meta/` and drop the folder, or a ZIP of it,
 
 The package holds only what you put in it. Anything missing stays as it is in the console.
 
+## Both stores from a `meta/` folder
+
+For a `meta/` folder in the Extension Tower META.md layout (`descriptions/`, `screenshots/`, `promo/`,
+`edge/`, `data/dashboard.json`, `listing.json`), generate the publish manifest first:
+
+```bash
+node scripts/publish-manifest.mjs path/to/extension/meta --zip path/to/release/ext-v1.zip
+```
+
+It writes `meta/store/publish.json` ([schema](publish.schema.json)) and copies the ZIP to
+`meta/store/package.zip` (gitignored). It prints a **review** list (answers it inferred, such as
+data-usage boxes or remote code) and **warnings** (sizes, locales missing from the package). Without
+`--zip` it takes the newest ZIP under `../release/`. Store ids come from `listing.json`: `id`,
+`publisherId`, `edgeProductId`.
+
+Then drop the whole `meta/` folder on the CWSAgent card in each console (each site keeps its own copy):
+
+| Store | Page | CWSAgent does | You do |
+|---|---|---|---|
+| Chrome | Store listing | Category, URLs, small tile, marquee, global screenshots, then every package language: description and localized screenshots | Save draft |
+| Chrome | Privacy | Single purpose, each permission, host access, remote code, data usage, privacy URL | Tick the 3 certifications, Save draft |
+| Chrome | Test instructions | Reviewer steps | Save draft, then **Submit for review** |
+| Chrome | Package | Not handled: upload there, or with the CWS API | Upload when the version changed |
+| Edge | Packages | **Upload package** puts `store/package.zip` in the upload and waits for validation | Save & Continue |
+| Edge | Availability | Not handled | Visibility, markets |
+| Edge | Properties | Category, website, support URL, mature content | Save & Continue |
+| Edge | Privacy | Same answers as Chrome | Certifications, Save & Continue |
+| Edge | Store listings | **Fill all languages**: opens each language, fills description, search terms, 300×300 logo, tiles, screenshots, presses Save draft and Close, next. Stopped runs carry on where they ended | **Publish** |
+
+Partner Center keeps edits per language only after Save draft, so the all-languages run saves each
+language's draft after you confirm. Nothing is submitted or published, and certifications are never
+ticked. Languages the package's `_locales` lacks are skipped: neither store offers them. The
+Edge page mechanics (Packages upload, search terms, the languages table) are new and not yet run on
+a live account.
+
 ## Private by design
 
 - **Runs on your computer**, inside your own Chrome, only on the Web Store developer console and Partner Center's Edge pages. No account needed.
@@ -92,7 +127,7 @@ A card sits under the heading of each item's Store listing, Privacy and Test ins
 | Autofill a package | Drop a ZIP or folder on the card, or choose one → **Autofill** on each tab → **Save draft** |
 | Extract | **Settings** → **Extract** → tick what to save → **Extract** → ZIP lands in Downloads |
 
-CWSAgent never saves, submits, ticks certifications or changes visibility.
+CWSAgent never saves, submits, ticks certifications or changes visibility. (The Edge all-languages run is the one exception to saving: it presses Save draft per language after you confirm.)
 
 ## Development
 

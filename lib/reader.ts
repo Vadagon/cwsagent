@@ -1,10 +1,11 @@
 // Turns a dropped listing package (folder or ZIP, layout in FORMAT.md) into one Package.
 import { store } from './store';
-import type { DataTypeKey, FileEntry, Package, Privacy } from './types';
+import type { DataTypeKey, FileEntry, Package, Privacy, Publish } from './types';
 import { unzip } from './zip';
 
 const IGNORED = /(^|\/)(__MACOSX|\.DS_Store|Thumbs\.db|node_modules)(\/|$)/;
 const MARKERS = ['listing.json', 'languages/', 'images/'];
+const MANIFEST = /(^|\/)store\/publish\.json$/;
 
 export const DATA_TYPES: Record<DataTypeKey, string> = {
   pii: 'Personally identifiable information',
@@ -59,9 +60,11 @@ export async function filesFromInput(fileList: FileList | File[]): Promise<FileE
 }
 
 async function expandZips(files: FileEntry[]): Promise<FileEntry[]> {
+  // A meta/ folder with a publish manifest carries the release ZIP as a file.
+  const keepZips = files.some((f) => MANIFEST.test(f.path));
   const out: FileEntry[] = [];
   for (const f of files) {
-    if (/\.zip$/i.test(f.path)) out.push(...(await unzip(f.blob)));
+    if (!keepZips && /\.zip$/i.test(f.path)) out.push(...(await unzip(f.blob)));
     else out.push(f);
   }
   return out.filter((f) => !IGNORED.test(f.path));
@@ -169,9 +172,92 @@ async function readLayout(rel: Map<string, Blob>, listing: Json, notes: string[]
   return parts;
 }
 
+// ---- meta/store/publish.json (META.md layout) -----------------------------------
+
+/** Reads a publish manifest; its paths are relative to the meta/ folder that holds store/. */
+async function readManifest(rel: Map<string, Blob>, m: Json, notes: string[]): Promise<Parts & { publish: Publish }> {
+  const parts: Parts = { details: {}, languages: {}, images: { screenshots: [] }, privacy: {}, test: null, blobs: {} };
+  const missing: string[] = [];
+  const keep = (path: unknown) => {
+    if (typeof path !== 'string' || !path) return undefined;
+    const blob = rel.get(path);
+    if (!blob) { missing.push(path); return undefined; }
+    parts.blobs[path] = blob;
+    return path;
+  };
+  const list = (paths: unknown, max: number, label: string) => {
+    const all = (Array.isArray(paths) ? paths : []).map(keep).filter((p): p is string => !!p);
+    if (all.length > max) notes.push(`${label}: only the first ${max} screenshots are used.`);
+    return all;
+  };
+
+  const d = m.details ?? {};
+  for (const k of [...DETAIL_KEYS, 'edgeCategory'] as const) {
+    if (d[k] !== undefined && d[k] !== null && d[k] !== '') (parts.details as Json)[k] = d[k];
+  }
+  const img = m.images ?? {};
+  for (const slot of ['icon', 'smallTile', 'marquee', 'edgeLogo'] as const) {
+    const path = keep(img[slot]);
+    if (path) parts.images[slot] = path;
+  }
+  parts.images.screenshots = list(img.screenshots, 5, 'Global');
+
+  for (const [code, l] of Object.entries((m.languages ?? {}) as Record<string, Json>)) {
+    if (l.inPackage === false) continue;
+    const lang: Package['languages'][string] = {};
+    const descPath = keep(l.description);
+    if (descPath) {
+      const text = (await rel.get(descPath)!.text()).replace(/\r\n/g, '\n').trim();
+      if (text) lang.description = text; else notes.push(`${descPath} is empty, skipped.`);
+      delete parts.blobs[descPath];
+    }
+    const shots = list(l.screenshots, 5, code);
+    if (shots.length) lang.screenshots = shots;
+    if (l.promoVideo) lang.promoVideo = String(l.promoVideo);
+    if (l.edge) lang.edgeName = String(l.edge);
+    if (Array.isArray(l.searchTerms) && l.searchTerms.length) lang.searchTerms = l.searchTerms.map(String);
+    parts.languages[code] = lang;
+  }
+  const skipped = Object.entries((m.languages ?? {}) as Record<string, Json>).filter(([, l]) => l.inPackage === false).map(([c]) => c);
+  if (skipped.length) notes.push(`Not in the extension package, skipped: ${skipped.join(', ')}.`);
+
+  parts.privacy = normalizePrivacy(m.privacy ?? {}, notes);
+  if (m.testInstructions) parts.test = m.testInstructions;
+  if (missing.length) notes.push(`Named in publish.json but not in the drop: ${missing.slice(0, 5).join(', ')}${missing.length > 5 ? ` and ${missing.length - 5} more` : ''}.`);
+
+  const packageZip = keep(m.package?.zip);
+  const publish: Publish = {
+    chromeItemId: m.stores?.chrome?.itemId,
+    edgeProductId: m.stores?.edge?.productId,
+    packageZip,
+    version: m.package?.version,
+    manual: Array.isArray(m.manual) ? m.manual : [],
+  };
+  for (const r of Array.isArray(m.review) ? m.review : []) notes.push(`Review: ${r}`);
+  return { ...parts, publish };
+}
+
 // ---- Entry point -----------------------------------------------------------
 
 export async function buildPackage(files: FileEntry[], sourceName?: string): Promise<Package> {
+  const manifestFile = files.find((f) => MANIFEST.test(f.path));
+  if (manifestFile) {
+    const root = manifestFile.path.replace(/store\/publish\.json$/, '');
+    const rel = new Map<string, Blob>();
+    for (const f of files) if (f.path.startsWith(root)) rel.set(f.path.slice(root.length), f.blob);
+    const notes: string[] = [];
+    const m = await readJson(manifestFile.blob, notes);
+    if (m.format !== 1) notes.push(`publish.json format ${m.format ?? 'missing'}; this CWSAgent reads format 1.`);
+    const parts = await readManifest(rel, m, notes);
+    return {
+      ...parts,
+      name: sourceName || m.extension || root.replace(/\/$/, '').split('/').pop() || 'meta',
+      itemId: parts.publish.chromeItemId ?? null,
+      loadedAt: Date.now(),
+      notes,
+    };
+  }
+
   const root = findRoot(files.map((f) => f.path));
   if (root === null) throw new Error('No listing found: expected listing.json, languages/ or images/.');
 

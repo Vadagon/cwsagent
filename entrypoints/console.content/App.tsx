@@ -678,6 +678,7 @@ function InfoPanel({ pkg, page }: { pkg: Package; page: Page }) {
         <div className="chips">{chips.map((c) => <span key={c} className="chip">{c}</span>)}</div>
         {pkg.itemId && page.itemId && pkg.itemId !== page.itemId && <div className="bad-text" style={{ marginTop: 4 }}>Made for item {pkg.itemId}.</div>}
         {pkg.notes.map((n) => <div key={n} className="muted" style={{ marginTop: 4 }}>{n}</div>)}
+        {pkg.publish?.manual.filter((m) => m.store === 'chrome').map((m) => <div key={m.step} style={{ marginTop: 4 }}>You: {m.step}</div>)}
       </div>
       {page.itemId && tabs.length > 0 && (
         <div className="links">

@@ -9,11 +9,17 @@ export interface Details {
   supportUrl?: string;
   matureContent?: boolean;
   promoVideo?: string;
+  /** Partner Center category, when it differs from the Chrome one. */
+  edgeCategory?: string;
 }
 
 export interface Language {
   description?: string;
   promoVideo?: string;
+  /** Partner Center's name for this language ("Portuguese (Brazil)"). */
+  edgeName?: string;
+  /** Edge search terms: up to 7, each ≤ 30 characters. */
+  searchTerms?: string[];
   /** Keys into Package.blobs, in display order. */
   screenshots?: string[];
 }
@@ -23,6 +29,18 @@ export interface Images {
   smallTile?: string;
   marquee?: string;
   screenshots: string[];
+  /** Edge store logo, 300×300. Edge falls back to the icon without it. */
+  edgeLogo?: string;
+}
+
+/** Store ids and the release package from a meta/store/publish.json drop. */
+export interface Publish {
+  chromeItemId?: string;
+  edgeProductId?: string;
+  /** Key into Package.blobs. */
+  packageZip?: string;
+  version?: string;
+  manual: { store: 'chrome' | 'edge'; step: string }[];
 }
 
 export interface Privacy {
@@ -53,6 +71,7 @@ export interface Package {
   test: TestInstructions | null;
   notes: string[];
   blobs: Record<string, Blob>;
+  publish?: Publish;
 }
 
 export interface FileEntry {

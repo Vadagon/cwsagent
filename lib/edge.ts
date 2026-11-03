@@ -9,16 +9,17 @@
 // components whose fields sit in shadow roots.
 import { clean, sleep, waitFor } from './dashboard';
 import { DATA_TYPES } from './reader';
+import { store } from './store';
 import type { DataTypeKey, Package, PlanStep, RunContext } from './types';
 
-export type EdgeKind = 'properties' | 'privacy' | 'listings' | 'language' | 'other';
+export type EdgeKind = 'packages' | 'properties' | 'privacy' | 'listings' | 'language' | 'other';
 export interface EdgePage { kind: EdgeKind; productId: string | null; language: string | null }
 
 export function edgePage(): EdgePage {
   const m = location.pathname.match(/\/microsoftedge\/([0-9a-f]{8}-[0-9a-f-]{27})\/([^/]+)/i);
   const productId = m?.[1]?.toLowerCase() ?? null;
   const section = m?.[2] ?? '';
-  if (section === 'properties' || section === 'privacy') return { kind: section, productId, language: null };
+  if (section === 'packages' || section === 'properties' || section === 'privacy') return { kind: section, productId, language: null };
   if (section === 'listings') {
     const language = clean(document.querySelector('h1')?.textContent).match(/^Details for (.+)$/)?.[1] ?? null;
     return { kind: language ? 'language' : 'listings', productId, language };
@@ -37,6 +38,11 @@ const names = new Intl.DisplayNames(['en'], { type: 'language' });
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z()]/g, '');
 
 /** The package language for a Partner Center language name, if the package has one. */
+export function packageLanguage(pkg: Package, name: string): string | null {
+  const named = Object.entries(pkg.languages).find(([, l]) => l.edgeName && norm(l.edgeName) === norm(name));
+  return named?.[0] ?? languageCode(name, Object.keys(pkg.languages)) ?? (/^English/.test(name) && pkg.languages.en ? 'en' : null);
+}
+
 export function languageCode(name: string, codes: string[]): string | null {
   const alias = ALIASES[name.toLowerCase()];
   if (alias) return codes.find((c) => c.toLowerCase() === alias.toLowerCase() || c.split('_')[0] === alias) ?? null;
@@ -93,10 +99,12 @@ const EDGE_CATEGORIES: Record<string, string> = {
 };
 const categoryKey = (s: string) => s.toLowerCase().replace(/^category_(extensions_)?/, '').replace(/&/g, 'and').replace(/[^a-z]/g, '');
 
+const edgeCategory = (d: Package['details']) => d.edgeCategory ?? (d.category ? EDGE_CATEGORIES[categoryKey(d.category)] : undefined);
+
 export function planProperties(pkg: Package): PlanStep[] {
   const d = pkg.details;
   return [
-    d.category && { text: `Category → ${EDGE_CATEGORIES[categoryKey(d.category)] ?? `${d.category} (no Edge match)`}` },
+    d.category && { text: `Category → ${edgeCategory(d) ?? `${d.category} (no Edge match)`}` },
     d.homepageUrl && { text: 'Website' },
     d.supportUrl && { text: 'Support contact' },
     d.matureContent !== undefined && { text: 'Mature content' },
@@ -105,10 +113,10 @@ export function planProperties(pkg: Package): PlanStep[] {
 
 export async function fillProperties(ctx: RunContext, pkg: Package) {
   const d = pkg.details;
-  if (d.category) {
-    const want = EDGE_CATEGORIES[categoryKey(d.category)];
+  if (d.category || d.edgeCategory) {
+    const want = edgeCategory(d);
     const select = document.querySelector<HTMLSelectElement>('select');
-    const option = select && [...select.options].find((o) => clean(o.text).toLowerCase() === want?.toLowerCase());
+    const option = select && [...select.options].find((o) => categoryKey(clean(o.text)) === categoryKey(want ?? ''));
     if (!want) ctx.skip(`Category: “${d.category}” has no Edge category`);
     else if (!select || !option) ctx.fail(`Category: “${want}” not found`);
     else {
@@ -198,15 +206,16 @@ const MAX_SHOTS = 6;
 
 /** What the open language page would get from the package. */
 export function languageWork(pkg: Package, name: string) {
-  const code = languageCode(name, Object.keys(pkg.languages)) ?? (/^English/.test(name) ? 'en' : null);
+  const code = packageLanguage(pkg, name);
   const lang = code ? pkg.languages[code] : undefined;
   const images: Partial<Record<Slot, string[]>> = {};
-  if (pkg.images.icon) images.logo = [pkg.images.icon];
+  const logo = pkg.images.edgeLogo ?? pkg.images.icon;
+  if (logo) images.logo = [logo];
   if (pkg.images.smallTile) images.smallTile = [pkg.images.smallTile];
   if (pkg.images.marquee) images.marquee = [pkg.images.marquee];
   const shots = lang?.screenshots ?? pkg.images.screenshots;
   if (shots.length) images.screenshots = shots.slice(0, MAX_SHOTS);
-  return { code, description: lang?.description, video: lang?.promoVideo ?? pkg.details.promoVideo, images };
+  return { code, description: lang?.description, video: lang?.promoVideo ?? pkg.details.promoVideo, terms: lang?.searchTerms, images };
 }
 
 export function planLanguage(pkg: Package, name: string): PlanStep[] {
@@ -214,6 +223,7 @@ export function planLanguage(pkg: Package, name: string): PlanStep[] {
   return [
     w.description && { text: 'Description' },
     w.video && { text: 'YouTube video' },
+    w.terms && { text: `Search terms: ${w.terms.join(', ')}` },
     ...(Object.keys(w.images) as Slot[]).map((slot) => ({ text: `Replace ${SECTION[slot].toLowerCase()}`, destructive: true })),
   ].filter(Boolean) as PlanStep[];
 }
@@ -296,12 +306,168 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
     else await write(ctx, () => document.querySelector<HTMLTextAreaElement>('textarea[id*="description"]'), w.description, 'Description');
   }
   if (w.video) await write(ctx, () => field('input', 'YouTube video URL'), w.video, 'YouTube video');
+  if (w.terms) await addSearchTerms(ctx, w.terms);
   for (const slot of ['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]) {
     const paths = w.images[slot];
     if (!paths) continue;
     ctx.check();
     ctx.progress(`Uploading ${SECTION[slot].toLowerCase()}…`);
     await replaceImages(ctx, slot, paths, pkg.blobs);
+  }
+}
+
+// ---- Search terms ------------------------------------------------------------------
+
+/** The block under the "Search terms" title, with its inputs and the Add Term link. */
+function termsSection(): HTMLElement | null {
+  const title = [...document.querySelectorAll<HTMLElement>('b, strong, label, span, div, h2, h3')]
+    .find((el) => el.children.length === 0 && /^Search terms\b/i.test(clean(el.textContent)));
+  let box = title?.parentElement ?? null;
+  for (let i = 0; box && i < 6; i++, box = box.parentElement) {
+    if (box.querySelector('input[type="text"], input:not([type])')) return box;
+  }
+  return null;
+}
+const termInputs = (box: HTMLElement) => [...box.querySelectorAll<HTMLInputElement>('input[type="text"], input:not([type])')];
+const addTermLink = (box: HTMLElement) => [...box.querySelectorAll<HTMLElement>('a, button')].find((b) => /^Add term$/i.test(clean(b.textContent)));
+const termsNow = (box: HTMLElement) => {
+  const values = termInputs(box).map((i) => i.value.trim().toLowerCase()).filter(Boolean);
+  const lines = box.innerText.split('\n').map((l) => clean(l).toLowerCase());
+  return (t: string) => values.includes(t.toLowerCase()) || lines.includes(t.toLowerCase());
+};
+
+/** Adds the terms Partner Center doesn't show yet; existing terms are kept. */
+async function addSearchTerms(ctx: RunContext, terms: string[]) {
+  const box = termsSection();
+  if (!box) return ctx.fail('Search terms: section not found', terms.join('\n'));
+  let added = 0;
+  for (const term of terms) {
+    ctx.check();
+    if (termsNow(box)(term)) continue;
+    let input = termInputs(box).find((i) => !i.value.trim());
+    if (!input) {
+      const link = addTermLink(box);
+      if (!link) { ctx.fail(`Search terms: no room for “${term}”`, term); continue; }
+      link.click();
+      input = (await waitFor(() => termInputs(box).find((i) => !i.value.trim()), { timeout: 3000 })) ?? undefined;
+      if (!input) { ctx.fail(`Search terms: no field for “${term}”`, term); continue; }
+    }
+    setNative(input, term);
+    await sleep(80);
+    // Some layouts turn the typed term into a chip only after Add Term.
+    if (!termsNow(box)(term)) { addTermLink(box)?.click(); await sleep(300); }
+    if (termsNow(box)(term)) added++; else ctx.fail(`Search terms: “${term}” not kept`, term);
+  }
+  ctx.ok(`Search terms: ${added} added, ${terms.length - added} already there or failed`);
+}
+
+// ---- Package -------------------------------------------------------------------------
+
+/** Every element matching selector, including inside Partner Center's shadow roots. */
+function deepAll<T extends Element>(selector: string, root: Document | ShadowRoot | Element = document): T[] {
+  const out = [...root.querySelectorAll<T>(selector)];
+  for (const el of root.querySelectorAll('*')) if (el.shadowRoot) out.push(...deepAll<T>(selector, el.shadowRoot));
+  return out;
+}
+
+export const planPackage = (pkg: Package): PlanStep[] =>
+  pkg.publish?.packageZip ? [{ text: `Upload package${pkg.publish.version ? ` v${pkg.publish.version}` : ''}`, destructive: true }] : [];
+
+/** Puts the release ZIP into the Packages page's upload control. Partner Center then validates it. */
+export async function uploadPackage(ctx: RunContext, pkg: Package) {
+  const path = pkg.publish?.packageZip;
+  const blob = path && pkg.blobs[path];
+  if (!blob) return ctx.skip('No package ZIP in the drop');
+  const zipInput = () => deepAll<HTMLInputElement>('input[type="file"]').find((i) => !i.accept || /zip/i.test(i.accept));
+  if (!zipInput()) {
+    deepAll<HTMLElement>('button, a, v6_he-button').find((b) => /^(Replace|Upload( a)?( new)? package|Browse)/i.test(clean(b.textContent)))?.click();
+  }
+  const input = await waitFor(zipInput, { timeout: 8000 });
+  if (!input) return ctx.fail('Package: upload control not found; drop the ZIP on the page yourself');
+  const dt = new DataTransfer();
+  dt.items.add(new File([blob], path.split('/').pop()!, { type: 'application/zip' }));
+  input.files = dt.files;
+  input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+  input.dispatchEvent(new Event('change', { bubbles: true, composed: true }));
+  ctx.progress('Partner Center is validating the package…');
+  const done = await waitFor(() => /validat(ing|ion in progress)|uploading/i.test(document.body.innerText) ? null : true, { timeout: 180000, every: 2000 });
+  const error = deepAll<HTMLElement>('[role="alert"], .error, .ms-MessageBar--error').map((e) => clean(e.textContent)).find(Boolean);
+  if (error) ctx.fail(`Package: ${error}`);
+  else if (done) ctx.ok(`Package${pkg.publish?.version ? ` v${pkg.publish.version}` : ''} uploaded; check the languages and permissions it shows`);
+  else ctx.fail('Package: still validating after 3 minutes; check the page');
+}
+
+// ---- Every language, one after another ---------------------------------------------------
+
+const RUN_KEY = 'edge-run';
+interface RunState { productId: string; loadedAt: number; done: string[] }
+
+/** Languages on the Store listings table, with each row's Edit details control. */
+function listingRows() {
+  return [...document.querySelectorAll<HTMLElement>('a, button')]
+    .filter((b) => /^Edit details$/i.test(clean(b.textContent)))
+    .map((edit) => {
+      const row = edit.closest<HTMLElement>('tr, [role="row"]');
+      const cells = row ? [...row.querySelectorAll<HTMLElement>('td, th, [role="cell"], [role="gridcell"], [role="rowheader"]')] : [];
+      const name = cells.map((c) => clean(c.innerText)).find((t) => t && !/^(Edit details|Complete|Incomplete|In progress)$/i.test(t)) ?? '';
+      return { name, edit };
+    })
+    .filter((r) => r.name);
+}
+
+const pageButtonEdge = (text: RegExp) =>
+  deepAll<HTMLElement>('button, v6_he-button').find((b) => text.test(clean(b.textContent)) && !(b as HTMLButtonElement).disabled);
+
+export function planAllLanguages(pkg: Package): PlanStep[] {
+  const rows = listingRows();
+  const ours = rows.filter((r) => packageLanguage(pkg, r.name));
+  return [
+    { text: `${ours.length} of ${rows.length} languages: description, search terms, logo, tiles, screenshots`, destructive: true },
+    { text: 'Each language is saved as a draft (Save draft), then closed. Nothing is published.', warn: true },
+  ];
+}
+
+/**
+ * Opens every language on Store listings, fills it, presses Save draft and Close.
+ * Languages finished in an earlier run with the same drop are skipped, so pressing
+ * again after a stop carries on.
+ */
+export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId: string) {
+  const saved = await store.get<RunState>(RUN_KEY).catch(() => undefined);
+  const state: RunState = saved && saved.productId === productId && saved.loadedAt === pkg.loadedAt ? saved : { productId, loadedAt: pkg.loadedAt, done: [] };
+  const names = listingRows().map((r) => r.name);
+  if (!names.length) return ctx.fail('Store listings: no languages found');
+  for (const name of names) {
+    ctx.check();
+    if (state.done.includes(name)) { ctx.skip(`${name}: done earlier`); continue; }
+    if (!packageLanguage(pkg, name)) { ctx.skip(`${name}: not in the package`); continue; }
+    ctx.progress(`${name}: opening…`);
+    const row = await waitFor(() => listingRows().find((r) => r.name === name), { timeout: 20000 });
+    if (!row) { ctx.fail(`${name}: row not found`); continue; }
+    row.edit.click();
+    if (!(await waitFor(() => edgePage().kind === 'language' && edgePage().language === name, { timeout: 30000 }))) { ctx.fail(`${name}: details page didn't open`); continue; }
+    await sleep(800);
+    const before = ctx.records.filter((r) => r.status === 'fail').length;
+    await fillLanguage(ctx, pkg, name);
+    const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
+    const save = pageButtonEdge(/^Save draft$/i);
+    if (!save) { ctx.fail(`${name}: Save draft not found`); break; }
+    save.click();
+    await sleep(1500);
+    await waitFor(() => !/\bSaving\b/.test(document.body.innerText), { timeout: 30000 });
+    // Close sometimes ignores the first click right after saving.
+    let back = false;
+    for (let i = 0; i < 10 && !back; i++) {
+      pageButtonEdge(/^Close$/i)?.click();
+      back = !!(await waitFor(() => edgePage().kind === 'listings', { timeout: 3000 }));
+    }
+    if (!back) { ctx.fail(`${name}: saved, but the page didn't close`); break; }
+    if (!failed) {
+      state.done.push(name);
+      await store.set(RUN_KEY, state).catch(() => {});
+      ctx.ok(`${name}: saved as draft`);
+    } else ctx.info(`${name}: saved with problems above; it runs again next time`);
+    await sleep(800);
   }
 }
 
