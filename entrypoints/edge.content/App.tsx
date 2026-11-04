@@ -8,7 +8,7 @@ import { Icon, type IconName } from '../../components/Icon';
 import { Stopped } from '../../lib/dashboard';
 import {
   createButton, edgePage, fillAllLanguages, fillLanguage, findProduct, isOverview, listedProducts, fillPrivacy, fillProperties, planAllLanguages, planLanguage,
-  planPackage, planPrivacy, planProperties, SAVE_LABEL, uploadPackage, type EdgePage,
+  planPackage, planPrivacy, planProperties, SAVE_LABEL, saveLanguage, uploadPackage, type EdgePage,
 } from '../../lib/edge';
 import { buildPackage, filesFromDrop, filesFromInput, loadPackage, savePackage } from '../../lib/reader';
 import { NotFound } from '../../components/NotFound';
@@ -20,7 +20,7 @@ const PAGE_NAMES = { packages: 'Packages', properties: 'Properties', privacy: 'P
 type Fillable = 'packages' | 'properties' | 'privacy' | 'listings' | 'language';
 const fillable = (p: EdgePage): p is EdgePage & { kind: Fillable } => p.kind !== 'other';
 const pageName = (p: EdgePage & { kind: Fillable }) => (p.kind === 'language' ? p.language! : PAGE_NAMES[p.kind]);
-const AFTER: Record<Fillable, string> = { ...SAVE_LABEL, packages: 'Save & Continue', listings: 'Review, then Publish yourself' };
+const AFTER: Record<Fillable, string> = { ...SAVE_LABEL, language: 'Saved as draft', packages: 'Save & Continue', listings: 'Review, then Publish yourself' };
 
 function plan(pkg: Package, page: EdgePage & { kind: Fillable }): PlanStep[] {
   if (page.kind === 'packages') return planPackage(pkg);
@@ -154,7 +154,7 @@ export default function App() {
       else if (page.kind === 'properties') await fillProperties(ctx, pkg);
       else if (page.kind === 'privacy') await fillPrivacy(ctx, pkg);
       else if (page.kind === 'listings') await fillAllLanguages(ctx, pkg, page.productId!);
-      else await fillLanguage(ctx, pkg, page.language!);
+      else { await fillLanguage(ctx, pkg, page.language!); await saveLanguage(ctx, page.language!); }
     } catch (e) {
       if (!(e instanceof Stopped)) ctx.fail(`Unexpected error: ${(e as Error).message}`);
     }
@@ -182,7 +182,7 @@ export default function App() {
   else if (confirm) {
     status = confirm.filter((s) => s.destructive || s.warn).map((s) => s.text.replace(/^Replace /, '')).join(', ');
     tone = 'bad'; icon = 'error';
-    const label = page.kind === 'listings' ? 'Fill & save drafts' : page.kind === 'packages' ? 'Upload' : 'Replace';
+    const label = page.kind === 'listings' ? 'Fill & save drafts' : page.kind === 'packages' ? 'Upload' : page.kind === 'language' ? 'Replace & save' : 'Replace';
     main = <><button className="btn danger" onClick={run}><Icon name="autofill" /><span>{label}</span></button><button className="btn ghost" onClick={() => setConfirm(null)}><span>Cancel</span></button></>;
   } else if (result) { status = result.text; tone = result.tone ?? ''; icon = tone === 'bad' ? 'error' : 'check'; }
   else if (local && pkg) {

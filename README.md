@@ -111,7 +111,7 @@ Partner Center doesn't block extensions, so no publishing window is needed there
 
 1. In the popup, press **Edge** next to an extension. The first time, CWSAgent looks for it by name in Partner Center, links it and opens it. If it isn't there, a dialog offers **Create new listing** (upload the package; CWSAgent links the new extension) or **Choose it myself** (open it, then press **Link**).
 2. The panel syncs the listing from Extension Tower. Open **Properties**, **Privacy** or a language's **Edit details** under Store listings and press **Autofill**.
-3. Review and press **Save & Continue** or **Save draft** yourself. Partner Center saves each language separately.
+3. Review and press **Save & Continue** yourself on Properties and Privacy. On a language page, Autofill replaces the images, writes the description last and presses **Save draft**: Partner Center saves each language separately.
 
 On Edge, images belong to each language, uploads are PNG (converted when needed), up to 6 screenshots are used, and descriptions over 10,000 characters are reported, not cut. Edge asks descriptions not to mention other browsers; the panel points it out.
 
@@ -127,7 +127,7 @@ A card sits under the heading of each item's Store listing, Privacy and Test ins
 | Autofill a package | Drop a ZIP or folder on the card, or choose one → **Autofill** on each tab → **Save draft** |
 | Extract | **Settings** → **Extract** → tick what to save → **Extract** → ZIP lands in Downloads |
 
-CWSAgent never saves, submits, ticks certifications or changes visibility. (The Edge all-languages run is the one exception to saving: it presses Save draft per language after you confirm.)
+CWSAgent never saves, submits, ticks certifications or changes visibility. (On Edge, a language page's Autofill and the all-languages run are the exception to saving: they press Save draft for each language after you confirm.)
 
 ## Development
 

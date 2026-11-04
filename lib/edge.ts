@@ -225,6 +225,7 @@ export function planLanguage(pkg: Package, name: string): PlanStep[] {
     w.video && { text: 'YouTube video' },
     w.terms && { text: `Search terms: ${w.terms.join(', ')}` },
     ...(Object.keys(w.images) as Slot[]).map((slot) => ({ text: `Replace ${SECTION[slot].toLowerCase()}`, destructive: true })),
+    { text: 'Save draft', warn: true },
   ].filter(Boolean) as PlanStep[];
 }
 
@@ -344,16 +345,6 @@ async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs:
 export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) {
   const w = languageWork(pkg, name);
   if (!w.code) return ctx.skip(`${name}: not in the package`);
-  if (w.description) {
-    if (/\bChrome\b/.test(w.description)) ctx.info('The description mentions Chrome; Edge asks not to reference other browsers.');
-    if (w.description.length > 10000) ctx.fail(`Description: ${w.description.length} characters, Edge allows 10,000`, w.description);
-    else {
-      // The page fills its own saved text in after it opens; write only once that settled.
-      await waitFor(description, { timeout: 15000 });
-      await sleep(1000);
-      await write(ctx, description, w.description, 'Description');
-    }
-  }
   if (w.video) await write(ctx, () => field('input', 'YouTube video URL'), w.video, 'YouTube video');
   if (w.terms) await addSearchTerms(ctx, w.terms);
   // Clear every section first, then start all uploads together and wait for them.
@@ -366,10 +357,26 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
   const count = ready.reduce((n, slot) => n + w.images[slot]!.length, 0);
   if (count) ctx.progress(`Uploading ${count} images…`);
   await Promise.all(ready.map((slot) => uploadImages(ctx, slot, w.images[slot]!, pkg.blobs)));
-  if (w.description && w.description.length <= 10000 && description()?.value !== w.description) {
-    ctx.info('Description was reset by the page; writing it again');
-    await write(ctx, description, w.description, 'Description');
+  // Last, so nothing the page re-renders during uploads can reset it.
+  if (w.description) {
+    if (/\bChrome\b/.test(w.description)) ctx.info('The description mentions Chrome; Edge asks not to reference other browsers.');
+    if (w.description.length > 10000) ctx.fail(`Description: ${w.description.length} characters, Edge allows 10,000`, w.description);
+    else {
+      await waitFor(description, { timeout: 15000 });
+      await sleep(500);
+      await write(ctx, description, w.description, 'Description');
+    }
   }
+}
+
+/** Presses Save draft on a language page and waits for the save to finish. */
+export async function saveLanguage(ctx: RunContext, name: string) {
+  const save = pageButtonEdge(/^Save draft$/i);
+  if (!save) { ctx.fail(`${name}: Save draft not found`); return false; }
+  save.click();
+  await sleep(1500);
+  await waitFor(() => !/\bSaving\b/.test(document.body.innerText), { timeout: 30000 });
+  return true;
 }
 
 const description = () => document.querySelector<HTMLTextAreaElement>('textarea[id*="description"]');
@@ -512,11 +519,7 @@ export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId:
     const before = ctx.records.filter((r) => r.status === 'fail').length;
     await fillLanguage(ctx, pkg, name);
     const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
-    const save = pageButtonEdge(/^Save draft$/i);
-    if (!save) { ctx.fail(`${name}: Save draft not found`); break; }
-    save.click();
-    await sleep(1500);
-    await waitFor(() => !/\bSaving\b/.test(document.body.innerText), { timeout: 30000 });
+    if (!(await saveLanguage(ctx, name))) break;
     // Close sometimes ignores the first click right after saving.
     let back = false;
     for (let i = 0; i < 10 && !back; i++) {
