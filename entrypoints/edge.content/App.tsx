@@ -190,7 +190,7 @@ export default function App() {
     else if (fillable(page) && !plan(pkg, page).length) status = `Nothing to autofill on ${pageName(page)}`;
     else if (fillable(page)) {
       status = <><b>{pkg.name}</b> · {pageName(page)} ready</>;
-      const label = page.kind === 'packages' ? 'Upload package' : page.kind === 'listings' ? 'Fill all languages' : 'Autofill';
+      const label = page.kind === 'packages' ? 'Upload package' : page.kind === 'listings' ? 'Fill all languages' : page.kind === 'language' ? `Fill ${page.language}` : 'Autofill';
       main = <button className="btn" onClick={requestRun}><Icon name={page.kind === 'packages' ? 'upload' : 'autofill'} /><span>{label}</span></button>;
     }
   }
