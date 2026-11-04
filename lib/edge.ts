@@ -379,13 +379,82 @@ async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs:
   else if (!ok) ctx.fail(`${label}: ${placed} of ${files.length} uploaded`);
 }
 
-export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) {
+// ---- Duplicate for all languages -------------------------------------------------------
+
+/**
+ * Sections whose images are the same for every package language: logo and tiles always,
+ * screenshots only when no language has its own. Those can be set once and duplicated.
+ */
+export function sharedSlots(pkg: Package, names: string[]): Slot[] {
+  const works = names.map((n) => languageWork(pkg, n)).filter((w) => w.code);
+  if (works.length < 2) return [];
+  return (['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]).filter((slot) => {
+    const first = works[0]!.images[slot]?.join('\n');
+    return !!first && works.every((w) => w.images[slot]?.join('\n') === first);
+  });
+}
+
+/** Partner Center's "Duplicate this … for all languages" control in a section. */
+function duplicateControl(slot: Slot): HTMLElement | null {
+  const box = section(slot);
+  if (!box) return null;
+  const re = /duplicate\b.*\ball languages/i;
+  const text = (el: Element) => clean((el as HTMLElement).innerText || el.textContent || el.getAttribute('aria-label') || '');
+  const hits = deepAll<HTMLElement>('input[type="checkbox"], [role="checkbox"], mat-checkbox, v6_he-checkbox, label, button, a, v6_he-button, [role="button"]', box)
+    .filter((el) => re.test(text(el)) || re.test(el.getAttribute('aria-label') ?? '') || (el.id && re.test(text(document.querySelector(`label[for="${CSS.escape(el.id)}"]`) ?? el))));
+  // Prefer the checkbox itself over its label.
+  return hits.find((el) => el.matches('input[type="checkbox"], [role="checkbox"], mat-checkbox, v6_he-checkbox'))
+    ?? hits.find((el) => el.querySelector('input[type="checkbox"], [role="checkbox"]'))?.querySelector<HTMLElement>('input[type="checkbox"], [role="checkbox"]')
+    ?? hits[0] ?? null;
+}
+
+const dupChecked = (el: HTMLElement) =>
+  el instanceof HTMLInputElement ? el.checked : isChecked(el) || el.classList.contains('mat-checkbox-checked') || el.classList.contains('mat-mdc-checkbox-checked');
+
+/** Turns on or presses a section's Duplicate for all languages, confirming any dialog it opens. */
+async function duplicateForAll(ctx: RunContext, slot: Slot) {
+  const label = SECTION[slot];
+  const control = await waitFor(() => duplicateControl(slot), { timeout: 5000 });
+  if (!control) { ctx.info(`${label}: no “Duplicate for all languages” control; uploading per language`); return false; }
+  const checkbox = control.matches('input[type="checkbox"], [role="checkbox"], mat-checkbox, v6_he-checkbox');
+  if (checkbox && dupChecked(control)) { ctx.ok(`${label}: duplicated for all languages`); return true; }
+  for (const type of ['mousedown', 'mouseup']) control.dispatchEvent(new MouseEvent(type, { bubbles: true, composed: true }));
+  control.click();
+  const shown = (el: Element) => (el as HTMLElement).getClientRects().length > 0;
+  const ok = await waitFor(() => {
+    const dialogs = deepAll<HTMLElement>('[role="dialog"], [role="alertdialog"], dialog, [aria-modal="true"], mat-dialog-container').filter(shown);
+    return dialogs.flatMap((d) => deepAll<HTMLElement>('button, [role="button"], v6_he-button', d)).filter(shown)
+      .find((b) => /^(confirm|duplicate|continue|ok|yes|replace|apply)$/i.test(clean(b.innerText || b.textContent))) ?? null;
+  }, { timeout: 3000 });
+  if (ok) {
+    for (const type of ['mousedown', 'mouseup']) ok.dispatchEvent(new MouseEvent(type, { bubbles: true, composed: true }));
+    ok.click();
+    await sleep(800);
+  }
+  if (checkbox && !(await waitFor(() => dupChecked(control) || null, { timeout: 3000 }))) {
+    ctx.fail(`${label}: “Duplicate for all languages” didn't stay on; uploading per language`);
+    return false;
+  }
+  ctx.ok(`${label}: duplicated for all languages`);
+  return true;
+}
+
+export interface LanguageOptions {
+  /** Sections already duplicated from another language: left as they are. */
+  skip?: Slot[];
+  /** Sections to duplicate to every language after uploading here. */
+  duplicate?: Slot[];
+}
+
+/** Fills one language. Returns the sections it duplicated for all languages. */
+export async function fillLanguage(ctx: RunContext, pkg: Package, name: string, opts: LanguageOptions = {}): Promise<Slot[]> {
   const w = languageWork(pkg, name);
-  if (!w.code) return ctx.skip(`${name}: not in the package`);
+  if (!w.code) { ctx.skip(`${name}: not in the package`); return []; }
   if (w.video) await write(ctx, () => field('input', 'YouTube video URL'), w.video, 'YouTube video');
   if (w.terms) await addSearchTerms(ctx, w.terms);
   // Clear every section first, then start all uploads together and wait for them.
-  const slots = (['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]).filter((slot) => w.images[slot]);
+  const slots = (['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]).filter((slot) => w.images[slot] && !opts.skip?.includes(slot));
+  for (const slot of opts.skip ?? []) if (w.images[slot]) ctx.skip(`${SECTION[slot]}: duplicated from the first language`);
   const ready: Slot[] = [];
   for (const slot of slots) {
     ctx.check();
@@ -396,6 +465,11 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
   await Promise.all(ready.map((slot) => uploadImages(ctx, slot, w.images[slot]!, pkg.blobs)));
   // Late-rendering saved images or a doubled upload can leave extras: trim to the expected count.
   for (const slot of ready) { ctx.check(); await trimImages(ctx, slot, w.images[slot]!.filter((p) => pkg.blobs[p]).length); }
+  const duplicated: Slot[] = [];
+  for (const slot of ready.filter((s) => opts.duplicate?.includes(s))) {
+    ctx.check();
+    if (await duplicateForAll(ctx, slot)) duplicated.push(slot);
+  }
   // Last, so nothing the page re-renders during uploads can reset it.
   if (w.description) {
     if (/\bChrome\b/.test(w.description)) ctx.info('The description mentions Chrome; Edge asks not to reference other browsers.');
@@ -406,6 +480,7 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
       await write(ctx, description, w.description, 'Description');
     }
   }
+  return duplicated;
 }
 
 /** Presses Save draft on a language page and waits for the save to finish. */
@@ -511,7 +586,7 @@ export async function uploadPackage(ctx: RunContext, pkg: Package) {
 // ---- Every language, one after another ---------------------------------------------------
 
 const RUN_KEY = 'edge-run';
-interface RunState { productId: string; loadedAt: number; done: string[] }
+interface RunState { productId: string; loadedAt: number; done: string[]; duplicated?: Slot[] }
 
 /** Languages on the Store listings table, with each row's Edit details control. */
 function listingRows() {
@@ -541,6 +616,7 @@ export function planAllLanguages(pkg: Package): PlanStep[] {
   const ours = rows.filter((r) => packageLanguage(pkg, r.name));
   return [
     { text: `${ours.length} of ${rows.length} languages: description, search terms, logo, tiles, screenshots`, destructive: true },
+    ...(() => { const shared = sharedSlots(pkg, ours.map((r) => r.name)); return shared.length ? [{ text: `${shared.map((s) => SECTION[s].toLowerCase()).join(', ')}: uploaded once, then Duplicate for all languages` }] : []; })(),
     { text: 'Each language is saved as a draft, then closed. Failed or Incomplete languages are filled again, up to 3 passes. Nothing is published.', warn: true },
   ];
 }
@@ -591,6 +667,9 @@ export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId:
   for (const r of rows) if (!packageLanguage(pkg, r.name)) ctx.skip(`${r.name}: not in the package`);
   const names = rows.map((r) => r.name).filter((name) => packageLanguage(pkg, name));
   const base = ctx;
+  // Logo, tiles and (when not localized) screenshots: upload once, then Duplicate for all languages.
+  const shared = sharedSlots(pkg, names);
+  let triedDuplicate = false;
   for (let pass = 1; pass <= MAX_PASSES; pass++) {
     // Done means filled without problems here and shown Complete on the table.
     const incomplete = new Set(listingRows().filter((r) => r.incomplete).map((r) => r.name));
@@ -605,9 +684,13 @@ export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId:
       if (!(await openLanguage(ctx, name))) { ctx.fail(`${name}: details page didn't open`); continue; }
       await sleep(800);
       const before = ctx.records.filter((r) => r.status === 'fail').length;
-      await fillLanguage(ctx, pkg, name);
+      const done = state.duplicated ?? [];
+      const toDuplicate = triedDuplicate ? [] : shared.filter((slot) => !done.includes(slot));
+      if (toDuplicate.length) triedDuplicate = true;
+      const duplicated = await fillLanguage(ctx, pkg, name, { skip: done, duplicate: toDuplicate });
       const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
       if (!(await saveLanguage(ctx, name))) return;
+      if (duplicated.length) { state.duplicated = [...done, ...duplicated]; await store.set(RUN_KEY, state).catch(() => {}); }
       if (!(await closeLanguage())) { ctx.fail(`${name}: saved, but the page didn't close`); return; }
       state.done = state.done.filter((n) => n !== name);
       if (!failed) {
