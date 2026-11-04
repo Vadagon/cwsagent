@@ -262,39 +262,52 @@ async function asPng(blob: Blob, name: string) {
   return { file: new File([await canvas.convertToBlob({ type: 'image/png' })], name.replace(/\.jpe?g$/i, '.png'), { type: 'image/png' }), ...size };
 }
 
-async function replaceImages(ctx: RunContext, slot: Slot, paths: string[], blobs: Record<string, Blob>) {
-  const label = SECTION[slot];
+/** Removes a section's current images, one at a time: each delete may ask to confirm. */
+async function clearImages(ctx: RunContext, slot: Slot) {
   const find = () => section(slot);
-  if (!find()) return ctx.fail(`${label}: section not found`);
+  if (!find()) { ctx.fail(`${SECTION[slot]}: section not found`); return false; }
   for (let guard = 0; guard < MAX_SHOTS + 2; guard++) {
     const box = find();
     const btn = box && deleteButtons(box)[0];
-    if (!btn) break;
+    if (!btn) return true;
     const before = deleteButtons(box).length;
     btn.click();
     await confirmIfAsked();
     if (!(await waitFor(() => deleteButtons(find()).length < before, { timeout: 8000 }))) {
-      return ctx.fail(`${label}: couldn't remove an existing image`);
+      ctx.fail(`${SECTION[slot]}: couldn't remove an existing image`);
+      return false;
     }
   }
-  let placed = 0;
-  for (const path of paths) {
-    ctx.check();
-    const blob = blobs[path];
-    if (!blob) { ctx.fail(`${label}: ${path} missing from the package`); continue; }
+  return true;
+}
+
+/**
+ * Hands a section all of its files, in one go when its control takes several,
+ * then waits for Partner Center to show them. Sections upload side by side.
+ */
+async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs: Record<string, Blob>) {
+  const label = SECTION[slot];
+  const find = () => section(slot);
+  const missing = paths.filter((p) => !blobs[p]);
+  for (const p of missing) ctx.fail(`${label}: ${p} missing from the package`);
+  const files = await Promise.all(paths.filter((p) => blobs[p]).map((p) => asPng(blobs[p]!, p.split('/').pop()!).then((i) => i.file)));
+  const send = async (batch: File[]) => {
     const input = await waitFor(() => find()?.querySelector<HTMLInputElement>('input[type="file"]'), { timeout: 8000 });
-    if (!input) { ctx.fail(`${label}: no upload control`); break; }
-    const img = await asPng(blob, path.split('/').pop()!);
+    if (!input) return false;
     const before = deleteButtons(find()).length;
     const dt = new DataTransfer();
-    dt.items.add(img.file);
+    for (const f of batch) dt.items.add(f);
     input.files = dt.files;
     input.dispatchEvent(new Event('change', { bubbles: true }));
-    if (await waitFor(() => deleteButtons(find()).length > before, { timeout: 60000, every: 300 })) placed++;
-    else ctx.fail(`${label}: ${img.file.name} did not upload`);
-    await sleep(300);
-  }
-  if (placed === paths.length) ctx.ok(`${label}: ${placed} image${placed > 1 ? 's' : ''}`);
+    return !!(await waitFor(() => deleteButtons(find()).length >= before + batch.length, { timeout: 120000, every: 300 }));
+  };
+  const input = find()?.querySelector<HTMLInputElement>('input[type="file"]');
+  let ok = true;
+  if (input?.multiple || files.length === 1) ok = await send(files);
+  else for (const f of files) { ctx.check(); if (!(await send([f]))) { ok = false; break; } }
+  const placed = deleteButtons(find()).length;
+  if (ok && !missing.length) ctx.ok(`${label}: ${placed} image${placed > 1 ? 's' : ''}`);
+  else if (!ok) ctx.fail(`${label}: ${placed} of ${files.length} uploaded`);
 }
 
 export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) {
@@ -307,13 +320,17 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
   }
   if (w.video) await write(ctx, () => field('input', 'YouTube video URL'), w.video, 'YouTube video');
   if (w.terms) await addSearchTerms(ctx, w.terms);
-  for (const slot of ['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]) {
-    const paths = w.images[slot];
-    if (!paths) continue;
+  // Clear every section first, then start all uploads together and wait for them.
+  const slots = (['logo', 'smallTile', 'screenshots', 'marquee'] as Slot[]).filter((slot) => w.images[slot]);
+  const ready: Slot[] = [];
+  for (const slot of slots) {
     ctx.check();
-    ctx.progress(`Uploading ${SECTION[slot].toLowerCase()}…`);
-    await replaceImages(ctx, slot, paths, pkg.blobs);
+    if (await clearImages(ctx, slot)) ready.push(slot);
   }
+  if (!ready.length) return;
+  const count = ready.reduce((n, slot) => n + w.images[slot]!.length, 0);
+  ctx.progress(`Uploading ${count} images…`);
+  await Promise.all(ready.map((slot) => uploadImages(ctx, slot, w.images[slot]!, pkg.blobs)));
 }
 
 // ---- Search terms ------------------------------------------------------------------
