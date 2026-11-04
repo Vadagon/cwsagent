@@ -295,22 +295,59 @@ async function asPng(blob: Blob, name: string) {
 }
 
 /** Removes a section's current images, one at a time: each delete may ask to confirm. */
+/** Waits until a section's image count stops changing, so late-loading saved images are counted. */
+async function settledCount(slot: Slot, quietMs = 1500, maxMs = 8000) {
+  let last = -1, since = Date.now();
+  const end = Date.now() + maxMs;
+  while (Date.now() < end) {
+    const n = deleteButtons(section(slot)).length;
+    if (n !== last) { last = n; since = Date.now(); }
+    else if (Date.now() - since >= quietMs) break;
+    await sleep(250);
+  }
+  return Math.max(last, 0);
+}
+
+/** Deletes one image (the first, or the one at index) and confirms the dialog. */
+async function deleteOne(slot: Slot, index = 0) {
+  const box = section(slot);
+  const buttons = deleteButtons(box);
+  const btn = buttons[index];
+  if (!btn) return false;
+  btn.click();
+  await confirmIfAsked();
+  return !!(await waitFor(() => deleteButtons(section(slot)).length < buttons.length, { timeout: 8000 }));
+}
+
 async function clearImages(ctx: RunContext, slot: Slot) {
-  const find = () => section(slot);
-  if (!find()) { ctx.fail(`${SECTION[slot]}: section not found`); return false; }
-  for (let guard = 0; guard < MAX_SHOTS + 2; guard++) {
-    const box = find();
-    const btn = box && deleteButtons(box)[0];
-    if (!btn) return true;
-    const before = deleteButtons(box).length;
-    btn.click();
-    await confirmIfAsked();
-    if (!(await waitFor(() => deleteButtons(find()).length < before, { timeout: 8000 }))) {
+  if (!section(slot)) { ctx.fail(`${SECTION[slot]}: section not found`); return false; }
+  // Saved images can render a moment after the page opens: count them once they settle.
+  await settledCount(slot);
+  for (let guard = 0; guard < MAX_SHOTS + 4; guard++) {
+    if (!deleteButtons(section(slot)).length) {
+      // Make sure none appeared late before uploading.
+      if (!(await settledCount(slot, 1000, 3000))) return true;
+      continue;
+    }
+    if (!(await deleteOne(slot))) {
       ctx.fail(`${SECTION[slot]}: couldn't remove an existing image`);
       return false;
     }
   }
-  return true;
+  return !deleteButtons(section(slot)).length;
+}
+
+/** Removes images beyond the expected count, oldest first, so a section never ends up with extras. */
+async function trimImages(ctx: RunContext, slot: Slot, expected: number) {
+  let n = await settledCount(slot);
+  let removed = 0;
+  while (n > expected) {
+    if (!(await deleteOne(slot, 0))) break;
+    removed++;
+    n = deleteButtons(section(slot)).length;
+  }
+  if (removed) ctx.info(`${SECTION[slot]}: removed ${removed} extra image${removed > 1 ? 's' : ''}`);
+  if (n > expected) ctx.fail(`${SECTION[slot]}: ${n} images, expected ${expected}`);
 }
 
 /**
@@ -337,7 +374,7 @@ async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs:
   let ok = true;
   if (input?.multiple || files.length === 1) ok = await send(files);
   else for (const f of files) { ctx.check(); if (!(await send([f]))) { ok = false; break; } }
-  const placed = deleteButtons(find()).length;
+  const placed = await settledCount(slot, 1000, 4000);
   if (ok && !missing.length) ctx.ok(`${label}: ${placed} image${placed > 1 ? 's' : ''}`);
   else if (!ok) ctx.fail(`${label}: ${placed} of ${files.length} uploaded`);
 }
@@ -357,6 +394,8 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
   const count = ready.reduce((n, slot) => n + w.images[slot]!.length, 0);
   if (count) ctx.progress(`Uploading ${count} images…`);
   await Promise.all(ready.map((slot) => uploadImages(ctx, slot, w.images[slot]!, pkg.blobs)));
+  // Late-rendering saved images or a doubled upload can leave extras: trim to the expected count.
+  for (const slot of ready) { ctx.check(); await trimImages(ctx, slot, w.images[slot]!.filter((p) => pkg.blobs[p]).length); }
   // Last, so nothing the page re-renders during uploads can reset it.
   if (w.description) {
     if (/\bChrome\b/.test(w.description)) ctx.info('The description mentions Chrome; Edge asks not to reference other browsers.');
