@@ -417,12 +417,18 @@ async function addSearchTerms(ctx: RunContext, terms: string[]) {
       input = (await waitFor(() => termInputs(box).find((i) => !i.value.trim()), { timeout: 3000 })) ?? undefined;
       if (!input) { ctx.fail(`Search terms: no field for “${term}”`, term); continue; }
     }
-    setNative(input, term);
-    await sleep(80);
     // Partner Center keeps a typed term only once Add Term is pressed, the last one included.
-    const link = addTermLink(box);
-    if (link) { link.click(); await sleep(300); }
-    if (termsNow(box)(term)) added++; else ctx.fail(`Search terms: “${term}” not kept`, term);
+    // Angular sometimes misses the first input event, so type and press again once.
+    let kept = false;
+    for (let attempt = 0; attempt < 2 && !kept; attempt++) {
+      setNative(input, term);
+      await sleep(attempt ? 400 : 120);
+      const link = addTermLink(box);
+      if (link) { link.click(); await sleep(attempt ? 800 : 300); }
+      kept = termsNow(box)(term);
+      if (!kept) input = termInputs(box).find((i) => !i.value.trim() || i.value.trim() === term) ?? input;
+    }
+    if (kept) added++; else ctx.fail(`Search terms: “${term}” not kept`, term);
   }
   ctx.ok(`Search terms: ${added} added, ${terms.length - added} already there or failed`);
 }
@@ -475,8 +481,12 @@ function listingRows() {
     .map((edit) => {
       const row = edit.closest<HTMLElement>('tr, [role="row"]');
       const cells = row ? [...row.querySelectorAll<HTMLElement>('td, th, [role="cell"], [role="gridcell"], [role="rowheader"]')] : [];
-      const name = cells.map((c) => clean(c.innerText)).find((t) => t && !/^(Edit details|Complete|Incomplete|In progress)$/i.test(t)) ?? '';
-      return { name, edit };
+      const texts = cells.map((c) => clean(c.innerText));
+      const name = texts.find((t) => t && !/^(Edit details|Complete|Incomplete|In progress)$/i.test(t)) ?? '';
+      // The status cell carries an icon, so read the row's text rather than an exact cell.
+      const rowText = clean(row?.innerText);
+      const incomplete = /\b(Incomplete|In progress)\b/i.test(rowText);
+      return { name, edit, incomplete, complete: !incomplete && /\bComplete\b/i.test(rowText) };
     })
     .filter((r) => r.name);
 }
@@ -492,55 +502,86 @@ export function planAllLanguages(pkg: Package): PlanStep[] {
   const ours = rows.filter((r) => packageLanguage(pkg, r.name));
   return [
     { text: `${ours.length} of ${rows.length} languages: description, search terms, logo, tiles, screenshots`, destructive: true },
-    { text: 'Each language is saved as a draft (Save draft), then closed. Nothing is published.', warn: true },
+    { text: 'Each language is saved as a draft, then closed. Failed or Incomplete languages are filled again, up to 3 passes. Nothing is published.', warn: true },
   ];
 }
 
+/** Opens one language's details page from Store listings, retrying when Partner Center doesn't go there. */
+async function openLanguage(ctx: RunContext, name: string) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    ctx.check();
+    // Edit details navigates relative to the listings route: press it only once
+    // Partner Center has fully settled back on Store listings.
+    const row = await waitFor(() => onListings() && listingRows().find((r) => r.name === name), { timeout: 20000 });
+    if (!row) {
+      if (edgePage().kind === 'language') await closeLanguage();
+      continue;
+    }
+    await sleep(1000 * attempt);
+    row.edit.click();
+    if (await waitFor(() => edgePage().kind === 'language' && edgePage().language === name, { timeout: 30000 })) return true;
+    ctx.progress(`${name}: details page didn't open, trying again (${attempt + 1}/3)…`);
+    // A wrong language page or a half-loaded one: go back to the list first.
+    if (edgePage().kind === 'language') await closeLanguage();
+  }
+  return false;
+}
+
+/** Presses Close until Store listings shows again. Close sometimes ignores the first click after saving. */
+async function closeLanguage() {
+  for (let i = 0; i < 6; i++) {
+    if (edgePage().kind === 'language') pageButtonEdge(/^Close$/i)?.click();
+    if (await waitFor(() => onListings() && listingRows().length > 0, { timeout: 10000 })) return true;
+  }
+  return false;
+}
+
+const MAX_PASSES = 3;
+
 /**
  * Opens every language on Store listings, fills it, presses Save draft and Close.
- * Languages finished in an earlier run with the same drop are skipped, so pressing
- * again after a stop carries on.
+ * Then goes round again for any language that failed or that Partner Center still
+ * marks Incomplete, up to three passes. Languages finished earlier with the same
+ * drop are skipped unless the table shows them Incomplete.
  */
 export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId: string) {
   const saved = await store.get<RunState>(RUN_KEY).catch(() => undefined);
   const state: RunState = saved && saved.productId === productId && saved.loadedAt === pkg.loadedAt ? saved : { productId, loadedAt: pkg.loadedAt, done: [] };
-  const rows = listingRows().map((r) => r.name);
+  const rows = listingRows();
   if (!rows.length) return ctx.fail('Store listings: no languages found');
-  for (const name of rows) if (!packageLanguage(pkg, name)) ctx.skip(`${name}: not in the package`);
-  const names = rows.filter((name) => packageLanguage(pkg, name));
+  for (const r of rows) if (!packageLanguage(pkg, r.name)) ctx.skip(`${r.name}: not in the package`);
+  const names = rows.map((r) => r.name).filter((name) => packageLanguage(pkg, name));
   const base = ctx;
-  for (const [i, name] of names.entries()) {
-    ctx.check();
-    if (state.done.includes(name)) { ctx.skip(`${name}: done earlier`); continue; }
-    ctx = withCount(base, `${i + 1}/${names.length} languages`);
-    ctx.progress(`${name}: opening…`);
-    // Edit details navigates relative to the listings route: press it only once
-    // Partner Center has fully settled back on Store listings.
-    const row = await waitFor(() => onListings() && listingRows().find((r) => r.name === name), { timeout: 20000 });
-    if (!row) { ctx.fail(`${name}: row not found`); continue; }
-    await sleep(1000);
-    row.edit.click();
-    if (!(await waitFor(() => edgePage().kind === 'language' && edgePage().language === name, { timeout: 30000 }))) { ctx.fail(`${name}: details page didn't open`); continue; }
-    await sleep(800);
-    const before = ctx.records.filter((r) => r.status === 'fail').length;
-    await fillLanguage(ctx, pkg, name);
-    const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
-    if (!(await saveLanguage(ctx, name))) break;
-    // Close sometimes ignores the first click right after saving; press it again
-    // only while the details page is still showing, never on the list.
-    let back = false;
-    for (let i = 0; i < 6 && !back; i++) {
-      if (edgePage().kind === 'language') pageButtonEdge(/^Close$/i)?.click();
-      back = !!(await waitFor(() => onListings() && listingRows().length > 0, { timeout: 10000 }));
-    }
-    if (!back) { ctx.fail(`${name}: saved, but the page didn't close`); break; }
-    if (!failed) {
-      state.done.push(name);
+  for (let pass = 1; pass <= MAX_PASSES; pass++) {
+    // Done means filled without problems here and shown Complete on the table.
+    const incomplete = new Set(listingRows().filter((r) => r.incomplete).map((r) => r.name));
+    const todo = names.filter((name) => !state.done.includes(name) || incomplete.has(name));
+    if (!todo.length) break;
+    if (pass === 1) { for (const name of names) if (!todo.includes(name)) ctx.skip(`${name}: done earlier`); }
+    else ctx.info(`Pass ${pass}: filling ${todo.length} incomplete or failed language${todo.length === 1 ? '' : 's'} again`);
+    for (const [i, name] of todo.entries()) {
+      ctx.check();
+      ctx = withCount(base, `${pass > 1 ? `Pass ${pass} · ` : ''}${i + 1}/${todo.length} languages`);
+      ctx.progress(`${name}: opening…`);
+      if (!(await openLanguage(ctx, name))) { ctx.fail(`${name}: details page didn't open`); continue; }
+      await sleep(800);
+      const before = ctx.records.filter((r) => r.status === 'fail').length;
+      await fillLanguage(ctx, pkg, name);
+      const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
+      if (!(await saveLanguage(ctx, name))) return;
+      if (!(await closeLanguage())) { ctx.fail(`${name}: saved, but the page didn't close`); return; }
+      state.done = state.done.filter((n) => n !== name);
+      if (!failed) {
+        state.done.push(name);
+        ctx.ok(`${name}: saved as draft`);
+      } else ctx.info(`${name}: saved with problems above; tried again in the next pass`);
       await store.set(RUN_KEY, state).catch(() => {});
-      ctx.ok(`${name}: saved as draft`);
-    } else ctx.info(`${name}: saved with problems above; it runs again next time`);
-    await sleep(800);
+      await sleep(800);
+    }
   }
+  ctx = base;
+  const still = listingRows().filter((r) => r.incomplete && names.includes(r.name)).map((r) => r.name);
+  if (still.length) ctx.fail(`Still incomplete after ${MAX_PASSES} passes: ${still.join(', ')}`);
 }
 
 // ---- Finding a product for Extension Tower -------------------------------------------
