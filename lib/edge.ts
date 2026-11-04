@@ -33,8 +33,15 @@ export const SAVE_LABEL: Record<'properties' | 'privacy' | 'language', string> =
 
 // ---- Languages: Partner Center shows English names ------------------------------
 
-const ALIASES: Record<string, string | string[]> = { kiswahili: 'sw', norwegian: ['nb', 'no'], 'norwegian bokmål': ['nb', 'no'], filipino: 'fil', 'chinese (china)': 'zh_CN', 'chinese (taiwan)': 'zh_TW' };
-const names = new Intl.DisplayNames(['en'], { type: 'language' });
+const ALIASES: Record<string, string | string[]> = { kiswahili: 'sw', norwegian: ['nb', 'no'], 'norwegian bokmål': ['nb', 'no'], filipino: 'fil', 'chinese (china)': 'zh_CN', 'chinese (taiwan)': 'zh_TW',
+  // Partner Center's own names that Intl spells differently.
+  'spanish (latin america and the caribbean)': ['es_419', 'es'], 'spanish (latin america)': ['es_419', 'es'],
+  'spanish (spain)': 'es', bangla: 'bn', 'bangla (bangladesh)': 'bn', 'bengali (india)': 'bn', persian: 'fa', farsi: 'fa',
+  'english (united states)': ['en_US', 'en'], 'english (united kingdom)': ['en_GB', 'en'], 'english (australia)': ['en_AU', 'en'],
+  'portuguese (brazil)': 'pt_BR', 'portuguese (portugal)': ['pt_PT', 'pt'], 'serbian (latin)': 'sr', 'serbian (cyrillic)': 'sr' };
+const dialectNames = new Intl.DisplayNames(['en'], { type: 'language' });
+const standardNames = new Intl.DisplayNames(['en'], { type: 'language', languageDisplay: 'standard' });
+const names = { of: (c: string) => [dialectNames.of(c), standardNames.of(c)] };
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z()]/g, '');
 
 /** The package language for a Partner Center language name, if the package has one. */
@@ -53,10 +60,10 @@ export function languageCode(name: string, codes: string[]): string | null {
     return null;
   }
   return codes.find((c) => {
-    try { return norm(names.of(c.replace(/_/g, '-')) ?? '') === norm(name); } catch { return false; }
+    try { return names.of(c.replace(/_/g, '-')).some((n) => norm(n ?? '') === norm(name)); } catch { return false; }
   }) ?? codes.find((c) => {
     // "Portuguese" for pt_PT/pt; region-less names match the bare language.
-    try { return !c.includes('_') && norm(names.of(c) ?? '') === norm(name); } catch { return false; }
+    try { return !c.includes('_') && names.of(c).some((n) => norm(n ?? '') === norm(name)); } catch { return false; }
   }) ?? null;
 }
 
