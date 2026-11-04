@@ -255,8 +255,9 @@ function fileInput(slot: Slot): HTMLInputElement | null {
   return [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((i) => !others.some((o) => o?.contains(i))) ?? null;
 }
 
+// Logo and tiles: aria-label "Delete"; screenshots: "Delete screenshot shot-en.png".
 const deleteButtons = (box: HTMLElement | null) => [...(box?.querySelectorAll<HTMLButtonElement>('button') ?? [])]
-  .filter((b) => clean(b.innerText || b.getAttribute('aria-label')) === 'Delete');
+  .filter((b) => /^Delete( screenshot\b.*)?$/.test(clean(b.innerText || b.getAttribute('aria-label'))));
 
 /**
  * Answers Partner Center's "Delete promotional tile … Are you sure you want to
