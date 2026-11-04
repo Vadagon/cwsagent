@@ -33,7 +33,7 @@ export const SAVE_LABEL: Record<'properties' | 'privacy' | 'language', string> =
 
 // ---- Languages: Partner Center shows English names ------------------------------
 
-const ALIASES: Record<string, string> = { kiswahili: 'sw', norwegian: 'nb', filipino: 'fil', 'chinese (china)': 'zh_CN', 'chinese (taiwan)': 'zh_TW' };
+const ALIASES: Record<string, string | string[]> = { kiswahili: 'sw', norwegian: ['nb', 'no'], 'norwegian bokmål': ['nb', 'no'], filipino: 'fil', 'chinese (china)': 'zh_CN', 'chinese (taiwan)': 'zh_TW' };
 const names = new Intl.DisplayNames(['en'], { type: 'language' });
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z()]/g, '');
 
@@ -45,7 +45,13 @@ export function packageLanguage(pkg: Package, name: string): string | null {
 
 export function languageCode(name: string, codes: string[]): string | null {
   const alias = ALIASES[name.toLowerCase()];
-  if (alias) return codes.find((c) => c.toLowerCase() === alias.toLowerCase() || c.split('_')[0] === alias) ?? null;
+  if (alias) {
+    for (const a of [alias].flat()) {
+      const hit = codes.find((c) => c.toLowerCase() === a.toLowerCase() || c.split('_')[0] === a);
+      if (hit) return hit;
+    }
+    return null;
+  }
   return codes.find((c) => {
     try { return norm(names.of(c.replace(/_/g, '-')) ?? '') === norm(name); } catch { return false; }
   }) ?? codes.find((c) => {
@@ -220,6 +226,7 @@ export function languageWork(pkg: Package, name: string) {
 
 export function planLanguage(pkg: Package, name: string): PlanStep[] {
   const w = languageWork(pkg, name);
+  if (!w.code) return [];
   return [
     w.description && { text: 'Description' },
     w.video && { text: 'YouTube video' },

@@ -7,7 +7,7 @@ import { useCallback, useEffect, useRef, useState, type DragEvent, type ReactNod
 import { Icon, type IconName } from '../../components/Icon';
 import { Stopped } from '../../lib/dashboard';
 import {
-  createButton, edgePage, fillAllLanguages, fillLanguage, findProduct, isOverview, listedProducts, fillPrivacy, fillProperties, planAllLanguages, planLanguage,
+  createButton, edgePage, packageLanguage, fillAllLanguages, fillLanguage, findProduct, isOverview, listedProducts, fillPrivacy, fillProperties, planAllLanguages, planLanguage,
   planPackage, planPrivacy, planProperties, SAVE_LABEL, saveLanguage, uploadPackage, type EdgePage,
 } from '../../lib/edge';
 import { buildPackage, filesFromDrop, filesFromInput, loadPackage, savePackage } from '../../lib/reader';
@@ -154,7 +154,8 @@ export default function App() {
       else if (page.kind === 'properties') await fillProperties(ctx, pkg);
       else if (page.kind === 'privacy') await fillPrivacy(ctx, pkg);
       else if (page.kind === 'listings') await fillAllLanguages(ctx, pkg, page.productId!);
-      else { await fillLanguage(ctx, pkg, page.language!); await saveLanguage(ctx, page.language!); }
+      else if (packageLanguage(pkg, page.language!)) { await fillLanguage(ctx, pkg, page.language!); await saveLanguage(ctx, page.language!); }
+      else ctx.fail(`${page.language}: not in the package`);
     } catch (e) {
       if (!(e instanceof Stopped)) ctx.fail(`Unexpected error: ${(e as Error).message}`);
     }

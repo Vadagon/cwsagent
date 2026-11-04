@@ -209,7 +209,7 @@ if (!images.edgeLogo) review.push('No edge/logo-300x300.png: Partner Center requ
 // ---- Languages -----------------------------------------------------------------
 
 const names = new Intl.DisplayNames(['en'], { type: 'language', languageDisplay: 'standard' });
-const EDGE_NAMES = { no: 'Norwegian Bokmål', fil: 'Filipino' };
+const EDGE_NAMES = { no: 'Norwegian', fil: 'Filipino' };
 const cwsCode = (code) => (code === 'he' ? 'iw' : code.replace(/_/g, '-'));
 const edgeName = (code) => EDGE_NAMES[code] ?? names.of(code.replace(/_/g, '-'));
 
