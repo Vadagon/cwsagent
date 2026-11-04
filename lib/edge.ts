@@ -258,10 +258,26 @@ function fileInput(slot: Slot): HTMLInputElement | null {
 const deleteButtons = (box: HTMLElement | null) => [...(box?.querySelectorAll<HTMLButtonElement>('button') ?? [])]
   .filter((b) => clean(b.innerText || b.getAttribute('aria-label')) === 'Delete');
 
+/**
+ * Answers Partner Center's "Delete promotional tile … Are you sure you want to
+ * proceed with deleting …?" dialog with Confirm. Its buttons may sit in shadow roots.
+ */
 async function confirmIfAsked() {
-  const dialog = await waitFor(() => [...document.querySelectorAll<HTMLElement>('[role="dialog"],[role="alertdialog"]')]
-    .find((d) => /delete|remove/i.test(d.innerText)), { timeout: 700 });
-  [...(dialog?.querySelectorAll('button') ?? [])].find((b) => /^(delete|remove|ok|yes|confirm)$/i.test(clean(b.textContent)))?.click();
+  const shown = (el: Element) => (el as HTMLElement).getClientRects().length > 0;
+  const buttons = (root?: Element) => deepAll<HTMLElement>('button, [role="button"], v6_he-button', root).filter(shown);
+  const label = (b: HTMLElement) => clean(b.innerText || b.textContent);
+  const confirm = await waitFor(() => {
+    const dialogs = deepAll<HTMLElement>('[role="dialog"], [role="alertdialog"], dialog, [aria-modal="true"]')
+      .filter((d) => shown(d) && /are you sure|delete|remove/i.test(d.innerText || d.textContent || ''));
+    if (!dialogs.length && !/Are you sure you want to proceed with deleting/i.test(document.body.innerText)) return null;
+    // "Confirm" is the dialog's own; a bare "Delete" may be an image's button behind it.
+    return buttons().find((b) => /^confirm$/i.test(label(b)))
+      ?? dialogs.flatMap((d) => buttons(d)).find((b) => /^(delete|remove|ok|yes)$/i.test(label(b))) ?? null;
+  }, { timeout: 3000 });
+  if (!confirm) return;
+  for (const type of ['mousedown', 'mouseup']) confirm.dispatchEvent(new MouseEvent(type, { bubbles: true, composed: true }));
+  confirm.click();
+  await waitFor(() => !/Are you sure you want to proceed with deleting/i.test(document.body.innerText), { timeout: 3000 });
 }
 
 /** Partner Center takes PNG only. */
