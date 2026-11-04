@@ -2,7 +2,7 @@
   "name": "cwsagent",
   "description": "Fill or extract a Chrome Web Store listing in one drop.",
   "private": true,
-  "version": "0.7.4",
+  "version": "0.7.5",
   "type": "module",
   "scripts": {
     "dev": "wxt",

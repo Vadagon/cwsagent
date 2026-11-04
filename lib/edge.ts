@@ -484,6 +484,9 @@ function listingRows() {
 const pageButtonEdge = (text: RegExp) =>
   deepAll<HTMLElement>('button, v6_he-button').find((b) => text.test(clean(b.textContent)) && !(b as HTMLButtonElement).disabled);
 
+/** Store listings is showing: its route, no details heading, and its table. */
+const onListings = () => /\/listings\/?$/.test(location.pathname) && edgePage().kind === 'listings';
+
 export function planAllLanguages(pkg: Package): PlanStep[] {
   const rows = listingRows();
   const ours = rows.filter((r) => packageLanguage(pkg, r.name));
@@ -511,8 +514,11 @@ export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId:
     if (state.done.includes(name)) { ctx.skip(`${name}: done earlier`); continue; }
     ctx = withCount(base, `${i + 1}/${names.length} languages`);
     ctx.progress(`${name}: opening…`);
-    const row = await waitFor(() => listingRows().find((r) => r.name === name), { timeout: 20000 });
+    // Edit details navigates relative to the listings route: press it only once
+    // Partner Center has fully settled back on Store listings.
+    const row = await waitFor(() => onListings() && listingRows().find((r) => r.name === name), { timeout: 20000 });
     if (!row) { ctx.fail(`${name}: row not found`); continue; }
+    await sleep(1000);
     row.edit.click();
     if (!(await waitFor(() => edgePage().kind === 'language' && edgePage().language === name, { timeout: 30000 }))) { ctx.fail(`${name}: details page didn't open`); continue; }
     await sleep(800);
@@ -520,11 +526,12 @@ export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId:
     await fillLanguage(ctx, pkg, name);
     const failed = ctx.records.filter((r) => r.status === 'fail').length > before;
     if (!(await saveLanguage(ctx, name))) break;
-    // Close sometimes ignores the first click right after saving.
+    // Close sometimes ignores the first click right after saving; press it again
+    // only while the details page is still showing, never on the list.
     let back = false;
-    for (let i = 0; i < 10 && !back; i++) {
-      pageButtonEdge(/^Close$/i)?.click();
-      back = !!(await waitFor(() => edgePage().kind === 'listings', { timeout: 3000 }));
+    for (let i = 0; i < 6 && !back; i++) {
+      if (edgePage().kind === 'language') pageButtonEdge(/^Close$/i)?.click();
+      back = !!(await waitFor(() => onListings() && listingRows().length > 0, { timeout: 10000 }));
     }
     if (!back) { ctx.fail(`${name}: saved, but the page didn't close`); break; }
     if (!failed) {
