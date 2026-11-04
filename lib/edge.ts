@@ -230,8 +230,11 @@ export function planLanguage(pkg: Package, name: string): PlanStep[] {
 
 /** The smallest block holding a section's title and its images or upload control. */
 function section(slot: Slot): HTMLElement | null {
+  // Partner Center: <section> … <span id="Extension logo_header_section">Extension logo<span> *</span>
+  const header = document.getElementById(`${SECTION[slot]}_header_section`)?.closest<HTMLElement>('section');
+  if (header) return header;
   const title = [...document.querySelectorAll<HTMLElement>('b, strong, label, span, div')]
-    .find((el) => el.children.length === 0 && clean(el.textContent).replace(/\s*\*$/, '') === SECTION[slot]);
+    .find((el) => [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && clean(n.textContent) === SECTION[slot]));
   let box = title?.parentElement ?? null;
   for (let i = 0; box && i < 8; i++, box = box.parentElement) {
     const others = (Object.values(SECTION) as string[]).filter((t) => t !== SECTION[slot] && box!.innerText.includes(t));
@@ -239,6 +242,17 @@ function section(slot: Slot): HTMLElement | null {
     if (box.querySelector('input[type="file"]') || deleteButtons(box).length) return box;
   }
   return null;
+}
+
+/**
+ * A section's upload control. The screenshots section has none of its own: its
+ * control sits outside every image section.
+ */
+function fileInput(slot: Slot): HTMLInputElement | null {
+  const own = section(slot)?.querySelector<HTMLInputElement>('input[type="file"]');
+  if (own || slot !== 'screenshots') return own ?? null;
+  const others = (['logo', 'smallTile', 'marquee'] as Slot[]).map(section);
+  return [...document.querySelectorAll<HTMLInputElement>('input[type="file"]')].find((i) => !others.some((o) => o?.contains(i))) ?? null;
 }
 
 const deleteButtons = (box: HTMLElement | null) => [...(box?.querySelectorAll<HTMLButtonElement>('button') ?? [])]
@@ -292,7 +306,7 @@ async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs:
   for (const p of missing) ctx.fail(`${label}: ${p} missing from the package`);
   const files = await Promise.all(paths.filter((p) => blobs[p]).map((p) => asPng(blobs[p]!, p.split('/').pop()!).then((i) => i.file)));
   const send = async (batch: File[]) => {
-    const input = await waitFor(() => find()?.querySelector<HTMLInputElement>('input[type="file"]'), { timeout: 8000 });
+    const input = await waitFor(() => fileInput(slot), { timeout: 8000 });
     if (!input) return false;
     const before = deleteButtons(find()).length;
     const dt = new DataTransfer();
@@ -301,7 +315,7 @@ async function uploadImages(ctx: RunContext, slot: Slot, paths: string[], blobs:
     input.dispatchEvent(new Event('change', { bubbles: true }));
     return !!(await waitFor(() => deleteButtons(find()).length >= before + batch.length, { timeout: 120000, every: 300 }));
   };
-  const input = find()?.querySelector<HTMLInputElement>('input[type="file"]');
+  const input = fileInput(slot);
   let ok = true;
   if (input?.multiple || files.length === 1) ok = await send(files);
   else for (const f of files) { ctx.check(); if (!(await send([f]))) { ok = false; break; } }
@@ -316,7 +330,12 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
   if (w.description) {
     if (/\bChrome\b/.test(w.description)) ctx.info('The description mentions Chrome; Edge asks not to reference other browsers.');
     if (w.description.length > 10000) ctx.fail(`Description: ${w.description.length} characters, Edge allows 10,000`, w.description);
-    else await write(ctx, () => document.querySelector<HTMLTextAreaElement>('textarea[id*="description"]'), w.description, 'Description');
+    else {
+      // The page fills its own saved text in after it opens; write only once that settled.
+      await waitFor(description, { timeout: 15000 });
+      await sleep(1000);
+      await write(ctx, description, w.description, 'Description');
+    }
   }
   if (w.video) await write(ctx, () => field('input', 'YouTube video URL'), w.video, 'YouTube video');
   if (w.terms) await addSearchTerms(ctx, w.terms);
@@ -327,11 +346,16 @@ export async function fillLanguage(ctx: RunContext, pkg: Package, name: string) 
     ctx.check();
     if (await clearImages(ctx, slot)) ready.push(slot);
   }
-  if (!ready.length) return;
   const count = ready.reduce((n, slot) => n + w.images[slot]!.length, 0);
-  ctx.progress(`Uploading ${count} images…`);
+  if (count) ctx.progress(`Uploading ${count} images…`);
   await Promise.all(ready.map((slot) => uploadImages(ctx, slot, w.images[slot]!, pkg.blobs)));
+  if (w.description && w.description.length <= 10000 && description()?.value !== w.description) {
+    ctx.info('Description was reset by the page; writing it again');
+    await write(ctx, description, w.description, 'Description');
+  }
 }
+
+const description = () => document.querySelector<HTMLTextAreaElement>('textarea[id*="description"]');
 
 // ---- Search terms ------------------------------------------------------------------
 
