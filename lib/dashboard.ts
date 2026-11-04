@@ -19,6 +19,12 @@ export async function waitFor<T>(test: () => T, { timeout = 15000, every = 150 }
 
 export class Stopped extends Error {}
 
+/** The same run, with each progress line led by a count such as "3/42 languages". */
+export function withCount(ctx: RunContext, count: string): RunContext {
+  const show = (t: string) => ctx.progress(`${count} · ${t}`);
+  return { ...ctx, ok: (t) => { ctx.ok(t); show(t); }, info: (t) => { ctx.info(t); show(t); }, progress: show };
+}
+
 // ---- Page detection --------------------------------------------------------
 
 export function pageKind(path = location.pathname): Page {
@@ -442,18 +448,20 @@ export async function fillListing(ctx: RunContext, pkg: Package, opts: ListingOp
     if (opts.images) await fillGlobalImages(ctx, pkg);
 
     const codes = Object.keys(pkg.languages).sort((a, b) => (a === 'en' ? -1 : b === 'en' ? 1 : a.localeCompare(b)));
-    for (const code of codes) {
+    const work = codes.map((code) => {
       const data = { ...pkg.languages[code] };
       if (!opts.descriptions) { delete data.description; delete data.promoVideo; }
       if (!opts.localizedImages) delete data.screenshots;
-      if (data.description === undefined && data.promoVideo === undefined && !data.screenshots?.length) continue;
-
+      return { code, data };
+    }).filter(({ data }) => data.description !== undefined || data.promoVideo !== undefined || data.screenshots?.length);
+    const todo = work.filter(({ code }) => languageValue(code));
+    for (const { code } of work) if (!languageValue(code)) ctx.skip(`${code}: not one of this item's languages`);
+    for (const [i, { code, data }] of todo.entries()) {
       ctx.check();
-      const value = languageValue(code);
-      if (!value) { ctx.skip(`${code}: not one of this item's languages`); continue; }
-      ctx.info(`Language: ${code}`);
-      if (!(await switchLanguage(value))) { ctx.fail(`${code}: could not switch language`, data.description); continue; }
-      await fillLanguage(ctx, pkg, code, data);
+      const lctx = withCount(ctx, `${i + 1}/${todo.length} languages`);
+      lctx.info(`Language: ${code}`);
+      if (!(await switchLanguage(languageValue(code)!))) { ctx.fail(`${code}: could not switch language`, data.description); continue; }
+      await fillLanguage(lctx, pkg, code, data);
     }
   } finally {
     if (start) await switchLanguage(start);

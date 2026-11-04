@@ -7,7 +7,7 @@
 // language (there are no global ones), uploads take PNG only, each language
 // is edited and saved on its own page, and Privacy is built from web
 // components whose fields sit in shadow roots.
-import { clean, sleep, waitFor } from './dashboard';
+import { clean, sleep, waitFor, withCount } from './dashboard';
 import { DATA_TYPES } from './reader';
 import { store } from './store';
 import type { DataTypeKey, Package, PlanStep, RunContext } from './types';
@@ -453,12 +453,15 @@ export function planAllLanguages(pkg: Package): PlanStep[] {
 export async function fillAllLanguages(ctx: RunContext, pkg: Package, productId: string) {
   const saved = await store.get<RunState>(RUN_KEY).catch(() => undefined);
   const state: RunState = saved && saved.productId === productId && saved.loadedAt === pkg.loadedAt ? saved : { productId, loadedAt: pkg.loadedAt, done: [] };
-  const names = listingRows().map((r) => r.name);
-  if (!names.length) return ctx.fail('Store listings: no languages found');
-  for (const name of names) {
+  const rows = listingRows().map((r) => r.name);
+  if (!rows.length) return ctx.fail('Store listings: no languages found');
+  for (const name of rows) if (!packageLanguage(pkg, name)) ctx.skip(`${name}: not in the package`);
+  const names = rows.filter((name) => packageLanguage(pkg, name));
+  const base = ctx;
+  for (const [i, name] of names.entries()) {
     ctx.check();
     if (state.done.includes(name)) { ctx.skip(`${name}: done earlier`); continue; }
-    if (!packageLanguage(pkg, name)) { ctx.skip(`${name}: not in the package`); continue; }
+    ctx = withCount(base, `${i + 1}/${names.length} languages`);
     ctx.progress(`${name}: opening…`);
     const row = await waitFor(() => listingRows().find((r) => r.name === name), { timeout: 20000 });
     if (!row) { ctx.fail(`${name}: row not found`); continue; }
