@@ -371,8 +371,9 @@ async function addSearchTerms(ctx: RunContext, terms: string[]) {
     }
     setNative(input, term);
     await sleep(80);
-    // Some layouts turn the typed term into a chip only after Add Term.
-    if (!termsNow(box)(term)) { addTermLink(box)?.click(); await sleep(300); }
+    // Partner Center keeps a typed term only once Add Term is pressed, the last one included.
+    const link = addTermLink(box);
+    if (link) { link.click(); await sleep(300); }
     if (termsNow(box)(term)) added++; else ctx.fail(`Search terms: “${term}” not kept`, term);
   }
   ctx.ok(`Search terms: ${added} added, ${terms.length - added} already there or failed`);
