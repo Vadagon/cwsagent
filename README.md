@@ -51,7 +51,7 @@ Then drop the whole `meta/` folder on the CWSAgent card in each console (each si
 | Edge | Availability | Not handled | Visibility, markets |
 | Edge | Properties | Category, website, support URL, mature content | Save & Continue |
 | Edge | Privacy | Same answers as Chrome | Certifications, Save & Continue |
-| Edge | Store listings | **Fill all languages**: opens each language, fills description, search terms, 300×300 logo, tiles, screenshots, presses Save draft and Close, next. Stopped runs carry on where they ended | **Publish** |
+| Edge | Store listings | **Fill all languages**: opens each language, fills description, search terms, 300×300 logo, tiles, screenshots, presses Save draft and Close, next; then fills failed or Incomplete languages again (up to 3 passes). Stopped runs carry on where they ended | **Publish** |
 
 Partner Center keeps edits per language only after Save draft, so the all-languages run saves each
 language's draft after you confirm. Nothing is submitted or published, and certifications are never
